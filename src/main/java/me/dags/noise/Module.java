@@ -94,6 +94,11 @@ public interface Module {
         return turbulence(x, y, builder.power());
     }
 
+    default Modifier turbulence(Source source, double power) {
+        Builder builder = source.toBuilder();
+        return turbulence(source, builder.seed(builder.seed() + 1).perlin(), power);
+    }
+
     /**
      * @return A module whose output values are distorted in the x/y directions by Modules x & y with the given power
      */

@@ -62,6 +62,24 @@ public class Renderer implements Viewer.Renderer {
     }
 
     public static void main(String[] args) {
+        Module root = example0();
+
+        // visualize the output of 'root'
+        Renderer renderer = new Renderer(root);
+
+        // creates a 512x768 view:
+        // 512x512 pixels for a plan view of the noise, 512x256 for a section view
+        Viewer viewer = new Viewer(512, 512 + 256);
+        viewer.setRenderer(renderer);
+    }
+
+    public static void test(Module module) {
+        Renderer renderer = new Renderer(module);
+        Viewer viewer = new Viewer(512, 512 + 256);
+        viewer.setRenderer(renderer);
+    }
+
+    public static Module example0() {
         // create two noise modules to blend together
         // - the source0 produces low amplitude, rolling waves
         // - the source1 produces higher amplitude, more erratic waves
@@ -88,18 +106,10 @@ public class Renderer implements Viewer.Renderer {
         System.out.println("Deserialized: " + example);
 
         // uniformly boost the noise values by 0.2 and clamp the output between 0.1 and 1.0
-        Module root = example.bias(0.2).clamp(0, 1);
-
-        // visualize the output of 'root'
-        Renderer renderer = new Renderer(root);
-
-        // creates a 512x768 view:
-        // 512x512 pixels for a plan view of the noise, 512x256 for a section view
-        Viewer viewer = new Viewer(512, 512 + 256);
-        viewer.setRenderer(renderer);
+        return example.bias(0.2).clamp(0, 1);
     }
 
-    public static Module baseExample() {
+    public static Module example1() {
         Module lower = Source.perlin(123, 160, 1).norm().scale(0.2).bias(0.2);
         Module upper = Source.ridge(124, 256, 4).norm();
         return new Base(lower, upper, 0.4F).clamp(0, 1);

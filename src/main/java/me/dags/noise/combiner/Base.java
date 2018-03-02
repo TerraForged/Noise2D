@@ -2,15 +2,12 @@ package me.dags.noise.combiner;
 
 import me.dags.config.Node;
 import me.dags.noise.Module;
-import me.dags.noise.func.Interpolation;
 import me.dags.noise.util.Util;
 
 /**
  * @author dags <dags@dags.me>
  */
 public class Base extends Combiner {
-
-    public static final Interpolation INTERPOLATION = Interpolation.HERMITE;
 
     private final Module lower;
     private final Module upper;
@@ -24,7 +21,7 @@ public class Base extends Combiner {
         this.upper = upper;
         this.min = lower.maxValue();
         this.max = min + falloff;
-        this.falloff = falloff;
+        this.falloff = falloff == 0 ? 1F : falloff;
         this.maxValue = Math.max(lower.maxValue(), upper.maxValue());
     }
 
@@ -37,10 +34,15 @@ public class Base extends Combiner {
     public float getValue(float x, float y) {
         float value = upper.getValue(x, y);
         if (value < max) {
-            float clamp = Math.min(max, Math.max(min, value));
-            float alpha = (max - clamp) / falloff;
             float value1 = lower.getValue(x, y);
-            return ((1 - alpha) * value) + (alpha * value1);
+
+            if (falloff > 0) {
+                float clamp = Math.min(max, Math.max(min, value));
+                float alpha = (max - clamp) / falloff;
+                return ((1 - alpha) * value) + (alpha * value1);
+            }
+
+            return value1;
         }
         return value;
     }
