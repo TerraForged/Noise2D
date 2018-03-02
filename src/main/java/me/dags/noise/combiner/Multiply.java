@@ -12,6 +12,11 @@ public class Multiply extends Combiner {
     }
 
     @Override
+    public String getName() {
+        return "mult";
+    }
+
+    @Override
     protected float minTotal(float total, Module next) {
         return total * next.minValue();
     }

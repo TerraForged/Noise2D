@@ -12,6 +12,11 @@ public class Sub extends Combiner {
     }
 
     @Override
+    public String getName() {
+        return "sub";
+    }
+
+    @Override
     protected float minTotal(float total, Module next) {
         return total - next.maxValue();
     }

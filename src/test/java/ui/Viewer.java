@@ -13,8 +13,8 @@ import java.util.concurrent.Executors;
  */
 public class Viewer extends JFrame implements KeyListener {
 
-    private static final int xInc = 10;
-    private static final int zInc = 10;
+    private static final int xInc = 8;
+    private static final int zInc = 8;
 
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
     private final JLabel label = new JLabel();

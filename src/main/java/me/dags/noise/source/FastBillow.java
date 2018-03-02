@@ -1,7 +1,7 @@
 package me.dags.noise.source;
 
 import me.dags.noise.Builder;
-import me.dags.noise.source.fast.Noise;
+import me.dags.noise.func.Noise;
 
 /**
  * https://github.com/Auburns/FastNoise_Java
@@ -10,6 +10,11 @@ public class FastBillow extends FastPerlin {
 
     public FastBillow(Builder builder) {
         super(builder);
+    }
+
+    @Override
+    public String getName() {
+        return "billow";
     }
 
     @Override

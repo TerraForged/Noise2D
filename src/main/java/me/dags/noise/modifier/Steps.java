@@ -1,7 +1,9 @@
 package me.dags.noise.modifier;
 
+import me.dags.config.Node;
 import me.dags.noise.Module;
-import me.dags.noise.source.fast.Util;
+import me.dags.noise.util.NoiseUtil;
+import me.dags.noise.util.Util;
 
 /**
  * @author dags <dags@dags.me>
@@ -19,6 +21,11 @@ public class Steps extends Modifier {
     }
 
     @Override
+    public String getName() {
+        return "steps";
+    }
+
+    @Override
     public float minValue() {
         return 0F;
     }
@@ -29,7 +36,13 @@ public class Steps extends Modifier {
 
     @Override
     public float modify(float x, float y, float noiseValue) {
-        int round = Util.FastRound(noiseValue * steps);
+        int round = NoiseUtil.FastRound(noiseValue * steps);
         return round / steps;
+    }
+
+    @Override
+    public void toNode(Node node) {
+        super.toNode(node);
+        node.set("count", Util.round5(steps));
     }
 }

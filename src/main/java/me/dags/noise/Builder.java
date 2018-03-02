@@ -1,11 +1,10 @@
 package me.dags.noise;
 
-import me.dags.noise.modifier.Modifier;
-import me.dags.noise.modifier.Turbulence;
+import me.dags.noise.func.CellFunc;
+import me.dags.noise.func.DistanceFunc;
+import me.dags.noise.func.EdgeFunc;
+import me.dags.noise.func.Interpolation;
 import me.dags.noise.source.*;
-import me.dags.noise.source.fast.CellDistanceFunc;
-import me.dags.noise.source.fast.CellType;
-import me.dags.noise.source.fast.Interpolation;
 
 /**
  * @author dags <dags@dags.me>
@@ -15,20 +14,27 @@ public class Builder {
     public static final int SEED = 1337;
     public static final int OCTAVES = 3;
     public static final float GAIN = 0.5F;
+    public static final float POWER = 1F;
     public static final float LACUNARITY = 2F;
     public static final float FREQUENCY = 0.01F;
-    private static final Source DEFAULT = new Constant(0.5F);
+    public static final float CONST_VALUE = 0F;
+    public static final CellFunc CELL_FUNC = CellFunc.CELL_VALUE;
+    public static final EdgeFunc EDGE_FUNC = EdgeFunc.DISTANCE_2;
+    public static final DistanceFunc DIST_FUNC = DistanceFunc.EUCLIDEAN;
+    public static final Interpolation INTERP = Interpolation.QUINTIC;
+    public static final Source SOURCE = new Constant(CONST_VALUE);
 
     private int seed = SEED;
     private int octaves = OCTAVES;
     private float gain = GAIN;
     private float lacunarity = LACUNARITY;
     private float frequency = FREQUENCY;
-    private float power = 1F;
-    private Interpolation interpolation = Interpolation.Quintic;
-    private CellType cellType = CellType.CellValue;
-    private CellDistanceFunc cellDistance = CellDistanceFunc.Euclidean;
-    private Module source = DEFAULT;
+    private float power = POWER;
+    private Module source = SOURCE;
+    private CellFunc cellFunc = CELL_FUNC;
+    private EdgeFunc edgeFunc = EDGE_FUNC;
+    private DistanceFunc distFunc = DIST_FUNC;
+    private Interpolation interpolation = INTERP;
 
     protected Builder() {}
 
@@ -60,12 +66,16 @@ public class Builder {
         return interpolation;
     }
 
-    public CellType cellType() {
-        return cellType;
+    public CellFunc cellFunc() {
+        return cellFunc;
     }
 
-    public CellDistanceFunc cellDistance() {
-        return cellDistance;
+    public EdgeFunc edgeFunc() {
+        return edgeFunc;
+    }
+
+    public DistanceFunc distFunc() {
+        return distFunc;
     }
 
     public Module source() {
@@ -82,18 +92,18 @@ public class Builder {
         return this;
     }
 
-    public Builder gain(float gain) {
-        this.gain = gain;
+    public Builder gain(double gain) {
+        this.gain = (float) gain;
         return this;
     }
 
-    public Builder power(float power) {
-        this.power = power;
+    public Builder power(double power) {
+        this.power = (float) power;
         return this;
     }
 
-    public Builder lacunarity(float lacunarity) {
-        this.lacunarity = lacunarity;
+    public Builder lacunarity(double lacunarity) {
+        this.lacunarity = (float) lacunarity;
         return this;
     }
 
@@ -102,8 +112,8 @@ public class Builder {
         return this;
     }
 
-    public Builder frequency(float frequency) {
-        this.frequency = frequency;
+    public Builder frequency(double frequency) {
+        this.frequency = (float) frequency;
         return this;
     }
 
@@ -112,13 +122,18 @@ public class Builder {
         return this;
     }
 
-    public Builder cellType(CellType cellType) {
-        this.cellType = cellType;
+    public Builder cellFunc(CellFunc cellFunc) {
+        this.cellFunc = cellFunc;
         return this;
     }
 
-    public Builder cellDistance(CellDistanceFunc cellDistance) {
-        this.cellDistance = cellDistance;
+    public Builder edgeFunc(EdgeFunc cellType) {
+        this.edgeFunc = cellType;
+        return this;
+    }
+
+    public Builder distFunc(DistanceFunc cellDistance) {
+        this.distFunc = cellDistance;
         return this;
     }
 
@@ -144,21 +159,10 @@ public class Builder {
     }
 
     public Source cell() {
-        switch (cellType()) {
-            case CellValue:
-            case Distance:
-            case NoiseLookup:
-                return new FastCell(this);
-            default:
-                return new FastCellEdge(this);
-        }
+        return new FastCell(this);
     }
 
-    public Modifier turbulence() {
-        int seed = seed();
-        Module turb0 = perlin();
-        Module turb1 = seed(seed + 1).perlin();
-        seed(seed);
-        return new Turbulence(source(), turb0, turb1, power());
+    public Source cellEdge() {
+        return new FastCellEdge(this);
     }
 }

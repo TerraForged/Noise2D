@@ -1,23 +1,23 @@
-package me.dags.noise.source.fast;
+package me.dags.noise.func;
 
 /**
  * https://github.com/Auburns/FastNoise_Java
  */
-public enum CellDistanceFunc {
+public enum DistanceFunc {
 
-    Euclidean {
+    EUCLIDEAN {
         @Override
         public float apply(float vecX, float vecY) {
             return vecX * vecX + vecY * vecY;
         }
     },
-    Manhattan {
+    MANHATTAN {
         @Override
         public float apply(float vecX, float vecY) {
             return Math.abs(vecX) + Math.abs(vecY);
         }
     },
-    Natural {
+    NATURAL {
         @Override
         public float apply(float vecX, float vecY) {
             return (Math.abs(vecX) + Math.abs(vecY)) + (vecX * vecX + vecY * vecY);

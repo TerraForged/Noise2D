@@ -1,28 +1,51 @@
 package me.dags.noise.source;
 
+import me.dags.config.Node;
 import me.dags.noise.Builder;
-import me.dags.noise.source.fast.CellDistanceFunc;
-import me.dags.noise.source.fast.CellType;
-import me.dags.noise.source.fast.Noise;
+import me.dags.noise.func.DistanceFunc;
+import me.dags.noise.func.EdgeFunc;
+import me.dags.noise.func.Noise;
+import me.dags.noise.util.Util;
 
 /**
  * @author dags <dags@dags.me>
  */
 public class FastCellEdge extends FastSource {
 
-    private final CellType cellType;
-    private final CellDistanceFunc cellDistance;
+    private final EdgeFunc edgeFunc;
+    private final DistanceFunc distFunc;
 
     public FastCellEdge(Builder builder) {
         super(builder);
-        this.cellType = builder.cellType();
-        this.cellDistance = builder.cellDistance();
+        this.edgeFunc = builder.edgeFunc();
+        this.distFunc = builder.distFunc();
+    }
+
+    @Override
+    public String getName() {
+        return "cell_edge";
     }
 
     @Override
     public float getValue(float x, float y) {
         x *= frequency;
         y *= frequency;
-        return Noise.singleCellular2Edge(x, y, seed, cellType, cellDistance);
+        return Noise.singleCellular2Edge(x, y, seed, edgeFunc, distFunc);
+    }
+
+    @Override
+    public void toNode(Node node) {
+        super.toNode(node);
+        Util.setNonDefault(node, "edge", edgeFunc, Builder.EDGE_FUNC);
+        Util.setNonDefault(node, "dist", distFunc, Builder.DIST_FUNC);
+    }
+
+    @Override
+    public String toString() {
+        return getName() + "{"
+                + properties()
+                + ", edge=" + edgeFunc
+                + ", dist=" + distFunc
+                + "}";
     }
 }

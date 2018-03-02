@@ -12,6 +12,11 @@ public class Max extends Combiner {
     }
 
     @Override
+    public String getName() {
+        return "max";
+    }
+
+    @Override
     protected float minTotal(float total, Module next) {
         return maxTotal(total, next);
     }

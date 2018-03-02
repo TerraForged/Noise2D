@@ -1,5 +1,6 @@
 package me.dags.noise.source;
 
+import me.dags.config.Node;
 import me.dags.noise.Builder;
 import me.dags.noise.Module;
 import me.dags.noise.Source;
@@ -13,6 +14,16 @@ public class Constant implements Source {
 
     public Constant(float value) {
         this.value = value;
+    }
+
+    @Override
+    public String getName() {
+        return "const";
+    }
+
+    @Override
+    public float getValue(float x, float y) {
+        return value;
     }
 
     @Override
@@ -31,7 +42,8 @@ public class Constant implements Source {
     }
 
     @Override
-    public float getValue(float x, float y) {
-        return value;
+    public void toNode(Node node) {
+        node.set("type", getName());
+        node.set("value", value);
     }
 }

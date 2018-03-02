@@ -12,6 +12,11 @@ public class Power extends Combiner {
     }
 
     @Override
+    public String getName() {
+        return "pow";
+    }
+
+    @Override
     protected float minTotal(float result, Module next) {
         return (float) Math.pow(result, next.minValue());
     }

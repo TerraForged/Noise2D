@@ -1,6 +1,8 @@
 package me.dags.noise.modifier;
 
+import me.dags.config.Node;
 import me.dags.noise.Module;
+import me.dags.noise.util.Util;
 
 /**
  * @author dags <dags@dags.me>
@@ -18,6 +20,11 @@ public class Map extends Modifier {
         this.outMax = max1;
         this.outRange = max1 - min1;
         this.sourceRange = source.maxValue() - source.minValue();
+    }
+
+    @Override
+    public String getName() {
+        return "map";
     }
 
     @Override
@@ -39,5 +46,12 @@ public class Map extends Modifier {
         } else {
             return Math.min(outMax, Math.max(outMin, noiseValue));
         }
+    }
+
+    @Override
+    public void toNode(Node node) {
+        super.toNode(node);
+        node.set("min", Util.round5(outMin));
+        node.set("max", Util.round5(outRange));
     }
 }

@@ -1,7 +1,8 @@
 package me.dags.noise.modifier;
 
-import me.dags.noise.Builder;
+import me.dags.config.Node;
 import me.dags.noise.Module;
+import me.dags.noise.util.Util;
 
 /**
  * @author dags <dags@dags.me>
@@ -13,20 +14,17 @@ public class Turbulence extends Modifier {
     private final Module source;
     private final float power;
 
-    public Turbulence(Builder builder) {
-        super(builder.source());
-        turb0 = builder.perlin();
-        turb1 = builder.seed(builder.seed() + 1).perlin();
-        source = builder.source();
-        power = builder.power();
-    }
-
     public Turbulence(Module source, Module turb0, Module turb1, float power) {
         super(source);
         this.turb0 = turb0;
         this.turb1 = turb1;
         this.source = source;
         this.power = power;
+    }
+
+    @Override
+    public String getName() {
+        return "turb";
     }
 
     @Override
@@ -49,5 +47,13 @@ public class Turbulence extends Modifier {
         x += turb0.getValue(x0, y0) * power;
         y += turb1.getValue(x1, y1) * power;
         return source.getValue(x, y);
+    }
+
+    @Override
+    public void toNode(Node node) {
+        super.toNode(node);
+        turb0.toNode(node.node("x"));
+        turb1.toNode(node.node("y"));
+        node.set("power", Util.round5(power));
     }
 }

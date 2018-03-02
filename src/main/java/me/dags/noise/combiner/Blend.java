@@ -1,5 +1,6 @@
 package me.dags.noise.combiner;
 
+import me.dags.config.Node;
 import me.dags.noise.Module;
 
 /**
@@ -16,6 +17,11 @@ public class Blend extends Combiner {
         this.source0 = source0;
         this.source1 = source1;
         this.control = control.norm();
+    }
+
+    @Override
+    public String getName() {
+        return "blend";
     }
 
     @Override
@@ -39,5 +45,11 @@ public class Blend extends Combiner {
     @Override
     protected float combine(float result, float value) {
         return 0F;
+    }
+
+    @Override
+    public void toNode(Node node) {
+        super.toNode(node);
+        control.toNode(node.node("selector"));
     }
 }

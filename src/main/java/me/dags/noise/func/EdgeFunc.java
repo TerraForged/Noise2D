@@ -1,52 +1,34 @@
-package me.dags.noise.source.fast;
+package me.dags.noise.func;
 
 /**
  * https://github.com/Auburns/FastNoise_Java
  */
-public enum CellType {
-    CellValue {
-        @Override
-        public float apply(float xc, float yc) {
-            return 0;
-        }
-    },
-    NoiseLookup {
-        @Override
-        public float apply(float xc, float yc) {
-            return 0;
-        }
-    },
-    Distance {
-        @Override
-        public float apply(float distance, float distance2) {
-            return 0;
-        }
-    },
-    Distance2 {
+public enum EdgeFunc {
+    DISTANCE_2 {
         @Override
         public float apply(float distance, float distance2) {
             return distance2 - 1;
         }
     },
-    Distance2Add {
+    DISTANCE_2_ADD {
         @Override
         public float apply(float distance, float distance2) {
             return distance2 + distance - 1;
         }
     },
-    Distance2Sub {
+    DISTANCE_2_SUB {
         @Override
         public float apply(float distance, float distance2) {
             return distance2 - distance - 1;
         }
     },
-    Distance2Mul {
+    DISTANCE_2_MUL {
         @Override
         public float apply(float distance, float distance2) {
             return distance2 * distance - 1;
         }
     },
-    Distance2Div {
+    DISTANCE_2_DIV {
         @Override
         public float apply(float distance, float distance2) {
             return distance / distance2 - 1;

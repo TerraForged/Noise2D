@@ -1,8 +1,10 @@
 package me.dags.noise.source;
 
+import me.dags.config.Node;
 import me.dags.noise.Builder;
-import me.dags.noise.source.fast.Interpolation;
-import me.dags.noise.source.fast.Noise;
+import me.dags.noise.func.Interpolation;
+import me.dags.noise.func.Noise;
+import me.dags.noise.util.Util;
 
 /**
  * https://github.com/Auburns/FastNoise_Java
@@ -14,6 +16,11 @@ public class FastPerlin extends FastSource {
     public FastPerlin(Builder builder) {
         super(builder);
         interpolation = builder.interp();
+    }
+
+    @Override
+    public String getName() {
+        return "perlin";
     }
 
     @Override
@@ -40,5 +47,19 @@ public class FastPerlin extends FastSource {
     public Builder toBuilder() {
         return super.toBuilder()
                 .interp(interpolation);
+    }
+
+    @Override
+    public void toNode(Node node) {
+        super.toNode(node);
+        Util.setNonDefault(node, "interpolation", interpolation, Builder.INTERP);
+    }
+
+    @Override
+    public String toString() {
+        return getName() + "{"
+                + properties()
+                + ", interpolation=" + interpolation
+                + "}";
     }
 }

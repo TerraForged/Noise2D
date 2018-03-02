@@ -12,6 +12,11 @@ public class Invert extends Modifier {
     }
 
     @Override
+    public String getName() {
+        return "invert";
+    }
+
+    @Override
     public float minValue() {
         return -super.maxValue();
     }

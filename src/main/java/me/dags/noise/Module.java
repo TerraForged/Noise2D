@@ -1,20 +1,28 @@
 package me.dags.noise;
 
+import me.dags.config.Config;
+import me.dags.config.Node;
 import me.dags.noise.combiner.*;
+import me.dags.noise.func.Interpolation;
 import me.dags.noise.modifier.*;
-import me.dags.noise.source.Constant;
-import me.dags.noise.source.fast.CellType;
+import me.dags.noise.util.Deserializer;
+
+import java.nio.file.Path;
 
 /**
  * @author dags <dags@dags.me>
  */
 public interface Module {
 
+    String getName();
+
     float minValue();
 
     float maxValue();
 
     float getValue(float x, float y);
+
+    void toNode(Node node);
 
     /**
      * @return A module whose output is mapped and clamped between 0 and 1
@@ -43,29 +51,29 @@ public interface Module {
     /**
      * @return A module whose output is mapped between the min and max values provided
      */
-    default Modifier map(float min, float max) {
-        return new Map(this, min, max);
+    default Modifier map(double min, double max) {
+        return new Map(this, (float) min, (float) max);
     }
 
     /**
      * @return A module whose output is clamped between the min and max values provided
      */
-    default Modifier clamp(float min, float max) {
-        return new Clamp(this, min, max);
+    default Modifier clamp(double min, double max) {
+        return new Clamp(this, (float) min, (float) max);
     }
 
     /**
      * @return A module whose output is scaled (multiplied) by the given scale value
      */
-    default Modifier scale(float scale) {
-        return new Scale(this, scale);
+    default Modifier scale(double scale) {
+        return new Scale(this, (float) scale);
     }
 
     /**
      * @return A module whose output is added to the given bias value
      */
-    default Modifier bias(float bias) {
-        return new Bias(this, bias);
+    default Modifier bias(double bias) {
+        return new Bias(this, (float) bias);
     }
 
     /**
@@ -89,8 +97,8 @@ public interface Module {
     /**
      * @return A module whose output values are distorted in the x/y directions by Modules x & y with the given power
      */
-    default Modifier turbulence(Module x, Module y, float power) {
-        return new Turbulence(this, x, y, power);
+    default Modifier turbulence(Module x, Module y, double power) {
+        return new Turbulence(this, x, y, (float) power);
     }
 
     /**
@@ -132,7 +140,17 @@ public interface Module {
      * @return A module whose output value is this module's output to the power of the given module's output
      */
     default Combiner pow(Module other) {
-        return new Multiply(this, other);
+        return new Power(this, other);
+    }
+
+    /**
+     * @return A module whose output is taken from 'other' unless it's value drops into the falloff range, at which
+     *         point the 'this' module's noise is blended into the result
+     *
+     *         The falloff range is calculated as this.maxValue() to this.maxValue() + falloff
+     */
+    default Combiner base(Module other, double falloff) {
+        return Module.base(this, other, (float) falloff);
     }
 
     /**
@@ -145,8 +163,28 @@ public interface Module {
     /**
      * @return Similar to blend but blending is weighted by an S-curve, controlled by this module
      */
-    default Combiner select(Module source0, Module source1, float lowerBound, float upperBound, float falloff) {
-        return select(this, source0, source1, lowerBound, upperBound, falloff);
+    default Combiner select(Module source0, Module source1, double lowerBound, double upperBound, double falloff) {
+        return Module.select(this, source0, source1, lowerBound, upperBound, falloff);
+    }
+
+    /**
+     * @return Similar to blend but blending is weighted by an S-curve, controlled by this module
+     */
+    default Combiner select(Module source0, Module source1, double lowerBound, double upperBound, double falloff, Interpolation interpolation) {
+        return Module.select(this, source0, source1, lowerBound, upperBound, falloff, interpolation);
+    }
+
+    default void save(Path path, String... nodePath) {
+        save(Config.must(path), nodePath);
+    }
+
+    default void save(Config config, String... nodePath) {
+        Node node = config;
+        for (String path : nodePath) {
+            node = node.node(path);
+        }
+        toNode(node);
+        config.save();
     }
 
     /**
@@ -157,80 +195,13 @@ public interface Module {
     }
 
     /**
-     * @return A Source Module with the given seed, scale and octaves
+     * @return A module whose output is taken from 'other' unless it's value drops into the falloff range, at which
+     *         point the 'this' module's noise is blended into the result
+     *
+     *         The falloff range is calculated as this.maxValue() to this.maxValue() + falloff
      */
-    static Source perlin(int seed, int scale, int octaves) {
-        return perlin(seed, 1F / scale, octaves);
-    }
-
-    /**
-     * @return A Source Module with the given seed, frequency and octaves
-     */
-    static Source perlin(int seed, float frequency, int octaves) {
-        return builder().seed(seed).frequency(frequency).octaves(octaves).perlin();
-    }
-
-    /**
-     * @return A Source Module with the given seed, scale and octaves
-     */
-    static Source billow(int seed, int scale, int octaves) {
-        return billow(seed, 1F / scale, octaves);
-    }
-
-    /**
-     * @return A Source Module with the given seed, frequency and octaves
-     */
-    static Source billow(int seed, float frequency, int octaves) {
-        return builder().seed(seed).frequency(frequency).octaves(octaves).billow();
-    }
-
-    /**
-     * @return A Source Module with the given seed, scale and octaves
-     */
-    static Source ridge(int seed, int scale, int octaves) {
-        return ridge(seed, 1F / scale, octaves);
-    }
-
-    /**
-     * @return A Source Module with the given seed, frequency and octaves
-     */
-    static Source ridge(int seed, float frequency, int octaves) {
-        return builder().seed(seed).frequency(frequency).octaves(octaves).ridge();
-    }
-
-    /**
-     * @return A Source Module with the given seed, scale and octaves
-     */
-    static Source cubic(int seed, int scale, int octaves) {
-        return cubic(seed, 1F / scale, octaves);
-    }
-
-    /**
-     * @return A Source Module with the given seed, frequency and octaves
-     */
-    static Source cubic(int seed, float frequency, int octaves) {
-        return builder().seed(seed).frequency(frequency).octaves(octaves).cubic();
-    }
-
-    /**
-     * @return A Source Module with the given seed, scale and octaves
-     */
-    static Source cell(int seed, int scale, CellType cellType) {
-        return cell(seed, 1F / scale, cellType);
-    }
-
-    /**
-     * @return A Source Module with the given seed, frequency and octaves
-     */
-    static Source cell(int seed, float frequency, CellType cellType) {
-        return builder().seed(seed).frequency(frequency).cellType(cellType).cell();
-    }
-
-    /**
-     * @return A module with a constant output value
-     */
-    static Source constant(float value) {
-        return new Constant(value);
+    static Combiner base(Module lower, Module upper, double range) {
+        return new Base(lower, upper, (float) range);
     }
 
     /**
@@ -243,7 +214,30 @@ public interface Module {
     /**
      * @return Similar to blend but blending is weighted by an S-curve, controlled by the control module
      */
-    static Combiner select(Module control, Module source0, Module source1, float lowerBound, float upperBound, float falloff) {
-        return new Select(control, source0, source1, lowerBound, upperBound, falloff);
+    static Combiner select(Module control, Module source0, Module source1, double lowerBound, double upperBound, double falloff) {
+        return new Select(control, source0, source1, (float) lowerBound, (float) upperBound, (float) falloff, Interpolation.HERMITE);
+    }
+
+    /**
+     * @return Similar to blend but blending is weighted by an S-curve, controlled by the control module
+     */
+    static Combiner select(Module control, Module source0, Module source1, double lowerBound, double upperBound, double falloff, Interpolation interpolation) {
+        return new Select(control, source0, source1, (float) lowerBound, (float) upperBound, (float) falloff, interpolation);
+    }
+
+    static Module load(Path path, String... nodePath) {
+        return load(Config.must(path), nodePath);
+    }
+
+    static Module load(Config config, String... nodePath) {
+        Node node = config;
+        for (String path : nodePath) {
+            node = node.node(path);
+        }
+        return fromNode(node);
+    }
+
+    static Module fromNode(Node node) {
+        return Deserializer.getInstance().deserialize(node);
     }
 }

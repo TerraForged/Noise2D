@@ -12,6 +12,11 @@ public class Add extends Combiner {
     }
 
     @Override
+    public String getName() {
+        return "add";
+    }
+
+    @Override
     protected float minTotal(float total, Module next) {
         return total + next.minValue();
     }

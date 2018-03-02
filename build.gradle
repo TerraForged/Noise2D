@@ -1,5 +1,15 @@
-apply plugin: 'java'
+plugins {
+    id 'java'
+}
 
 group 'me.dags'
 version '0.1-SNAPSHOT'
-sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    compile 'com.github.dags-:Config:1.0.1'
+}

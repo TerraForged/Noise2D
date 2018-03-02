@@ -1,13 +1,15 @@
 package me.dags.noise.source;
 
+import me.dags.config.Node;
 import me.dags.noise.Builder;
 import me.dags.noise.Module;
 import me.dags.noise.Source;
-import me.dags.noise.source.fast.Noise;
+import me.dags.noise.func.Noise;
+import me.dags.noise.util.Util;
 
 /**
  * @author dags <dags@dags.me>
- *
+ * <p>
  * FastSource modules are based on the work of FastNoise_Java https://github.com/Auburns/FastNoise_Java
  */
 public abstract class FastSource implements Source {
@@ -40,5 +42,32 @@ public abstract class FastSource implements Source {
                 .lacunarity(lacunarity)
                 .gain(gain)
                 .frequency(frequency);
+    }
+
+    @Override
+    public void toNode(Node node) {
+        node.clear();
+        node.set("module", getName());
+        Util.setNonDefault(node, "seed", seed, Builder.SEED);
+        Util.setNonDefault(node, "octaves", octaves, Builder.OCTAVES);
+        Util.setNonDefault(node, "gain", gain, Builder.GAIN);
+        Util.setNonDefault(node, "frequency", frequency, Builder.FREQUENCY);
+        Util.setNonDefault(node, "lacunarity", lacunarity, Builder.LACUNARITY);
+    }
+
+    @Override
+    public String toString() {
+        return getName() + "{"
+                + properties()
+                + '}';
+    }
+
+    protected String properties() {
+        return "seed=" + seed +
+                ", octaves=" + octaves +
+                ", lacunarity=" + lacunarity +
+                ", gain=" + gain +
+                ", frequency=" + frequency +
+                ", bounding=" + bounding;
     }
 }

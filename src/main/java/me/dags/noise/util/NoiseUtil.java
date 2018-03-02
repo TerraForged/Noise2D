@@ -1,9 +1,9 @@
-package me.dags.noise.source.fast;
+package me.dags.noise.util;
 
 /**
  * https://github.com/Auburns/FastNoise_Java
  */
-public class Util {
+public class NoiseUtil {
 
     public final static int X_PRIME = 1619;
     public final static int Y_PRIME = 31337;

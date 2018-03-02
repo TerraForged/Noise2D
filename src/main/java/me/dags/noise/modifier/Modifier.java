@@ -1,5 +1,6 @@
 package me.dags.noise.modifier;
 
+import me.dags.config.Node;
 import me.dags.noise.Module;
 
 /**
@@ -16,17 +17,30 @@ public abstract class Modifier implements Module {
     }
 
     @Override
+    public float getValue(float x, float y) {
+        return modify(x, y, source.getValue(x, y));
+    }
+
+    @Override
     public float minValue() {
         return source.minValue();
     }
 
+    @Override
     public float maxValue() {
         return source.maxValue();
     }
 
     @Override
-    public float getValue(float x, float y) {
-        return modify(x, y, source.getValue(x, y));
+    public void toNode(Node node) {
+        node.clear();
+        node.set("module", getName());
+        source.toNode(node.node("source"));
+    }
+
+    @Override
+    public String toString() {
+        return getName() + "{" + source + "}";
     }
 
     public abstract float modify(float x, float y, float noiseValue);
