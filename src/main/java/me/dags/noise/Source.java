@@ -73,6 +73,20 @@ public interface Source extends Module {
     /**
      * @return A Source Module with the given seed, scale and octaves
      */
+    static Source ridge2(int seed, int scale, int octaves) {
+        return Source.ridge2(seed, 1F / scale, octaves);
+    }
+
+    /**
+     * @return A Source Module with the given seed, frequency and octaves
+     */
+    static Source ridge2(int seed, double frequency, int octaves) {
+        return builder().seed(seed).frequency(frequency).octaves(octaves).ridge2();
+    }
+
+    /**
+     * @return A Source Module with the given seed, scale and octaves
+     */
     static Source cubic(int seed, int scale, int octaves) {
         return Source.cubic(seed, 1F / scale, octaves);
     }

@@ -37,7 +37,8 @@ public class FastPerlin extends FastSource {
             y *= lacunarity;
 
             amp *= gain;
-            sum += Noise.singlePerlin(x, y, ++seed, interpolation) * amp;
+            float noise = Noise.singlePerlin(x, y, ++seed, interpolation);
+            sum += noise * amp;
         }
 
         return sum * bounding;

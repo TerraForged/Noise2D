@@ -79,6 +79,12 @@ public class Renderer implements Viewer.Renderer {
         viewer.setRenderer(renderer);
     }
 
+    public static Module test0() {
+        Module base = Source.perlin(1, 128, 3).norm().scale(0.25).bias(0.2);
+        Module mountains = Source.ridge2(2, 512, 3).scale(0.8);
+        return base.base(mountains, 0.2);
+    }
+
     public static Module example0() {
         // create two noise modules to blend together
         // - the source0 produces low amplitude, rolling waves

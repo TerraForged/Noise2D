@@ -150,6 +150,10 @@ public class Builder {
         return new FastRidge(this);
     }
 
+    public Source ridge2() {
+        return new FlowRidge(this);
+    }
+
     public Source billow() {
         return new FastBillow(this);
     }
