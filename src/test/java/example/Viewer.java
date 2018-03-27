@@ -1,12 +1,16 @@
-package ui;
+package example;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 /**
  * @author dags <dags@dags.me>
@@ -33,7 +37,7 @@ public class Viewer extends JFrame implements KeyListener {
         this.setSize(width, height);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
     }
 
@@ -78,8 +82,12 @@ public class Viewer extends JFrame implements KeyListener {
     }
 
     public static void clear(BufferedImage image) {
+        clear(image, Color.BLACK);
+    }
+
+    public static void clear(BufferedImage image, Color color) {
         Graphics2D g = image.createGraphics();
-        g.setColor(Color.BLACK);
+        g.setColor(color);
         g.fillRect(0, 0, image.getWidth(), image.getHeight());
         g.dispose();
     }
@@ -108,6 +116,7 @@ public class Viewer extends JFrame implements KeyListener {
             label.setIcon(icon);
             label.repaint();
             rendering = false;
+            pack();
         });
     }
 

@@ -12,10 +12,17 @@ import me.dags.noise.util.Util;
 public class FastPerlin extends FastSource {
 
     protected final Interpolation interpolation;
+    protected final float min;
+    protected final float max;
+    protected final float range;
 
     public FastPerlin(Builder builder) {
         super(builder);
         interpolation = builder.interp();
+        min = calculateBound(minSignal(), builder.octaves(), builder.gain());
+        max = calculateBound(maxSignal(), builder.octaves(), builder.gain());
+        range = Math.abs(max - min);
+        System.out.println(min + ":" + max);
     }
 
     @Override
@@ -28,20 +35,17 @@ public class FastPerlin extends FastSource {
         x *= frequency;
         y *= frequency;
 
-        int seed = this.seed;
-        float sum = Noise.singlePerlin(x, y, seed, interpolation);
         float amp = 1;
+        float sum = Noise.singlePerlin(x, y, seed, interpolation);
 
         for (int i = 1; i < octaves; i++) {
+            amp *= gain;
             x *= lacunarity;
             y *= lacunarity;
-
-            amp *= gain;
-            float noise = Noise.singlePerlin(x, y, ++seed, interpolation);
-            sum += noise * amp;
+            sum += Noise.singlePerlin(x, y, seed + i, interpolation) * amp;
         }
 
-        return sum * bounding;
+        return Noise.map(sum, min, max, range);
     }
 
     @Override
@@ -62,5 +66,23 @@ public class FastPerlin extends FastSource {
                 + properties()
                 + ", interpolation=" + interpolation
                 + "}";
+    }
+
+    protected float minSignal() {
+        return -0.5F;
+    }
+
+    protected float maxSignal() {
+        return 0.5F;
+    }
+
+    protected float calculateBound(float signal, int octaves, float gain) {
+        float amp = 1F;
+        float value = signal;
+        for (int i = 1; i < octaves; i++) {
+            amp *= gain;
+            value += signal * amp;
+        }
+        return value;
     }
 }

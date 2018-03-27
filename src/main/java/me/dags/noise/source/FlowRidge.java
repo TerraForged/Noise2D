@@ -15,6 +15,9 @@ public class FlowRidge extends FastSource {
 
     private final Interpolation interpolation;
     private final float[] spectralWeights;
+    private final float min;
+    private final float max;
+    private final float range;
 
     public FlowRidge(Builder builder) {
         super(builder);
@@ -27,6 +30,10 @@ public class FlowRidge extends FastSource {
             spectralWeights[i] = (float) Math.pow(frequency, -h);
             frequency *= lacunarity;
         }
+
+        min = calculateBound(0.5F, builder.octaves(), builder.gain());
+        max = calculateBound(0.0F, builder.octaves(), builder.gain());
+        range = Math.abs(max - min);
     }
 
     @Override
@@ -47,9 +54,7 @@ public class FlowRidge extends FastSource {
         float gain = 2.0F;
 
         for (int curOctave = 0; curOctave < octaves; curOctave++) {
-            int seed = (this.seed + curOctave);
-
-            signal = Noise.singlePerlin(x, y, seed, interpolation);
+            signal = Noise.singlePerlin(x, y, seed + curOctave, interpolation);
             signal = Math.abs(signal);
             signal = offset - signal;
             signal *= signal;
@@ -64,22 +69,35 @@ public class FlowRidge extends FastSource {
             y *= lacunarity;
         }
 
-        return value * bounding;
-    }
-
-    @Override
-    public float minValue() {
-        return 0;
-    }
-
-    @Override
-    public float maxValue() {
-        return 1F;
+        return Noise.map(value, min, max, range);
     }
 
     @Override
     public void toNode(Node node) {
         super.toNode(node);
         Util.setNonDefault(node, "interpolation", interpolation, Builder.INTERP);
+    }
+
+    private float calculateBound(float signal, int octaves, float gain) {
+        float value = 0.0F;
+        float weight = 1.0F;
+
+        float amp = 2.0F;
+        float offset = 1.0F;
+
+        for (int curOctave = 0; curOctave < octaves; curOctave++) {
+            float noise = signal;
+            noise = Math.abs(noise);
+            noise = offset - noise;
+            noise *= noise;
+            noise *= weight;
+
+            weight = noise * amp;
+            weight = Math.min(1F, Math.max(0F, weight));
+
+            value += (noise * spectralWeights[curOctave]);
+        }
+
+        return value;
     }
 }

@@ -4,7 +4,13 @@ import me.dags.noise.func.CellFunc;
 import me.dags.noise.func.DistanceFunc;
 import me.dags.noise.func.EdgeFunc;
 import me.dags.noise.func.Interpolation;
-import me.dags.noise.source.*;
+import me.dags.noise.source.Constant;
+import me.dags.noise.source.FastBillow;
+import me.dags.noise.source.FastCell;
+import me.dags.noise.source.FastCellEdge;
+import me.dags.noise.source.FastCubic;
+import me.dags.noise.source.FastPerlin;
+import me.dags.noise.source.FlowRidge;
 
 /**
  * @author dags <dags@dags.me>
@@ -21,7 +27,7 @@ public class Builder {
     public static final CellFunc CELL_FUNC = CellFunc.CELL_VALUE;
     public static final EdgeFunc EDGE_FUNC = EdgeFunc.DISTANCE_2;
     public static final DistanceFunc DIST_FUNC = DistanceFunc.EUCLIDEAN;
-    public static final Interpolation INTERP = Interpolation.QUINTIC;
+    public static final Interpolation INTERP = Interpolation.HERMITE;
     public static final Source SOURCE = new Constant(CONST_VALUE);
 
     private int seed = SEED;
@@ -147,10 +153,6 @@ public class Builder {
     }
 
     public Source ridge() {
-        return new FastRidge(this);
-    }
-
-    public Source ridge2() {
         return new FlowRidge(this);
     }
 

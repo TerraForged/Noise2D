@@ -1,10 +1,9 @@
 package me.dags.noise.util;
 
-import me.dags.config.Node;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import me.dags.config.Node;
 
 /**
  * @author dags <dags@dags.me>

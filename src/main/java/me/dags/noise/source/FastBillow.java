@@ -22,17 +22,37 @@ public class FastBillow extends FastPerlin {
         x *= frequency;
         y *= frequency;
 
-        int seed = this.seed;
-        float sum = Math.abs(Noise.singlePerlin(x, y, seed, interpolation)) * 2 - 1;
         float amp = 1;
+        float sum = Math.abs(Noise.singlePerlin(x, y, seed, interpolation)) * 2 - 1;
 
         for (int i = 1; i < octaves; i++) {
+            amp *= gain;
             x *= lacunarity;
             y *= lacunarity;
-            amp *= gain;
-            sum += (Math.abs(Noise.singlePerlin(x, y, ++seed, interpolation)) * 2 - 1) * amp;
+            sum += (Math.abs(Noise.singlePerlin(x, y, seed + i, interpolation)) * 2 - 1) * amp;
         }
 
-        return sum * bounding;
+        return Noise.map(sum, min, max, range);
+    }
+
+    protected float minSignal() {
+        return 0F;
+    }
+
+    protected float maxSignal() {
+        return 0.5F;
+    }
+
+    @Override
+    protected float calculateBound(float signal, int octaves, float gain) {
+        // min output when signal = 0.5 -> 0.5 * 2 - 1 = -1
+        // max output when signal = 0.0 -> 0.0 * 2 - 1 =  0
+        float amp = 1F;
+        float value = Math.abs(signal) * 2 - 1F;
+        for (int i = 1; i < octaves; i++) {
+            amp *= gain;
+            value += (Math.abs(signal) * 2 - 1F) * amp;
+        }
+        return value;
     }
 }

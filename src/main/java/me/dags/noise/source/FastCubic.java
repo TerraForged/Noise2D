@@ -18,6 +18,16 @@ public class FastCubic extends FastSource {
     }
 
     @Override
+    public float minValue() {
+        return -1F;
+    }
+
+    @Override
+    public float maxValue() {
+        return 1F;
+    }
+
+    @Override
     public float getValue(float x, float y) {
         x *= frequency;
         y *= frequency;
@@ -35,6 +45,6 @@ public class FastCubic extends FastSource {
             sum += Noise.singleCubic(x, y, ++seed) * amp;
         }
 
-        return sum * bounding;
+        return sum;
     }
 }

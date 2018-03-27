@@ -1,13 +1,20 @@
 package me.dags.noise;
 
+import java.nio.file.Path;
 import me.dags.config.Config;
 import me.dags.config.Node;
-import me.dags.noise.combiner.*;
+import me.dags.noise.combiner.Add;
+import me.dags.noise.combiner.Base;
+import me.dags.noise.combiner.Blend;
+import me.dags.noise.combiner.Combiner;
+import me.dags.noise.combiner.Max;
+import me.dags.noise.combiner.Min;
+import me.dags.noise.combiner.Multiply;
+import me.dags.noise.combiner.Select;
+import me.dags.noise.combiner.Sub;
 import me.dags.noise.func.Interpolation;
 import me.dags.noise.modifier.*;
 import me.dags.noise.util.Deserializer;
-
-import java.nio.file.Path;
 
 /**
  * @author dags <dags@dags.me>
@@ -77,21 +84,17 @@ public interface Module {
     }
 
     /**
+     * @return A module whose output is returned to the power n
+     */
+    default Modifier pow(float n) {
+        return new Power(this, n);
+    }
+
+    /**
      * @return A module whose output values are mapped to stepped values between 0 and 1
      */
     default Modifier steps(int steps) {
         return new Steps(this, steps);
-    }
-
-    /**
-     * @return A module whose output values are distorted in the x/y directions by Perlin noise built from the provided Builder
-     */
-    default Modifier turbulence(Builder builder) {
-        int seed = builder.seed();
-        Module x = builder.perlin();
-        Module y = builder.seed(seed + 1).perlin();
-        builder.seed(seed);
-        return turbulence(x, y, builder.power());
     }
 
     default Modifier turbulence(Source source, double power) {
@@ -139,13 +142,6 @@ public interface Module {
      */
     default Combiner mult(Module other) {
         return new Multiply(this, other);
-    }
-
-    /**
-     * @return A module whose output value is this module's output to the power of the given module's output
-     */
-    default Combiner pow(Module other) {
-        return new Power(this, other);
     }
 
     /**

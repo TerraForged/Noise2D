@@ -4,7 +4,6 @@ import me.dags.config.Node;
 import me.dags.noise.Builder;
 import me.dags.noise.Module;
 import me.dags.noise.Source;
-import me.dags.noise.func.Noise;
 import me.dags.noise.util.Util;
 
 /**
@@ -19,7 +18,6 @@ public abstract class FastSource implements Source {
     protected final float lacunarity;
     protected final float gain;
     protected final float frequency;
-    protected final float bounding;
 
     public FastSource(Builder builder) {
         this(builder.seed(), builder.octaves(), builder.lacunarity(), builder.gain(), builder.frequency());
@@ -31,7 +29,16 @@ public abstract class FastSource implements Source {
         this.lacunarity = lacunarity;
         this.gain = gain;
         this.frequency = frequency;
-        this.bounding = Noise.calculateFractalBounding(octaves, gain);
+    }
+
+    @Override
+    public float minValue() {
+        return 0;
+    }
+
+    @Override
+    public float maxValue() {
+        return 1;
     }
 
     @Override
@@ -67,7 +74,6 @@ public abstract class FastSource implements Source {
                 ", octaves=" + octaves +
                 ", lacunarity=" + lacunarity +
                 ", gain=" + gain +
-                ", frequency=" + frequency +
-                ", bounding=" + bounding;
+                ", frequency=" + frequency;
     }
 }

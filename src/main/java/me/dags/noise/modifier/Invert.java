@@ -17,17 +17,13 @@ public class Invert extends Modifier {
     }
 
     @Override
-    public float minValue() {
-        return -super.maxValue();
-    }
-
-    @Override
-    public float maxValue() {
-        return -super.minValue();
-    }
-
-    @Override
     public float modify(float x, float y, float noiseValue) {
-        return -noiseValue;
+        if (noiseValue > source.maxValue()) {
+            return source.minValue();
+        }
+        if (noiseValue < source.minValue()) {
+            return source.maxValue();
+        }
+        return source.maxValue() - noiseValue;
     }
 }

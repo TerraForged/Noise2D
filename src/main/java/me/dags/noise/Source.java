@@ -1,25 +1,17 @@
 package me.dags.noise;
 
 import me.dags.noise.func.CellFunc;
-import me.dags.noise.func.DistanceFunc;
+import me.dags.noise.func.EdgeFunc;
 import me.dags.noise.source.Constant;
 
 /**
  * @author dags <dags@dags.me>
  *
- * Source modules are expected to return values between -1.0 and 1.0
+ * Source modules are expected to return values between 0 and 1.0
  */
 public interface Source extends Module {
 
     Builder toBuilder();
-
-    default float minValue() {
-        return -1F;
-    }
-
-    default float maxValue() {
-        return 1F;
-    }
 
     /**
      * @return A noise source builder
@@ -73,20 +65,6 @@ public interface Source extends Module {
     /**
      * @return A Source Module with the given seed, scale and octaves
      */
-    static Source ridge2(int seed, int scale, int octaves) {
-        return Source.ridge2(seed, 1F / scale, octaves);
-    }
-
-    /**
-     * @return A Source Module with the given seed, frequency and octaves
-     */
-    static Source ridge2(int seed, double frequency, int octaves) {
-        return builder().seed(seed).frequency(frequency).octaves(octaves).ridge2();
-    }
-
-    /**
-     * @return A Source Module with the given seed, scale and octaves
-     */
     static Source cubic(int seed, int scale, int octaves) {
         return Source.cubic(seed, 1F / scale, octaves);
     }
@@ -121,8 +99,8 @@ public interface Source extends Module {
         return Source.cellEdge(seed, 1F / scale);
     }
 
-    static Source cellEdge(int seed, int scale, DistanceFunc distFunc) {
-        return Source.cellEdge(seed, 1F / scale, distFunc);
+    static Source cellEdge(int seed, int scale, EdgeFunc func) {
+        return Source.cellEdge(seed, 1F / scale, func);
     }
 
     /**
@@ -132,8 +110,8 @@ public interface Source extends Module {
         return builder().seed(seed).frequency(frequency).cellEdge();
     }
 
-    static Source cellEdge(int seed, double frequency, DistanceFunc distFunc) {
-        return builder().seed(seed).frequency(frequency).distFunc(distFunc).cellEdge();
+    static Source cellEdge(int seed, double frequency, EdgeFunc func) {
+        return builder().seed(seed).frequency(frequency).edgeFunc(func).cellEdge();
     }
 
     /**

@@ -1,11 +1,10 @@
 package me.dags.noise.combiner;
 
-import me.dags.config.Node;
-import me.dags.noise.Module;
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import me.dags.config.Node;
+import me.dags.noise.Module;
 
 /**
  * @author dags <dags@dags.me>

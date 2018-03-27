@@ -30,7 +30,8 @@ public class FastCellEdge extends FastSource {
     public float getValue(float x, float y) {
         x *= frequency;
         y *= frequency;
-        return Noise.singleCellular2Edge(x, y, seed, edgeFunc, distFunc);
+        float value = Noise.singleCellular2Edge(x, y, seed, edgeFunc, distFunc);
+        return Noise.map(value, -1, 1, 2);
     }
 
     @Override

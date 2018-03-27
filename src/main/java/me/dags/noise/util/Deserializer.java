@@ -1,21 +1,35 @@
 package me.dags.noise.util;
 
-import me.dags.config.Node;
-import me.dags.noise.Builder;
-import me.dags.noise.Module;
-import me.dags.noise.Source;
-import me.dags.noise.combiner.*;
-import me.dags.noise.func.CellFunc;
-import me.dags.noise.func.DistanceFunc;
-import me.dags.noise.func.EdgeFunc;
-import me.dags.noise.func.Interpolation;
-import me.dags.noise.modifier.*;
-import me.dags.noise.source.Constant;
-
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import me.dags.config.Node;
+import me.dags.noise.Builder;
+import me.dags.noise.Module;
+import me.dags.noise.Source;
+import me.dags.noise.combiner.Add;
+import me.dags.noise.combiner.Base;
+import me.dags.noise.combiner.Blend;
+import me.dags.noise.combiner.Max;
+import me.dags.noise.combiner.Min;
+import me.dags.noise.combiner.Multiply;
+import me.dags.noise.combiner.Select;
+import me.dags.noise.combiner.Sub;
+import me.dags.noise.func.CellFunc;
+import me.dags.noise.func.DistanceFunc;
+import me.dags.noise.func.EdgeFunc;
+import me.dags.noise.func.Interpolation;
+import me.dags.noise.modifier.Abs;
+import me.dags.noise.modifier.Bias;
+import me.dags.noise.modifier.Clamp;
+import me.dags.noise.modifier.Invert;
+import me.dags.noise.modifier.Normalize;
+import me.dags.noise.modifier.Power;
+import me.dags.noise.modifier.Scale;
+import me.dags.noise.modifier.Steps;
+import me.dags.noise.modifier.Turbulence;
+import me.dags.noise.source.Constant;
 
 /**
  * @author dags <dags@dags.me>
@@ -23,8 +37,8 @@ import java.util.function.Function;
 public class Deserializer {
 
     private static final AtomicReference<Deserializer> deserializer = new AtomicReference<>(new Deserializer());
-    private static final Set<String> combiners = Util.set("add", "blend", "max", "min", "mult", "pow", "select", "sub");
-    private static final Set<String> modifiers = Util.set("abs", "bias", "clamp", "invert", "map", "norm", "scale", "steps", "turb");
+    private static final Set<String> combiners = Util.set("add", "blend", "max", "min", "mult", "select", "sub");
+    private static final Set<String> modifiers = Util.set("abs", "bias", "clamp", "invert", "map", "norm", "pow", "scale", "steps", "turb");
     private static final Set<String> sources = Util.set("const", "billow", "cell", "cell_edge", "cubic", "perlin", "ridge");
 
     public static Deserializer getInstance() {
@@ -103,8 +117,6 @@ public class Deserializer {
                 return new Min(modules);
             case "mult":
                 return new Multiply(modules);
-            case "pow":
-                return new Power(modules);
             case "select":
                 if (modules.length != 2) {
                     break;
@@ -145,6 +157,9 @@ public class Deserializer {
                 return new me.dags.noise.modifier.Map(source, outMin, outMax);
             case "norm":
                 return new Normalize(source);
+            case "pow":
+                float n = node.get("n", 1F);
+                return new Power(source, n);
             case "scale":
                 float scale = node.get("scale", 1F);
                 return new Scale(source, scale);
