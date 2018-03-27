@@ -12,22 +12,22 @@ public class Select extends Combiner {
 
     public static final Interpolation INTERPOLATION = Interpolation.HERMITE;
 
-    private final Module control;
-    private final Module source0;
-    private final Module source1;
-    private final Interpolation interpolation;
+    protected final Module control;
+    protected final Module source0;
+    protected final Module source1;
+    protected final Interpolation interpolation;
 
-    private final float lowerBound;
-    private final float upperBound;
-    private final float edgeFalloff;
-    private final float lowerCurve0;
-    private final float upperCurve0;
-    private final float lowerCurve1;
-    private final float upperCurve1;
-    private final float lowerBoundMin;
-    private final float lowerBoundMax;
-    private final float upperBoundMin;
-    private final float upperBoundMax;
+    protected final float lowerBound;
+    protected final float upperBound;
+    protected final float edgeFalloff;
+    protected final float lowerCurve0;
+    protected final float upperCurve0;
+    protected final float lowerCurve1;
+    protected final float upperCurve1;
+    protected final float lowerBoundMin;
+    protected final float lowerBoundMax;
+    protected final float upperBoundMin;
+    protected final float upperBoundMax;
 
     public Select(Module control, Module source0, Module source1, float lowerBound, float upperBound, float edgeFalloff, Interpolation interpolation) {
         super(source0, source1);
@@ -110,11 +110,11 @@ public class Select extends Combiner {
                 + "}";
     }
 
-    private float curve(float a) {
+    protected float curve(float a) {
         return interpolation.apply(a);
     }
 
-    private static float linearInterp(float n0, float n1, float a) {
+    protected static float linearInterp(float n0, float n1, float a) {
         return ((1.0F - a) * n0) + (a * n1);
     }
 }

@@ -8,7 +8,7 @@ import me.dags.noise.Module;
  */
 public class Blend extends Combiner {
 
-    private final Module control;
+    protected final Module control;
     private final Module source0;
     private final Module source1;
 

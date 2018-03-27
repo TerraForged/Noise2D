@@ -1,6 +1,7 @@
 package me.dags.noise;
 
 import java.nio.file.Path;
+import java.util.List;
 import me.dags.config.Config;
 import me.dags.config.Node;
 import me.dags.noise.combiner.Add;
@@ -14,6 +15,10 @@ import me.dags.noise.combiner.Select;
 import me.dags.noise.combiner.Sub;
 import me.dags.noise.func.Interpolation;
 import me.dags.noise.modifier.*;
+import me.dags.noise.tag.Tagged;
+import me.dags.noise.tag.TaggedBlend;
+import me.dags.noise.tag.TaggedModule;
+import me.dags.noise.tag.TaggedSelect;
 import me.dags.noise.util.Deserializer;
 
 /**
@@ -173,6 +178,18 @@ public interface Module {
      */
     default Combiner select(Module source0, Module source1, double lowerBound, double upperBound, double falloff, Interpolation interpolation) {
         return Module.select(this, source0, source1, lowerBound, upperBound, falloff, interpolation);
+    }
+
+    default <T> Tagged<T> tag(List<T> tags) {
+        return new TaggedModule<>(this, tags);
+    }
+
+    default <T> Tagged<T> tagBlend(Tagged<T> s0, Tagged<T> s1) {
+        return new TaggedBlend<>(this, s0, s1);
+    }
+
+    default <T> Tagged<T> tagSelect(Tagged<T> s0, Tagged<T> s1, float lower, float upper, float falloff) {
+        return new TaggedSelect<>(this, s0, s1, lower, upper, falloff);
     }
 
     default void save(Path path, String... nodePath) {

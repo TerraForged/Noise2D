@@ -11,10 +11,10 @@ public class Base extends Combiner {
 
     private final Module lower;
     private final Module upper;
-    private final float min;
-    private final float max;
-    private final float maxValue;
-    private final float falloff;
+    protected final float min;
+    protected final float max;
+    protected final float maxValue;
+    protected final float falloff;
 
     public Base(Module lower, Module upper, float falloff) {
         this.lower = lower;
