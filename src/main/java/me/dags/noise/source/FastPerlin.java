@@ -22,7 +22,6 @@ public class FastPerlin extends FastSource {
         min = calculateBound(minSignal(), builder.octaves(), builder.gain());
         max = calculateBound(maxSignal(), builder.octaves(), builder.gain());
         range = Math.abs(max - min);
-        System.out.println(min + ":" + max);
     }
 
     @Override
