@@ -12,8 +12,8 @@ public interface Tagged<T> extends Module {
 
     List<T> getTags(float x, float y);
 
-    default Tagged<T> tagBase(Tagged<T> upper, float falloff) {
-        return new TaggedBase<>(this, upper, falloff);
+    default Tagged<T> tagBase(Tagged<T> upper, double falloff) {
+        return new TaggedBase<>(this, upper, (float) falloff);
     }
 
     default Tagged<T> tagCombine(Module source) {
