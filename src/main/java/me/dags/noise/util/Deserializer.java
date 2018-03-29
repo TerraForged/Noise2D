@@ -1,15 +1,17 @@
 package me.dags.noise.util;
 
 import me.dags.config.Node;
-import me.dags.noise.Builder;
 import me.dags.noise.Module;
 import me.dags.noise.Source;
 import me.dags.noise.combiner.*;
+import me.dags.noise.combiner.selector.Blend;
+import me.dags.noise.combiner.selector.Select;
 import me.dags.noise.func.CellFunc;
 import me.dags.noise.func.DistanceFunc;
 import me.dags.noise.func.EdgeFunc;
 import me.dags.noise.func.Interpolation;
 import me.dags.noise.modifier.*;
+import me.dags.noise.source.Builder;
 import me.dags.noise.source.Constant;
 
 import java.util.List;
@@ -23,8 +25,8 @@ import java.util.function.Function;
 public class Deserializer {
 
     private static final AtomicReference<Deserializer> deserializer = new AtomicReference<>(new Deserializer());
-    private static final Set<String> combiners = Util.set("add", "blend", "max", "min", "mult", "pow", "select", "sub");
-    private static final Set<String> modifiers = Util.set("abs", "bias", "clamp", "invert", "map", "norm", "scale", "steps", "turb");
+    private static final Set<String> combiners = Util.set("add", "blend", "max", "min", "mult", "select", "sub");
+    private static final Set<String> modifiers = Util.set("abs", "bias", "clamp", "invert", "map", "norm", "pow", "scale", "steps", "turb");
     private static final Set<String> sources = Util.set("const", "billow", "cell", "cell_edge", "cubic", "perlin", "ridge");
 
     public static Deserializer getInstance() {
@@ -89,22 +91,23 @@ public class Deserializer {
             case "base":
                 float baseFalloff = node.get("falloff", 0.25F);
                 Module baseLower = deserialize(node.node("lower"));
-                Module baseUpper = deserialize(node.node("uppser"));
-                return new Base(baseLower, baseUpper, baseFalloff);
+                Module baseUpper = deserialize(node.node("upper"));
+                Interpolation baseInterp = getEnum(node, "interp", Select.INTERPOLATION, Interpolation::valueOf);
+                return new Base(baseLower, baseUpper, baseFalloff, baseInterp);
             case "blend":
                 if (modules.length != 2) {
                     break;
                 }
+                float mid = node.get("center", 0.5F);
+                float blend = node.get("blend", 0.5F);
                 Module blendCtrl = deserialize(node.node("selector"));
-                return new Blend(blendCtrl, modules[0], modules[1]);
+                return new Blend(blendCtrl, modules[0], modules[1], mid, blend, Interpolation.LINEAR);
             case "max":
                 return new Max(modules);
             case "min":
                 return new Min(modules);
             case "mult":
                 return new Multiply(modules);
-            case "pow":
-                return new Power(modules);
             case "select":
                 if (modules.length != 2) {
                     break;
@@ -113,8 +116,8 @@ public class Deserializer {
                 float lower = node.get("boundLower", 0F);
                 float upper = node.get("boundUpper", 1F);
                 float falloff = node.get("falloff", 0F);
-                Interpolation interpolation = getEnum(node, "interp", Select.INTERPOLATION, Interpolation::valueOf);
-                return new Select(selectCtrl, modules[0], modules[1], lower, upper, falloff, interpolation);
+                Interpolation selInterp = getEnum(node, "interp", Select.INTERPOLATION, Interpolation::valueOf);
+                return new Select(selectCtrl, modules[0], modules[1], lower, upper, falloff, selInterp);
             case "sub":
                 return new Sub(modules);
         }
@@ -122,7 +125,7 @@ public class Deserializer {
     }
 
     public Module modifier(String type, Node node) {
-        Module source = deserialize(node.node("source"));
+        Module source = deserialize(node.node("getSource"));
         if (source == Builder.SOURCE) {
             return source;
         }
@@ -143,8 +146,9 @@ public class Deserializer {
                 float outMin = node.get("min", 0F);
                 float outMax = node.get("max", 1F);
                 return new me.dags.noise.modifier.Map(source, outMin, outMax);
-            case "norm":
-                return new Normalize(source);
+            case "pow":
+                float n = node.get("n", 1F);
+                return new Power(source, n);
             case "scale":
                 float scale = node.get("scale", 1F);
                 return new Scale(source, scale);
@@ -154,7 +158,7 @@ public class Deserializer {
             case "turb":
                 Module x = deserialize(node.node("x"));
                 Module y = deserialize(node.node("y"));
-                float power = node.get("power", Builder.POWER);
+                float power = node.get("power", 1F);
                 return new Turbulence(source, x, y, power);
             default:
                 return Builder.SOURCE;
@@ -165,14 +169,13 @@ public class Deserializer {
         Builder builder = Source.builder();
         builder.seed(node.get("seed", Builder.SEED));
         builder.gain(node.get("gain", Builder.GAIN));
-        builder.power(node.get("power", Builder.POWER));
         builder.octaves(node.get("octaves", Builder.OCTAVES));
         builder.frequency(node.get("frequency", Builder.FREQUENCY));
         builder.lacunarity(node.get("lacunarity", Builder.LACUNARITY));
         builder.cellFunc(getEnum(node, "cell", Builder.CELL_FUNC, CellFunc::valueOf));
         builder.edgeFunc(getEnum(node, "edge", Builder.EDGE_FUNC, EdgeFunc::valueOf));
         builder.distFunc(getEnum(node, "dist", Builder.DIST_FUNC, DistanceFunc::valueOf));
-        builder.interp(getEnum(node, "interpolation", Builder.INTERP, Interpolation::valueOf));
+        builder.interp(getEnum(node, "interp", Builder.INTERP, Interpolation::valueOf));
 
         Node child = node.node("source");
         if (!child.isEmpty()) {

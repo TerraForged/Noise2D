@@ -13,7 +13,7 @@ public class Steps extends Modifier {
     private final float steps;
 
     public Steps(Module source, int steps) {
-        super(source.norm());
+        super(source.map(0, 1));
         if (steps == 0) {
             throw new IllegalArgumentException("steps cannot be 0");
         }

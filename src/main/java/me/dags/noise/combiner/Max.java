@@ -1,6 +1,7 @@
 package me.dags.noise.combiner;
 
 import me.dags.noise.Module;
+import me.dags.noise.cache.Cache;
 
 /**
  * @author dags <dags@dags.me>
@@ -8,7 +9,11 @@ import me.dags.noise.Module;
 public class Max extends Combiner {
 
     public Max(Module... modules) {
-        super(modules);
+        this(Cache.NONE, modules);
+    }
+
+    public Max(Cache cache, Module... modules) {
+        super(cache, modules);
     }
 
     @Override

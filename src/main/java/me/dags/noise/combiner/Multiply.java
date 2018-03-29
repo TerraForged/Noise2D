@@ -1,6 +1,7 @@
 package me.dags.noise.combiner;
 
 import me.dags.noise.Module;
+import me.dags.noise.cache.Cache;
 
 /**
  * @author dags <dags@dags.me>
@@ -8,7 +9,11 @@ import me.dags.noise.Module;
 public class Multiply extends Combiner {
 
     public Multiply(Module... modules) {
-        super(modules);
+        super(Cache.NONE, modules);
+    }
+
+    public Multiply(Cache cache, Module... modules) {
+        super(cache, modules);
     }
 
     @Override

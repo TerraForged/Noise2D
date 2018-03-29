@@ -2,6 +2,7 @@ package me.dags.noise.combiner;
 
 import me.dags.config.Node;
 import me.dags.noise.Module;
+import me.dags.noise.cache.Cache;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -17,8 +18,9 @@ public abstract class Combiner implements Module {
     private final float min;
     private final float max;
     private final Module[] sources;
+    private final Cache cache;
 
-    public Combiner(Module... sources) {
+    public Combiner(Cache cache, Module... sources) {
         float min = 0F;
         float max = 0F;
         if (sources.length > 0) {
@@ -32,6 +34,7 @@ public abstract class Combiner implements Module {
         }
         this.min = min;
         this.max = max;
+        this.cache = cache;
         this.sources = sources;
     }
 
@@ -59,17 +62,25 @@ public abstract class Combiner implements Module {
     }
 
     @Override
+    public Cache getCache() {
+        return cache;
+    }
+
+    @Override
     public float getValue(float x, float y) {
-        float result = 0F;
-        if (sources.length > 0) {
-            result = sources[0].getValue(x, y);
-            for (int i = 1; i < sources.length; i++) {
-                Module module = sources[i];
-                float value = module.getValue(x, y);
-                result = combine(result, value);
+        if (!getCache().isCached(x, y)) {
+            float result = 0F;
+            if (sources.length > 0) {
+                result = sources[0].getValue(x, y);
+                for (int i = 1; i < sources.length; i++) {
+                    Module module = sources[i];
+                    float value = module.getValue(x, y);
+                    result = combine(result, value);
+                }
             }
+            return getCache().cacheValue(x, y, result);
         }
-        return result;
+        return getCache().getValue();
     }
 
     @Override

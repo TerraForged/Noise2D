@@ -1,9 +1,9 @@
 package me.dags.noise.source;
 
 import me.dags.config.Node;
-import me.dags.noise.Builder;
 import me.dags.noise.Module;
 import me.dags.noise.Source;
+import me.dags.noise.cache.Cache;
 
 /**
  * @author dags <dags@dags.me>
@@ -45,5 +45,10 @@ public class Constant implements Source {
     public void toNode(Node node) {
         node.set("type", getName());
         node.set("value", value);
+    }
+
+    @Override
+    public Cache getCache() {
+        return Cache.NONE;
     }
 }

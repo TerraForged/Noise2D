@@ -2,19 +2,35 @@ package me.dags.noise;
 
 import me.dags.config.Config;
 import me.dags.config.Node;
+import me.dags.noise.cache.Cache;
 import me.dags.noise.combiner.*;
+import me.dags.noise.combiner.selector.Blend;
+import me.dags.noise.combiner.selector.Select;
+import me.dags.noise.combiner.selector.VariableBlend;
 import me.dags.noise.func.Interpolation;
 import me.dags.noise.modifier.*;
+import me.dags.noise.source.Builder;
+import me.dags.noise.tag.TagBlend;
+import me.dags.noise.tag.TagModule;
+import me.dags.noise.tag.TagSelect;
+import me.dags.noise.tag.TagVariableBlend;
 import me.dags.noise.util.Deserializer;
+import me.dags.noise.util.Util;
 
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author dags <dags@dags.me>
  */
 public interface Module {
 
+    Interpolation DEFAULT_INTERP = Interpolation.CURVE3;
+
     String getName();
+
+    Cache getCache();
 
     float minValue();
 
@@ -24,159 +40,168 @@ public interface Module {
 
     void toNode(Node node);
 
-    /**
-     * @return A module whose output is mapped and clamped between 0 and 1
-     */
-    default Module norm() {
-        if (this instanceof Normalize) {
-            return this;
-        }
-        return new Normalize(this);
-    }
-
-    /**
-     * @return A module whose output is absolute (ie always a positive number)
-     */
     default Modifier abs() {
         return new Abs(this);
     }
 
-    /**
-     * @return A module whose output is inverted (ie negatives become positives & visa versa)
-     */
     default Modifier invert() {
         return new Invert(this);
     }
 
-    /**
-     * @return A module whose output is mapped between the min and max values provided
-     */
     default Modifier map(double min, double max) {
         return new Map(this, (float) min, (float) max);
     }
 
-    /**
-     * @return A module whose output is clamped between the min and max values provided
-     */
     default Modifier clamp(double min, double max) {
         return new Clamp(this, (float) min, (float) max);
     }
 
-    /**
-     * @return A module whose output is scaled (multiplied) by the given scale value
-     */
     default Modifier scale(double scale) {
         return new Scale(this, (float) scale);
     }
 
-    /**
-     * @return A module whose output is added to the given bias value
-     */
     default Modifier bias(double bias) {
         return new Bias(this, (float) bias);
     }
 
-    /**
-     * @return A module whose output values are mapped to stepped values between 0 and 1
-     */
+    default Modifier pow(double n) {
+        return new Power(this, (float) n);
+    }
+
     default Modifier steps(int steps) {
         return new Steps(this, steps);
     }
 
-    /**
-     * @return A module whose output values are distorted in the x/y directions by Perlin noise built from the provided Builder
-     */
-    default Modifier turbulence(Builder builder) {
-        int seed = builder.seed();
-        Module x = builder.perlin();
-        Module y = builder.seed(seed + 1).perlin();
-        builder.seed(seed);
-        return turbulence(x, y, builder.power());
-    }
-
-    default Modifier turbulence(Source source, double power) {
-        Builder builder = source.toBuilder();
-        return turbulence(source, builder.seed(builder.seed() + 1).perlin(), power);
-    }
-
-    /**
-     * @return A module whose output values are distorted in the x/y directions by Modules x & y with the given power
-     */
-    default Modifier turbulence(Module x, Module y, double power) {
-        return new Turbulence(this, x, y, (float) power);
-    }
-
-    /**
-     * @return A module whose output is the sum of this and the other module's outputs
-     */
     default Combiner add(Module other) {
         return new Add(this, other);
     }
 
-    /**
-     * @return A module whose output is the difference of this and the other module's outputs
-     */
     default Combiner sub(Module other) {
         return new Sub(this, other);
     }
 
-    /**
-     * @return A module whose output is the lowest of this and the other module's outputs
-     */
     default Combiner min(Module other) {
         return new Min(this, other);
     }
 
-    /**
-     * @return A module whose output is the highest of this and the other module's outputs
-     */
     default Combiner max(Module other) {
         return new Max(this, other);
     }
 
-    /**
-     * @return A module whose output is calculated by multiplying this and the other module's outputs
-     */
     default Combiner mult(Module other) {
         return new Multiply(this, other);
     }
 
-    /**
-     * @return A module whose output value is this module's output to the power of the given module's output
-     */
-    default Combiner pow(Module other) {
-        return new Power(this, other);
+    default Modifier turbulence(Module x, Module y, double power) {
+        return new Turbulence(this, x, y, (float) power);
     }
 
-    /**
-     * @return A module whose output is taken from 'other' unless it's value drops into the falloff range, at which
-     *         point the 'this' module's noise is blended into the result
-     *
-     *         The falloff range is calculated as this.maxValue() to this.maxValue() + falloff
-     */
-    default Combiner base(Module other, double falloff) {
-        return Module.base(this, other, (float) falloff);
+    default Combiner base(Module other, double falloff, Interpolation interpolation) {
+        return new Base(this, other, (float) falloff, interpolation);
     }
 
-    /**
-     * @return A module whose output is blend of source0 and source1's outputs controlled by this module
-     */
-    default Combiner blend(Module source0, Module source1) {
-        return blend(this, source0, source1);
+    default Combiner blend(Module source0, Module source1, double midpoint, double blendRange, Interpolation interpolation) {
+        return new Blend(this, source0, source1, (float) midpoint, (float) blendRange, interpolation);
     }
 
-    /**
-     * @return Similar to blend but blending is weighted by an S-curve, controlled by this module
-     */
-    default Combiner select(Module source0, Module source1, double lowerBound, double upperBound, double falloff) {
-        return Module.select(this, source0, source1, lowerBound, upperBound, falloff);
+    default Combiner blendVar(Module variable, Module source0, Module source1, double midpoint, double min, double max, Interpolation interpolation) {
+        return new VariableBlend(this, variable, source0, source1, (float) midpoint, (float) min, (float) max, interpolation);
     }
 
-    /**
-     * @return Similar to blend but blending is weighted by an S-curve, controlled by this module
-     */
     default Combiner select(Module source0, Module source1, double lowerBound, double upperBound, double falloff, Interpolation interpolation) {
-        return Module.select(this, source0, source1, lowerBound, upperBound, falloff, interpolation);
+        return new Select(this, source0, source1, (float) lowerBound, (float) upperBound, (float) falloff, interpolation);
+    }
+
+    default <T> Tagged<T> tag(List<T> tags) {
+        return new TagModule<>(this, tags);
+    }
+
+    default <T> Tagged<T> tagBlend(Tagged<T> source0, Tagged<T> source1, List<T> mix, double mid, double blend, Interpolation interpolation) {
+        return new TagBlend<>(this, source0, source1, mix, (float) mid, (float) blend, interpolation);
+    }
+
+    default <T> Tagged<T> tagVarBlend(Module variable, Tagged<T> source0, Tagged<T> source1, List<T> mix, double mid, double min, double max, Interpolation interpolation) {
+        return new TagVariableBlend<>(this, variable, source0, source1, mix, (float) mid, (float) min, (float) max, interpolation);
+    }
+
+    default <T> Tagged<T> tagSelect(Tagged<T> s0, Tagged<T> s1, List<T> mix, double lower, double upper, double falloff, Interpolation interpolation) {
+        return new TagSelect<>(this, s0, s1, mix, (float) lower, (float) upper, (float) falloff, interpolation);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // OVERLOADS
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    default Modifier turbulence(Source source, double power) {
+        Builder builder = source.toBuilder();
+        builder.seed(builder.getSeed() + 1);
+        Source source1 = builder.build(source.getClass());
+        return turbulence(source, source1, power);
+    }
+
+    default Combiner base(Module other, double falloff) {
+        return base(other, (float) falloff, DEFAULT_INTERP);
+    }
+
+    default Combiner blend(Module source0, Module source1, double midpoint, double blendRange) {
+        return blend(source0, source1, (float) midpoint, (float) blendRange, DEFAULT_INTERP);
+    }
+
+    default Combiner blendVar(Module variable, Module source0, Module source1, double midpoint, double min, double max) {
+        return blendVar(variable, source0, source1, (float) midpoint, (float) min, (float) max, DEFAULT_INTERP);
+    }
+
+    default Combiner select(Module source0, Module source1, double lowerBound, double upperBound, double falloff) {
+        return select(source0, source1, lowerBound, upperBound, falloff, DEFAULT_INTERP);
+    }
+
+    @SuppressWarnings("unchecked")
+    default <T> Tagged<T> tag(T... tag) {
+        return tag(Arrays.asList(tag));
+    }
+
+    default <T> Tagged<T> tagBlend(Tagged<T> source0, Tagged<T> source1, double mid, double blend) {
+        return tagBlend(source0, source1, Util.combine(source0.getTags(), source1.getTags()), mid, blend);
+    }
+
+    default <T> Tagged<T> tagBlend(Tagged<T> source0, Tagged<T> source1, List<T> mix, double mid, double blend) {
+        return tagBlend(source0, source1, mix, mid, blend, DEFAULT_INTERP);
+    }
+
+    default <T> Tagged<T> tagBlend(Tagged<T> source0, Tagged<T> source1, double mid, double blend, Interpolation interpolation) {
+        return tagBlend(source0, source1, Util.combine(source0.getTags(), source1.getTags()), mid, blend, interpolation);
+    }
+
+    default <T> Tagged<T> tagVarBlend(Module variable, Tagged<T> source0, Tagged<T> source1, double mid, double min, double max) {
+        return tagVarBlend(variable, source0, source1, mid, min, max, DEFAULT_INTERP);
+    }
+
+    default <T> Tagged<T> tagVarBlend(Module variable, Tagged<T> source0, Tagged<T> source1, List<T> mix, double mid, double min, double max) {
+        return tagVarBlend(variable, source0, source1, mix, mid, min, max, DEFAULT_INTERP);
+    }
+
+    default <T> Tagged<T> tagVarBlend(Module variable, Tagged<T> source0, Tagged<T> source1, double mid, double min, double max, Interpolation interpolation) {
+        return tagVarBlend(variable, source0, source1, Util.combine(source0.getTags(), source1.getTags()), mid, min, max, interpolation);
+    }
+
+    default <T> Tagged<T> tagSelect(Tagged<T> s0, Tagged<T> s1, double lower, double upper, double falloff) {
+        return tagSelect(s0, s1, Util.combine(s0.getTags(), s1.getTags()), lower, upper, falloff);
+    }
+
+    default <T> Tagged<T> tagSelect(Tagged<T> s0, Tagged<T> s1, List<T> mix, double lower, double upper, double falloff) {
+        return tagSelect(s0, s1, mix, (float) lower, (float) upper, (float) falloff, DEFAULT_INTERP);
+    }
+
+    default <T> Tagged<T> tagSelect(Tagged<T> s0, Tagged<T> s1, double lower, double upper, double falloff, Interpolation interpolation) {
+        return tagSelect(s0, s1, Util.combine(s0.getTags(), s1.getTags()), lower, upper, falloff, interpolation);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // STATIC
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    static Builder builder() {
+        return new Builder();
     }
 
     default void save(Path path, String... nodePath) {
@@ -190,44 +215,6 @@ public interface Module {
         }
         toNode(node);
         config.save();
-    }
-
-    /**
-     * @return A noise source builder
-     */
-    static Builder builder() {
-        return new Builder();
-    }
-
-    /**
-     * @return A module whose output is taken from 'other' unless it's value drops into the falloff range, at which
-     *         point the 'this' module's noise is blended into the result
-     *
-     *         The falloff range is calculated as this.maxValue() to this.maxValue() + falloff
-     */
-    static Combiner base(Module lower, Module upper, double range) {
-        return new Base(lower, upper, (float) range);
-    }
-
-    /**
-     * @return A module whose output is blend of source0 and source1's outputs controlled by the control module
-     */
-    static Combiner blend(Module control, Module source0, Module source1) {
-        return new Blend(control, source0, source1);
-    }
-
-    /**
-     * @return Similar to blend but blending is weighted by an S-curve, controlled by the control module
-     */
-    static Combiner select(Module control, Module source0, Module source1, double lowerBound, double upperBound, double falloff) {
-        return new Select(control, source0, source1, (float) lowerBound, (float) upperBound, (float) falloff, Interpolation.HERMITE);
-    }
-
-    /**
-     * @return Similar to blend but blending is weighted by an S-curve, controlled by the control module
-     */
-    static Combiner select(Module control, Module source0, Module source1, double lowerBound, double upperBound, double falloff, Interpolation interpolation) {
-        return new Select(control, source0, source1, (float) lowerBound, (float) upperBound, (float) falloff, interpolation);
     }
 
     static Module load(Path path, String... nodePath) {

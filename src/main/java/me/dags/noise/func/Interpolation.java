@@ -12,13 +12,13 @@ public enum Interpolation {
             return f;
         }
     },
-    HERMITE {
+    CURVE3 {
         @Override
         public float apply(float f) {
             return NoiseUtil.InterpHermiteFunc(f);
         }
     },
-    QUINTIC {
+    CURVE4 {
         @Override
         public float apply(float f) {
             return NoiseUtil.InterpQuinticFunc(f);

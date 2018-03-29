@@ -28,7 +28,7 @@ public class Turbulence extends Modifier {
     }
 
     @Override
-    public float getValue(float x, float y) {
+    protected float value(float x, float y) {
         float x0 = x + (12414.0F / 65536.0F);
         float y0 = y + (31337.0F / 65536.0F);
         float x1 = x + (53820.0F / 65536.0F);
@@ -40,13 +40,7 @@ public class Turbulence extends Modifier {
 
     @Override
     public float modify(float x, float y, float noiseValue) {
-        float x0 = x + (12414.0F / 65536.0F);
-        float y0 = y + (31337.0F / 65536.0F);
-        float x1 = x + (53820.0F / 65536.0F);
-        float y1 = y + (44845.0F / 65536.0F);
-        x += turb0.getValue(x0, y0) * power;
-        y += turb1.getValue(x1, y1) * power;
-        return source.getValue(x, y);
+        return 0;
     }
 
     @Override
@@ -54,6 +48,6 @@ public class Turbulence extends Modifier {
         super.toNode(node);
         turb0.toNode(node.node("x"));
         turb1.toNode(node.node("y"));
-        node.set("power", Util.round5(power));
+        node.set("getPower", Util.round5(power));
     }
 }

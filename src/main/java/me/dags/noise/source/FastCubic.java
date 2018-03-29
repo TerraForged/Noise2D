@@ -1,7 +1,6 @@
 package me.dags.noise.source;
 
-import me.dags.noise.Builder;
-import me.dags.noise.func.Noise;
+import me.dags.noise.util.Noise;
 
 /**
  * https://github.com/Auburns/FastNoise_Java
@@ -18,7 +17,17 @@ public class FastCubic extends FastSource {
     }
 
     @Override
-    public float getValue(float x, float y) {
+    public float minValue() {
+        return -1F;
+    }
+
+    @Override
+    public float maxValue() {
+        return 1F;
+    }
+
+    @Override
+    public float value(float x, float y) {
         x *= frequency;
         y *= frequency;
 
@@ -35,6 +44,6 @@ public class FastCubic extends FastSource {
             sum += Noise.singleCubic(x, y, ++seed) * amp;
         }
 
-        return sum * bounding;
+        return sum;
     }
 }

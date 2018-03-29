@@ -1,10 +1,16 @@
-package me.dags.noise;
+package me.dags.noise.source;
 
+import me.dags.noise.Module;
+import me.dags.noise.Source;
+import me.dags.noise.cache.Cache;
+import me.dags.noise.cache.ValueCache;
 import me.dags.noise.func.CellFunc;
 import me.dags.noise.func.DistanceFunc;
 import me.dags.noise.func.EdgeFunc;
 import me.dags.noise.func.Interpolation;
-import me.dags.noise.source.*;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author dags <dags@dags.me>
@@ -14,14 +20,13 @@ public class Builder {
     public static final int SEED = 1337;
     public static final int OCTAVES = 3;
     public static final float GAIN = 0.5F;
-    public static final float POWER = 1F;
     public static final float LACUNARITY = 2F;
     public static final float FREQUENCY = 0.01F;
     public static final float CONST_VALUE = 0F;
     public static final CellFunc CELL_FUNC = CellFunc.CELL_VALUE;
     public static final EdgeFunc EDGE_FUNC = EdgeFunc.DISTANCE_2;
     public static final DistanceFunc DIST_FUNC = DistanceFunc.EUCLIDEAN;
-    public static final Interpolation INTERP = Interpolation.QUINTIC;
+    public static final Interpolation INTERP = Interpolation.CURVE3;
     public static final Source SOURCE = new Constant(CONST_VALUE);
 
     private int seed = SEED;
@@ -29,56 +34,56 @@ public class Builder {
     private float gain = GAIN;
     private float lacunarity = LACUNARITY;
     private float frequency = FREQUENCY;
-    private float power = POWER;
+    private Cache cache = Cache.NONE;
     private Module source = SOURCE;
     private CellFunc cellFunc = CELL_FUNC;
     private EdgeFunc edgeFunc = EDGE_FUNC;
     private DistanceFunc distFunc = DIST_FUNC;
     private Interpolation interpolation = INTERP;
 
-    protected Builder() {}
+    public Builder() {}
 
-    public int seed() {
+    public int getSeed() {
         return seed;
     }
 
-    public int octaves() {
+    public int getOctaves() {
         return octaves;
     }
 
-    public float gain() {
+    public float getGain() {
         return gain;
     }
 
-    public float power() {
-        return power;
-    }
-
-    public float frequency() {
+    public float getFrequency() {
         return frequency;
     }
 
-    public float lacunarity() {
+    public float getLacunarity() {
         return lacunarity;
     }
 
-    public Interpolation interp() {
+    public Interpolation getInterp() {
         return interpolation;
     }
 
-    public CellFunc cellFunc() {
+    public Cache getCache() {
+        return cache;
+    }
+
+    public CellFunc getCellFunc() {
         return cellFunc;
     }
 
-    public EdgeFunc edgeFunc() {
+    public EdgeFunc getEdgeFunc() {
         return edgeFunc;
     }
 
-    public DistanceFunc distFunc() {
+    public DistanceFunc getDistFunc() {
         return distFunc;
     }
 
-    public Module source() {
+    public Module getSource() {
         return source;
     }
 
@@ -94,11 +99,6 @@ public class Builder {
 
     public Builder gain(double gain) {
         this.gain = (float) gain;
-        return this;
-    }
-
-    public Builder power(double power) {
-        this.power = (float) power;
         return this;
     }
 
@@ -142,15 +142,16 @@ public class Builder {
         return this;
     }
 
+    public Builder cached() {
+        this.cache = new ValueCache();
+        return this;
+    }
+
     public Source perlin() {
         return new FastPerlin(this);
     }
 
     public Source ridge() {
-        return new FastRidge(this);
-    }
-
-    public Source ridge2() {
         return new FlowRidge(this);
     }
 
@@ -168,5 +169,15 @@ public class Builder {
 
     public Source cellEdge() {
         return new FastCellEdge(this);
+    }
+
+    public Source build(Class<? extends Source> type) {
+        try {
+            Constructor<? extends Source> constructor = type.getConstructor(Builder.class);
+            return constructor.newInstance(this);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            e.printStackTrace();
+            return perlin();
+        }
     }
 }

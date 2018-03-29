@@ -1,10 +1,9 @@
 package me.dags.noise.source;
 
 import me.dags.config.Node;
-import me.dags.noise.Builder;
 import me.dags.noise.Module;
 import me.dags.noise.Source;
-import me.dags.noise.func.Noise;
+import me.dags.noise.cache.Cache;
 import me.dags.noise.util.Util;
 
 /**
@@ -19,19 +18,40 @@ public abstract class FastSource implements Source {
     protected final float lacunarity;
     protected final float gain;
     protected final float frequency;
-    protected final float bounding;
+    protected final Cache cache;
 
     public FastSource(Builder builder) {
-        this(builder.seed(), builder.octaves(), builder.lacunarity(), builder.gain(), builder.frequency());
+        this.seed = builder.getSeed();
+        this.octaves = builder.getOctaves();
+        this.lacunarity = builder.getLacunarity();
+        this.gain = builder.getGain();
+        this.frequency = builder.getFrequency();
+        this.cache = builder.getCache();
     }
 
-    public FastSource(int seed, int octaves, float lacunarity, float gain, float frequency) {
-        this.seed = seed;
-        this.octaves = octaves;
-        this.lacunarity = lacunarity;
-        this.gain = gain;
-        this.frequency = frequency;
-        this.bounding = Noise.calculateFractalBounding(octaves, gain);
+    protected abstract float value(float x, float y);
+
+    @Override
+    public float getValue(float x, float y) {
+        if (!getCache().isCached(x, y)) {
+            return getCache().cacheValue(x, y, value(x, y));
+        }
+        return getCache().getValue();
+    }
+
+    @Override
+    public Cache getCache() {
+        return cache;
+    }
+
+    @Override
+    public float minValue() {
+        return 0;
+    }
+
+    @Override
+    public float maxValue() {
+        return 1;
     }
 
     @Override
@@ -48,11 +68,11 @@ public abstract class FastSource implements Source {
     public void toNode(Node node) {
         node.clear();
         node.set("module", getName());
-        Util.setNonDefault(node, "seed", seed, Builder.SEED);
-        Util.setNonDefault(node, "octaves", octaves, Builder.OCTAVES);
-        Util.setNonDefault(node, "gain", gain, Builder.GAIN);
-        Util.setNonDefault(node, "frequency", frequency, Builder.FREQUENCY);
-        Util.setNonDefault(node, "lacunarity", lacunarity, Builder.LACUNARITY);
+        Util.setNonDefault(node, "getSeed", seed, Builder.SEED);
+        Util.setNonDefault(node, "getOctaves", octaves, Builder.OCTAVES);
+        Util.setNonDefault(node, "getGain", gain, Builder.GAIN);
+        Util.setNonDefault(node, "getFrequency", frequency, Builder.FREQUENCY);
+        Util.setNonDefault(node, "getLacunarity", lacunarity, Builder.LACUNARITY);
     }
 
     @Override
@@ -63,11 +83,10 @@ public abstract class FastSource implements Source {
     }
 
     protected String properties() {
-        return "seed=" + seed +
-                ", octaves=" + octaves +
-                ", lacunarity=" + lacunarity +
-                ", gain=" + gain +
-                ", frequency=" + frequency +
-                ", bounding=" + bounding;
+        return "getSeed=" + seed +
+                ", getOctaves=" + octaves +
+                ", getLacunarity=" + lacunarity +
+                ", getGain=" + gain +
+                ", getFrequency=" + frequency;
     }
 }

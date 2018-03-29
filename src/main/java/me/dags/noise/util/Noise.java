@@ -1,22 +1,15 @@
-package me.dags.noise.func;
+package me.dags.noise.util;
 
 import me.dags.noise.Module;
-import me.dags.noise.util.NoiseUtil;
+import me.dags.noise.func.CellFunc;
+import me.dags.noise.func.DistanceFunc;
+import me.dags.noise.func.EdgeFunc;
+import me.dags.noise.func.Interpolation;
 
 /**
  * https://github.com/Auburns/FastNoise_Java
  */
 public class Noise {
-
-    public static float calculateFractalBounding(int octaves, float gain) {
-        float amp = gain;
-        float ampFractal = 1;
-        for (int i = 1; i < octaves; i++) {
-            ampFractal += amp;
-            amp *= gain;
-        }
-        return 1 / ampFractal;
-    }
 
     public static float singlePerlin(float x, float y, int seed, Interpolation interp) {
         int x0 = NoiseUtil.FastFloor(x);

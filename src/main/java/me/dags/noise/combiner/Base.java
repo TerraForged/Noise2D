@@ -2,21 +2,25 @@ package me.dags.noise.combiner;
 
 import me.dags.config.Node;
 import me.dags.noise.Module;
+import me.dags.noise.cache.Cache;
+import me.dags.noise.combiner.selector.Selector;
+import me.dags.noise.func.Interpolation;
 import me.dags.noise.util.Util;
 
 /**
  * @author dags <dags@dags.me>
  */
-public class Base extends Combiner {
+public class Base extends Selector {
 
     private final Module lower;
     private final Module upper;
-    private final float min;
-    private final float max;
-    private final float maxValue;
-    private final float falloff;
+    protected final float min;
+    protected final float max;
+    protected final float maxValue;
+    protected final float falloff;
 
-    public Base(Module lower, Module upper, float falloff) {
+    public Base(Module lower, Module upper, float falloff, Interpolation interpolation) {
+        super(upper, lower, upper, Cache.NONE, interpolation);
         this.lower = lower;
         this.upper = upper;
         this.min = lower.maxValue();
@@ -31,20 +35,21 @@ public class Base extends Combiner {
     }
 
     @Override
-    public float getValue(float x, float y) {
-        float value = upper.getValue(x, y);
-        if (value < max) {
-            float value1 = lower.getValue(x, y);
+    protected float selectValue(float x, float y, float upperValue) {
+        if (upperValue < max) {
+            float lowerValue = lower.getValue(x, y);
 
             if (falloff > 0) {
-                float clamp = Math.min(max, Math.max(min, value));
+                float clamp = Math.min(max, Math.max(min, upperValue));
                 float alpha = (max - clamp) / falloff;
-                return ((1 - alpha) * value) + (alpha * value1);
+                return selectTwo(lower, upper, lowerValue, upperValue, x, y, alpha);
             }
 
-            return value1;
+            select(lower, x, y);
+            return lowerValue;
         }
-        return value;
+        select(upper, x, y);
+        return upperValue;
     }
 
     @Override
@@ -58,25 +63,8 @@ public class Base extends Combiner {
     }
 
     @Override
-    protected float minTotal(float result, Module next) {
-        return 0;
-    }
-
-    @Override
-    protected float maxTotal(float result, Module next) {
-        return 0;
-    }
-
-    @Override
-    protected float combine(float result, float value) {
-        return 0;
-    }
-
-    @Override
     public void toNode(Node node) {
         super.toNode(node);
         node.set("falloff", Util.round5(falloff));
-        lower.toNode(node.node("lower"));
-        upper.toNode(node.node("upper"));
     }
 }

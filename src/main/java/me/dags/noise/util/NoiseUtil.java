@@ -49,6 +49,16 @@ public class NoiseUtil {
             new Float2(0.1198188883f, -0.4337550392f), new Float2(-0.243590703f, 0.3783696201f), new Float2(0.2958191174f, -0.3391033025f), new Float2(-0.1164007991f, 0.4346847754f), new Float2(0.1274037151f, -0.4315881062f), new Float2(0.368047306f, 0.2589231171f), new Float2(0.2451436949f, 0.3773652989f), new Float2(-0.4314509715f, 0.12786735f),
     };
 
+    public static float map(float value, float min, float max, float range) {
+        if (value <= min) {
+            return 0F;
+        }
+        if (value >= max) {
+            return 1F;
+        }
+        return (value - min) / range;
+    }
+
     public static int FastFloor(float f) {
         return (f >= 0 ? (int) f : (int) f - 1);
     }
@@ -67,6 +77,10 @@ public class NoiseUtil {
 
     public static float InterpQuinticFunc(float t) {
         return t * t * t * (t * (t * 6 - 15) + 10);
+    }
+
+    public static float interp(float val0, float val1, float alpha) {
+        return ((1 - alpha) * val0) + (alpha * val1);
     }
 
     public static float CubicLerp(float a, float b, float c, float d, float t) {

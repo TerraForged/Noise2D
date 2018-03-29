@@ -1,11 +1,11 @@
 package me.dags.noise.source;
 
 import me.dags.config.Node;
-import me.dags.noise.Builder;
 import me.dags.noise.Module;
 import me.dags.noise.func.CellFunc;
 import me.dags.noise.func.DistanceFunc;
-import me.dags.noise.func.Noise;
+import me.dags.noise.util.Noise;
+import me.dags.noise.util.NoiseUtil;
 import me.dags.noise.util.Util;
 
 /**
@@ -19,9 +19,9 @@ public class FastCell extends FastSource {
 
     public FastCell(Builder builder) {
         super(builder);
-        lookup = builder.source();
-        cellFunc = builder.cellFunc();
-        distFunc = builder.distFunc();
+        lookup = builder.getSource();
+        cellFunc = builder.getCellFunc();
+        distFunc = builder.getDistFunc();
     }
 
     @Override
@@ -30,10 +30,11 @@ public class FastCell extends FastSource {
     }
 
     @Override
-    public float getValue(float x, float y) {
+    public float value(float x, float y) {
         x *= frequency;
         y *= frequency;
-        return Noise.singleCellular(x, y, seed, cellFunc, distFunc, lookup);
+        float value = Noise.singleCellular(x, y, seed, cellFunc, distFunc, lookup);
+        return NoiseUtil.map(value, -1, 1, 2);
     }
 
     @Override
@@ -50,7 +51,7 @@ public class FastCell extends FastSource {
         Util.setNonDefault(node, "cell", cellFunc, Builder.CELL_FUNC);
         Util.setNonDefault(node, "dist", distFunc, Builder.DIST_FUNC);
         if (lookup != Builder.SOURCE) {
-            lookup.toNode(node.node("source"));
+            lookup.toNode(node.node("getSource"));
         }
     }
 

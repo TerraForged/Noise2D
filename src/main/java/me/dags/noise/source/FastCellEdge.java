@@ -1,10 +1,10 @@
 package me.dags.noise.source;
 
 import me.dags.config.Node;
-import me.dags.noise.Builder;
 import me.dags.noise.func.DistanceFunc;
 import me.dags.noise.func.EdgeFunc;
-import me.dags.noise.func.Noise;
+import me.dags.noise.util.Noise;
+import me.dags.noise.util.NoiseUtil;
 import me.dags.noise.util.Util;
 
 /**
@@ -17,8 +17,8 @@ public class FastCellEdge extends FastSource {
 
     public FastCellEdge(Builder builder) {
         super(builder);
-        this.edgeFunc = builder.edgeFunc();
-        this.distFunc = builder.distFunc();
+        this.edgeFunc = builder.getEdgeFunc();
+        this.distFunc = builder.getDistFunc();
     }
 
     @Override
@@ -27,10 +27,11 @@ public class FastCellEdge extends FastSource {
     }
 
     @Override
-    public float getValue(float x, float y) {
+    public float value(float x, float y) {
         x *= frequency;
         y *= frequency;
-        return Noise.singleCellular2Edge(x, y, seed, edgeFunc, distFunc);
+        float value = Noise.singleCellular2Edge(x, y, seed, edgeFunc, distFunc);
+        return NoiseUtil.map(value, -1, 1, 2);
     }
 
     @Override
