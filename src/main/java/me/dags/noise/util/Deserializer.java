@@ -4,6 +4,7 @@ import me.dags.config.Node;
 import me.dags.noise.Module;
 import me.dags.noise.Source;
 import me.dags.noise.combiner.*;
+import me.dags.noise.combiner.selector.Base;
 import me.dags.noise.combiner.selector.Blend;
 import me.dags.noise.combiner.selector.Select;
 import me.dags.noise.func.CellFunc;

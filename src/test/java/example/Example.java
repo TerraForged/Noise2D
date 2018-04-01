@@ -2,7 +2,9 @@ package example;
 
 import me.dags.noise.Module;
 import me.dags.noise.Source;
+import me.dags.noise.combiner.selector.MultiBlend;
 import me.dags.noise.func.EdgeFunc;
+import me.dags.noise.func.Interpolation;
 
 import java.awt.*;
 
@@ -12,15 +14,27 @@ import java.awt.*;
 public class Example {
 
     public static void main(String[] args) {
-        Module cell = Source.cellEdge(1, 256, EdgeFunc.DISTANCE_2_ADD);
+        Module cell = Source.cellEdge(1, 256, EdgeFunc.DISTANCE_2);
         Module ridge = Source.ridge(2, 256 + 128, 4);
         Module source = cell.mult(ridge).scale(0.7).bias(0.25);
         Viewer viewer = new Viewer(512, 768);
         viewer.setRenderer(render(source));
     }
 
+    private static Module make() {
+        return new MultiBlend(
+                0.1F,
+                Interpolation.CURVE3,
+                Source.perlin(512, 1),
+                Source.constant(0.2),
+                Source.constant(0.3),
+                Source.constant(0.7),
+                Source.constant(0.9)
+        ).clamp(0, 1);
+    }
+
     private static Viewer.Renderer render(Module source) {
-        Module module = source.clamp(0, 1);
+        Module module = make();
         return (buffer, xOff, zOff) -> {
             Viewer.clear(buffer, Color.BLUE);
 

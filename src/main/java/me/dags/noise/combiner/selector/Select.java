@@ -28,7 +28,7 @@ public class Select extends Selector {
     protected final float upperCurveRange;
 
     public Select(Module control, Module source0, Module source1, float lowerBound, float upperBound, float edgeFalloff, Interpolation interpolation) {
-        super(control, source0, source1, Cache.NONE, interpolation);
+        super(control, new Module[]{source0, source1}, Cache.NONE, interpolation);
         this.control = control;
         this.source0 = source0;
         this.source1 = source1;
@@ -60,36 +60,36 @@ public class Select extends Selector {
     public float selectValue(float x, float y, float value) {
         if (edgeFalloff == 0) {
             if (value < lowerCurveMax) {
-                return selectOne(source0, x, y);
+                return selectOne(source0, 0,x, y);
             }
 
             if (value > upperCurveMin) {
-                return selectOne(source1, x, y);
+                return selectOne(source1, 1, x, y);
             }
 
-            return selectOne(source0, x, y);
+            return selectOne(source0, 0, x, y);
         }
 
         if (value < lowerCurveMin) {
-            return selectOne(source0, x, y);
+            return selectOne(source0, 0, x, y);
         }
 
         // curve
         if (value < lowerCurveMax) {
             float alpha = (value - lowerCurveMin) / lowerCurveRange;
-            return selectTwo(source0, source1, x, y, alpha);
+            return selectTwo(source0, source1, 0, 1, x, y, alpha);
         }
 
         if (value < upperCurveMin) {
-            return selectOne(source1, x, y);
+            return selectOne(source1, 1, x, y);
         }
 
         if (value < upperCurveMax) {
             float alpha = (value - upperCurveMin) / upperCurveRange;
-            return selectTwo(source1, source0, x, y, alpha);
+            return selectTwo(source1, source0, 1, 0, x, y, alpha);
         }
 
-        return selectOne(source0, x, y);
+        return selectOne(source0, 0, x, y);
     }
 
     @Override

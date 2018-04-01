@@ -1,9 +1,8 @@
-package me.dags.noise.combiner;
+package me.dags.noise.combiner.selector;
 
 import me.dags.config.Node;
 import me.dags.noise.Module;
 import me.dags.noise.cache.Cache;
-import me.dags.noise.combiner.selector.Selector;
 import me.dags.noise.func.Interpolation;
 import me.dags.noise.util.Util;
 
@@ -20,7 +19,7 @@ public class Base extends Selector {
     protected final float falloff;
 
     public Base(Module lower, Module upper, float falloff, Interpolation interpolation) {
-        super(upper, lower, upper, Cache.NONE, interpolation);
+        super(upper, new Module[]{lower, upper}, Cache.NONE, interpolation);
         this.lower = lower;
         this.upper = upper;
         this.min = lower.maxValue();
@@ -42,13 +41,13 @@ public class Base extends Selector {
             if (falloff > 0) {
                 float clamp = Math.min(max, Math.max(min, upperValue));
                 float alpha = (max - clamp) / falloff;
-                return selectTwo(lower, upper, lowerValue, upperValue, x, y, alpha);
+                return selectTwo(lower, upper, 0, 1, lowerValue, upperValue, x, y, alpha);
             }
 
-            select(lower, x, y);
+            select(0, x, y);
             return lowerValue;
         }
-        select(upper, x, y);
+        select(1, x, y);
         return upperValue;
     }
 

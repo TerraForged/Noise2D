@@ -1,9 +1,8 @@
 package me.dags.noise.tag;
 
-import me.dags.noise.Module;
 import me.dags.noise.Tagged;
 import me.dags.noise.cache.TagCache;
-import me.dags.noise.combiner.Base;
+import me.dags.noise.combiner.selector.Base;
 import me.dags.noise.func.Interpolation;
 
 import java.util.List;
@@ -41,8 +40,8 @@ public class TagBase<T> extends Base implements Tagged<T> {
     }
 
     @Override
-    protected void select(Module module, float x, float y) {
-        if (module == lower) {
+    protected void select(int index, float x, float y) {
+        if (index == 0) {
             cache.cacheTags(x, y, lower);
         } else {
             cache.cacheTags(x, y, upper);
@@ -50,7 +49,7 @@ public class TagBase<T> extends Base implements Tagged<T> {
     }
 
     @Override
-    protected void select(Module module0, Module module1, float x, float y) {
+    protected void select(int i0, int i1, float x, float y) {
         cache.cacheTags(x, y, mix);
     }
 }

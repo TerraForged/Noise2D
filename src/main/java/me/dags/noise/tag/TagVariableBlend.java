@@ -41,8 +41,8 @@ public class TagVariableBlend<T> extends VariableBlend implements Tagged<T> {
     }
 
     @Override
-    protected void select(Module module, float x, float y) {
-        if (module == source0) {
+    protected void select(int index, float x, float y) {
+        if (index == 0) {
             cache.cacheTags(x, y, source0);
         } else {
             cache.cacheTags(x, y, source1);
@@ -50,7 +50,7 @@ public class TagVariableBlend<T> extends VariableBlend implements Tagged<T> {
     }
 
     @Override
-    protected void select(Module module0, Module module1, float x, float y) {
+    protected void select(int i0, int i1, float x, float y) {
         cache.cacheTags(x, y, mix);
     }
 }

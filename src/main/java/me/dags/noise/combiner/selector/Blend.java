@@ -19,7 +19,7 @@ public class Blend extends Selector {
     private final float blendRange;
 
     public Blend(Module selector, Module source0, Module source1, float midPoint, float blendRange, Interpolation interpolation) {
-        super(selector, source0, source1, Cache.NONE, interpolation);
+        super(selector, new Module[]{source0, source1}, Cache.NONE, interpolation);
         float mid = selector.minValue() + ((selector.maxValue() - selector.minValue()) * midPoint);
         this.source0 = source0;
         this.source1 = source1;
@@ -37,13 +37,13 @@ public class Blend extends Selector {
     @Override
     public float selectValue(float x, float y, float select) {
         if (select < blendLower) {
-            return selectOne(source0, x, y);
+            return selectOne(source0, 0, x, y);
         }
         if (select > blendUpper) {
-            return selectOne(source1, x, y);
+            return selectOne(source1, 1, x, y);
         }
         float alpha = (select - blendLower) / blendRange;
-        return selectTwo(source0, source1, x, y, alpha);
+        return selectTwo(source0, source1, 0, 1, x, y, alpha);
     }
 
     @Override

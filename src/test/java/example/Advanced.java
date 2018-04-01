@@ -5,6 +5,7 @@ import me.dags.noise.Tagged;
 import me.dags.noise.func.Interpolation;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -21,16 +22,26 @@ public class Advanced {
 
     public static void main(String[] args) {
         Viewer viewer = new Viewer(512, 512+256);
-        viewer.setRenderer(render(model()));
+        viewer.setRenderer(render(test1()));
     }
 
-    private static Tagged<Color> model() {
+    private static Tagged<Color> test0() {
         Source.SEED_RANDOM.setSeed(123);
         Tagged<Color> lowland = Source.perlin(128, 1).scale(0.05).bias(0.1).tag(BLUE);
         Tagged<Color> highland = Source.perlin(128, 2).scale(0.1).bias(0.25).tag(GREEN);
         return Source.perlin(512, 1)
                 .turbulence(Source.perlin(32, 1), 24)
                 .tagVarBlend(Source.perlin(512, 1), lowland, highland, Collections.singletonList(YELLOW), 0.5, 0.01, 0.3, Interpolation.CURVE3);
+    }
+
+    private static Tagged<Color> test1() {
+        Source.SEED_RANDOM.setSeed(123);
+        return Source.perlin(512, 1)
+                .tagMultiBlend(0.35, Arrays.asList(
+                        Source.constant(0.1).tag(BLUE, YELLOW),
+                        Source.constant(0.3).tag(YELLOW),
+                        Source.constant(0.6).tag(GREEN)
+                ));
     }
 
     private static Viewer.Renderer render(Tagged<Color> source) {

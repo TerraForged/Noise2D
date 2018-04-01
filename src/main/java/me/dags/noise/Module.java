@@ -4,16 +4,11 @@ import me.dags.config.Config;
 import me.dags.config.Node;
 import me.dags.noise.cache.Cache;
 import me.dags.noise.combiner.*;
-import me.dags.noise.combiner.selector.Blend;
-import me.dags.noise.combiner.selector.Select;
-import me.dags.noise.combiner.selector.VariableBlend;
+import me.dags.noise.combiner.selector.*;
 import me.dags.noise.func.Interpolation;
 import me.dags.noise.modifier.*;
 import me.dags.noise.source.Builder;
-import me.dags.noise.tag.TagBlend;
-import me.dags.noise.tag.TagModule;
-import me.dags.noise.tag.TagSelect;
-import me.dags.noise.tag.TagVariableBlend;
+import me.dags.noise.tag.*;
 import me.dags.noise.util.Deserializer;
 import me.dags.noise.util.Util;
 
@@ -104,6 +99,10 @@ public interface Module {
         return new Blend(this, source0, source1, (float) midpoint, (float) blendRange, interpolation);
     }
 
+    default Combiner multiBlend(double blend, Interpolation interpolation, Module control, Module... sources) {
+        return new MultiBlend((float) blend, interpolation, control, sources);
+    }
+
     default Combiner blendVar(Module variable, Module source0, Module source1, double midpoint, double min, double max, Interpolation interpolation) {
         return new VariableBlend(this, variable, source0, source1, (float) midpoint, (float) min, (float) max, interpolation);
     }
@@ -122,6 +121,10 @@ public interface Module {
 
     default <T> Tagged<T> tagVarBlend(Module variable, Tagged<T> source0, Tagged<T> source1, List<T> mix, double mid, double min, double max, Interpolation interpolation) {
         return new TagVariableBlend<>(this, variable, source0, source1, mix, (float) mid, (float) min, (float) max, interpolation);
+    }
+
+    default <T> Tagged<T> tagMultiBlend(double blend, Interpolation interpolation, List<Tagged<T>> sources) {
+        return new TagMultiBlend<>(this, sources, (float) blend, interpolation);
     }
 
     default <T> Tagged<T> tagSelect(Tagged<T> s0, Tagged<T> s1, List<T> mix, double lower, double upper, double falloff, Interpolation interpolation) {
@@ -145,6 +148,10 @@ public interface Module {
 
     default Combiner blend(Module source0, Module source1, double midpoint, double blendRange) {
         return blend(source0, source1, (float) midpoint, (float) blendRange, DEFAULT_INTERP);
+    }
+
+    default Combiner multiBlend(double blend, Module control, Module... sources) {
+        return multiBlend(blend, DEFAULT_INTERP, control, sources);
     }
 
     default Combiner blendVar(Module variable, Module source0, Module source1, double midpoint, double min, double max) {
@@ -182,6 +189,11 @@ public interface Module {
 
     default <T> Tagged<T> tagVarBlend(Module variable, Tagged<T> source0, Tagged<T> source1, double mid, double min, double max, Interpolation interpolation) {
         return tagVarBlend(variable, source0, source1, Util.combine(source0.getTags(), source1.getTags()), mid, min, max, interpolation);
+    }
+
+    @SuppressWarnings("unchecked")
+    default <T> Tagged<T> tagMultiBlend(double blend, List<Tagged<T>> sources) {
+        return tagMultiBlend(blend, DEFAULT_INTERP, sources);
     }
 
     default <T> Tagged<T> tagSelect(Tagged<T> s0, Tagged<T> s1, double lower, double upper, double falloff) {

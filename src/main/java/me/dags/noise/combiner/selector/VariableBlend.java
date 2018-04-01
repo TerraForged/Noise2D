@@ -19,7 +19,7 @@ public class VariableBlend extends Selector {
     private final float minBlend;
 
     public VariableBlend(Module control, Module variator, Module source0, Module source1, float midpoint, float minBlend, float maxBlend, Interpolation interpolation) {
-        super(control, source0, source1, Cache.NONE, interpolation);
+        super(control, new Module[]{source0, source1}, Cache.NONE, interpolation);
         this.source0 = source0;
         this.source1 = source1;
         this.midpoint = midpoint;
@@ -39,16 +39,16 @@ public class VariableBlend extends Selector {
 
         float min = Math.max(0, midpoint - radius);
         if (selector < min) {
-            return selectOne(source0, x, y);
+            return selectOne(source0, 0, x, y);
         }
 
         float max = Math.min(1, midpoint + radius);
         if (selector > max) {
-            return selectOne(source1, x, y);
+            return selectOne(source1, 1, x, y);
         }
 
         float alpha = (selector - min) / (max - min);
-        return selectTwo(source0, source1, x, y, alpha);
+        return selectTwo(source0, source1, 0, 1, x, y, alpha);
     }
 
     @Override
