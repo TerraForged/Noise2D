@@ -34,7 +34,7 @@ public class Example {
     }
 
     private static Viewer.Renderer render(Module source) {
-        Module module = make();
+        Module module = Source.cellNoise(32, Source.perlin(8, 1));
         return (buffer, xOff, zOff) -> {
             Viewer.clear(buffer, Color.BLUE);
 

@@ -16,12 +16,18 @@ public class FastCell extends FastSource {
     private final Module lookup;
     private final CellFunc cellFunc;
     private final DistanceFunc distFunc;
+    private final float min;
+    private final float max;
+    private final float range;
 
     public FastCell(Builder builder) {
         super(builder);
         lookup = builder.getSource();
         cellFunc = builder.getCellFunc();
         distFunc = builder.getDistFunc();
+        min = cellFunc == CellFunc.NOISE_LOOKUP ? lookup.minValue() : -1;
+        max = cellFunc == CellFunc.NOISE_LOOKUP ? lookup.maxValue() : 1;
+        range = max - min;
     }
 
     @Override
@@ -34,7 +40,7 @@ public class FastCell extends FastSource {
         x *= frequency;
         y *= frequency;
         float value = Noise.singleCellular(x, y, seed, cellFunc, distFunc, lookup);
-        return NoiseUtil.map(value, -1, 1, 2);
+        return NoiseUtil.map(value, min, max, range);
     }
 
     @Override
