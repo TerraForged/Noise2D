@@ -1,12 +1,10 @@
 package me.dags.noise;
 
-import me.dags.noise.cache.TagCache;
+import java.util.List;
 import me.dags.noise.func.Interpolation;
 import me.dags.noise.tag.TagBase;
 import me.dags.noise.tag.TagCombiner;
 import me.dags.noise.util.Util;
-
-import java.util.List;
 
 /**
  * @author dags <dags@dags.me>
@@ -14,16 +12,10 @@ import java.util.List;
 public interface Tagged<T> extends Module {
 
     @Override
-    TagCache<T> getCache();
-
     List<T> getTags();
 
-    default List<T> getTags(float x, float y) {
-        if (!getCache().isCached(x, y)) {
-            getValue(x, y);
-        }
-        return getCache().getTags();
-    }
+    @Override
+    List<T> getTags(float x, float y);
 
     default Tagged<T> tagBase(Tagged<T> upper, double falloff) {
         return tagBase(upper, falloff, Interpolation.LINEAR);

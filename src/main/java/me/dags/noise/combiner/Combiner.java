@@ -1,12 +1,6 @@
 package me.dags.noise.combiner;
 
-import me.dags.config.Node;
 import me.dags.noise.Module;
-import me.dags.noise.cache.Cache;
-
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * @author dags <dags@dags.me>
@@ -18,9 +12,8 @@ public abstract class Combiner implements Module {
     private final float min;
     private final float max;
     private final Module[] sources;
-    private final Cache cache;
 
-    public Combiner(Cache cache, Module... sources) {
+    public Combiner(Module... sources) {
         float min = 0F;
         float max = 0F;
         if (sources.length > 0) {
@@ -34,21 +27,21 @@ public abstract class Combiner implements Module {
         }
         this.min = min;
         this.max = max;
-        this.cache = cache;
         this.sources = sources;
     }
 
     @Override
-    public void toNode(Node node) {
-        node.clear();
-        List<Node> nodes = new LinkedList<>();
-        for (Module module : sources) {
-            Node n = Node.create();
-            module.toNode(n);
-            nodes.add(n);
+    public float getValue(float x, float y) {
+        float result = 0F;
+        if (sources.length > 0) {
+            result = sources[0].getValue(x, y);
+            for (int i = 1; i < sources.length; i++) {
+                Module module = sources[i];
+                float value = module.getValue(x, y);
+                result = combine(result, value);
+            }
         }
-        node.set("module", getName());
-        node.node("sources").set(nodes);
+        return result;
     }
 
     @Override
@@ -59,35 +52,6 @@ public abstract class Combiner implements Module {
     @Override
     public float maxValue() {
         return max;
-    }
-
-    @Override
-    public Cache getCache() {
-        return cache;
-    }
-
-    @Override
-    public float getValue(float x, float y) {
-        if (!getCache().isCached(x, y)) {
-            float result = 0F;
-            if (sources.length > 0) {
-                result = sources[0].getValue(x, y);
-                for (int i = 1; i < sources.length; i++) {
-                    Module module = sources[i];
-                    float value = module.getValue(x, y);
-                    result = combine(result, value);
-                }
-            }
-            return getCache().cacheValue(x, y, result);
-        }
-        return getCache().getValue();
-    }
-
-    @Override
-    public String toString() {
-        return getName() + "{"
-                + "sources=" + Arrays.toString(sources)
-                + "}";
     }
 
     protected abstract float minTotal(float result, Module next);

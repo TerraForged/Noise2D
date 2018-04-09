@@ -1,10 +1,7 @@
 package me.dags.noise.source;
 
-import me.dags.config.Node;
 import me.dags.noise.Module;
 import me.dags.noise.Source;
-import me.dags.noise.cache.Cache;
-import me.dags.noise.util.Util;
 
 /**
  * @author dags <dags@dags.me>
@@ -18,7 +15,6 @@ public abstract class FastSource implements Source {
     protected final float lacunarity;
     protected final float gain;
     protected final float frequency;
-    protected final Cache cache;
 
     public FastSource(Builder builder) {
         this.seed = builder.getSeed();
@@ -26,22 +22,6 @@ public abstract class FastSource implements Source {
         this.lacunarity = builder.getLacunarity();
         this.gain = builder.getGain();
         this.frequency = builder.getFrequency();
-        this.cache = builder.getCache();
-    }
-
-    protected abstract float value(float x, float y);
-
-    @Override
-    public float getValue(float x, float y) {
-        if (!getCache().isCached(x, y)) {
-            return getCache().cacheValue(x, y, value(x, y));
-        }
-        return getCache().getValue();
-    }
-
-    @Override
-    public Cache getCache() {
-        return cache;
     }
 
     @Override
@@ -62,31 +42,5 @@ public abstract class FastSource implements Source {
                 .lacunarity(lacunarity)
                 .gain(gain)
                 .frequency(frequency);
-    }
-
-    @Override
-    public void toNode(Node node) {
-        node.clear();
-        node.set("module", getName());
-        Util.setNonDefault(node, "getSeed", seed, Builder.SEED);
-        Util.setNonDefault(node, "getOctaves", octaves, Builder.OCTAVES);
-        Util.setNonDefault(node, "getGain", gain, Builder.GAIN);
-        Util.setNonDefault(node, "getFrequency", frequency, Builder.FREQUENCY);
-        Util.setNonDefault(node, "getLacunarity", lacunarity, Builder.LACUNARITY);
-    }
-
-    @Override
-    public String toString() {
-        return getName() + "{"
-                + properties()
-                + '}';
-    }
-
-    protected String properties() {
-        return "getSeed=" + seed +
-                ", getOctaves=" + octaves +
-                ", getLacunarity=" + lacunarity +
-                ", getGain=" + gain +
-                ", getFrequency=" + frequency;
     }
 }

@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '2.0.2'
 }
 
 group 'me.dags'
@@ -8,16 +7,9 @@ version '0.1-SNAPSHOT'
 
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    compile 'com.github.dags-:Config:1.0.2'
-}
+    compile group: 'com.google.guava', name: 'guava', version: '24.1-jre'
 
-shadowJar {
-    relocate 'com.google.', 'me.dags.noise.lib.guava.'
-    relocate 'me.dags.config.', 'me.dags.noise.lib.config.'
-    relocate 'com.typesafe.config.', 'me.dags.noise.lib.typesafe.'
-    relocate 'ninja.leaping.configurate.', 'me.dags.noise.lib.configurate.'
 }

@@ -1,20 +1,28 @@
 package me.dags.noise;
 
-import me.dags.config.Config;
-import me.dags.config.Node;
-import me.dags.noise.cache.Cache;
-import me.dags.noise.combiner.*;
-import me.dags.noise.combiner.selector.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import me.dags.noise.combiner.Add;
+import me.dags.noise.combiner.Combiner;
+import me.dags.noise.combiner.Max;
+import me.dags.noise.combiner.Min;
+import me.dags.noise.combiner.Multiply;
+import me.dags.noise.combiner.Sub;
+import me.dags.noise.combiner.selector.Base;
+import me.dags.noise.combiner.selector.Blend;
+import me.dags.noise.combiner.selector.MultiBlend;
+import me.dags.noise.combiner.selector.Select;
+import me.dags.noise.combiner.selector.VariableBlend;
 import me.dags.noise.func.Interpolation;
 import me.dags.noise.modifier.*;
 import me.dags.noise.source.Builder;
-import me.dags.noise.tag.*;
-import me.dags.noise.util.Deserializer;
+import me.dags.noise.tag.TagBlend;
+import me.dags.noise.tag.TagModule;
+import me.dags.noise.tag.TagMultiBlend;
+import me.dags.noise.tag.TagSelect;
+import me.dags.noise.tag.TagVariableBlend;
 import me.dags.noise.util.Util;
-
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author dags <dags@dags.me>
@@ -23,17 +31,41 @@ public interface Module {
 
     Interpolation DEFAULT_INTERP = Interpolation.CURVE3;
 
-    String getName();
-
-    Cache getCache();
-
     float minValue();
 
     float maxValue();
 
     float getValue(float x, float y);
 
-    void toNode(Node node);
+    default List<?> getTags() {
+        return Collections.emptyList();
+    }
+
+    default List<?> getTags(float x, float z) {
+        return Collections.emptyList();
+    }
+
+    default float[] generate(int width, int height, int xOffset, int yOffset) {
+        return generate(new float[width * height], width, height, xOffset, yOffset);
+    }
+
+    default float[] generate(float[] backing, int width, int height, int xOffset, int yOffset) {
+        int size = width * height;
+        if (size != backing.length) {
+            backing = new float[size];
+        }
+
+        for (int dy = 0; dy < height; dy++) {
+            for (int dx = 0; dx < width; dx++) {
+                int x = xOffset + dx;
+                int y = yOffset + dy;
+                int index = dy * width + dx;
+                backing[index] = getValue(x, y);
+            }
+        }
+
+        return backing;
+    }
 
     default Modifier abs() {
         return new Abs(this);
@@ -87,7 +119,7 @@ public interface Module {
         return new Multiply(this, other);
     }
 
-    default Modifier turbulence(Module x, Module y, double power) {
+    default Modifier turb(Module x, Module y, double power) {
         return new Turbulence(this, x, y, (float) power);
     }
 
@@ -135,11 +167,11 @@ public interface Module {
     // OVERLOADS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    default Modifier turbulence(Source source, double power) {
+    default Modifier turb(Source source, double power) {
         Builder builder = source.toBuilder();
         builder.seed(builder.getSeed() + 1);
         Source source1 = builder.build(source.getClass());
-        return turbulence(source, source1, power);
+        return turb(source, source1, power);
     }
 
     default Combiner base(Module other, double falloff) {
@@ -214,34 +246,5 @@ public interface Module {
 
     static Builder builder() {
         return new Builder();
-    }
-
-    default void save(Path path, String... nodePath) {
-        save(Config.must(path), nodePath);
-    }
-
-    default void save(Config config, String... nodePath) {
-        Node node = config;
-        for (String path : nodePath) {
-            node = node.node(path);
-        }
-        toNode(node);
-        config.save();
-    }
-
-    static Module load(Path path, String... nodePath) {
-        return load(Config.must(path), nodePath);
-    }
-
-    static Module load(Config config, String... nodePath) {
-        Node node = config;
-        for (String path : nodePath) {
-            node = node.node(path);
-        }
-        return fromNode(node);
-    }
-
-    static Module fromNode(Node node) {
-        return Deserializer.getInstance().deserialize(node);
     }
 }

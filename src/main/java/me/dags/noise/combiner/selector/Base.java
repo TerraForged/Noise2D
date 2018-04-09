@@ -1,10 +1,8 @@
 package me.dags.noise.combiner.selector;
 
-import me.dags.config.Node;
+import java.util.List;
 import me.dags.noise.Module;
-import me.dags.noise.cache.Cache;
 import me.dags.noise.func.Interpolation;
-import me.dags.noise.util.Util;
 
 /**
  * @author dags <dags@dags.me>
@@ -19,7 +17,7 @@ public class Base extends Selector {
     protected final float falloff;
 
     public Base(Module lower, Module upper, float falloff, Interpolation interpolation) {
-        super(upper, new Module[]{lower, upper}, Cache.NONE, interpolation);
+        super(upper, new Module[]{lower, upper}, interpolation);
         this.lower = lower;
         this.upper = upper;
         this.min = lower.maxValue();
@@ -29,26 +27,28 @@ public class Base extends Selector {
     }
 
     @Override
-    public String getName() {
-        return "floor";
-    }
-
-    @Override
     protected float selectValue(float x, float y, float upperValue) {
         if (upperValue < max) {
             float lowerValue = lower.getValue(x, y);
-
             if (falloff > 0) {
                 float clamp = Math.min(max, Math.max(min, upperValue));
                 float alpha = (max - clamp) / falloff;
-                return selectTwo(lower, upper, 0, 1, lowerValue, upperValue, x, y, alpha);
+                return blendValues(lowerValue, upperValue, alpha);
             }
-
-            select(0, x, y);
             return lowerValue;
         }
-        select(1, x, y);
         return upperValue;
+    }
+
+    @Override
+    protected List<?> selectTags(float x, float y, float upperValue) {
+        if (upperValue < max) {
+            if (falloff > 0) {
+                return getTags();
+            }
+            return lower.getTags(x, y);
+        }
+        return upper.getTags(x, y);
     }
 
     @Override
@@ -59,11 +59,5 @@ public class Base extends Selector {
     @Override
     public float maxValue() {
         return maxValue;
-    }
-
-    @Override
-    public void toNode(Node node) {
-        super.toNode(node);
-        node.set("falloff", Util.round5(falloff));
     }
 }

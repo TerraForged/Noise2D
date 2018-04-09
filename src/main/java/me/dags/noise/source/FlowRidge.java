@@ -1,10 +1,8 @@
 package me.dags.noise.source;
 
-import me.dags.config.Node;
 import me.dags.noise.func.Interpolation;
 import me.dags.noise.util.Noise;
 import me.dags.noise.util.NoiseUtil;
-import me.dags.noise.util.Util;
 
 /**
  * @author dags <dags@dags.me>
@@ -37,12 +35,7 @@ public class FlowRidge extends FastSource {
     }
 
     @Override
-    public String getName() {
-        return "ridge2";
-    }
-
-    @Override
-    public float value(float x, float y) {
+    public float getValue(float x, float y) {
         x *= frequency;
         y *= frequency;
 
@@ -70,12 +63,6 @@ public class FlowRidge extends FastSource {
         }
 
         return NoiseUtil.map(value, min, max, range);
-    }
-
-    @Override
-    public void toNode(Node node) {
-        super.toNode(node);
-        Util.setNonDefault(node, "interpolation", interpolation, Builder.INTERP);
     }
 
     private float calculateBound(float signal, int octaves, float gain) {

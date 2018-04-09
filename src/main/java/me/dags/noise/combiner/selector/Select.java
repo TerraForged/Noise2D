@@ -1,10 +1,8 @@
 package me.dags.noise.combiner.selector;
 
-import me.dags.config.Node;
+import java.util.List;
 import me.dags.noise.Module;
-import me.dags.noise.cache.Cache;
 import me.dags.noise.func.Interpolation;
-import me.dags.noise.util.Util;
 
 /**
  * @author dags <dags@dags.me>
@@ -28,7 +26,7 @@ public class Select extends Selector {
     protected final float upperCurveRange;
 
     public Select(Module control, Module source0, Module source1, float lowerBound, float upperBound, float edgeFalloff, Interpolation interpolation) {
-        super(control, new Module[]{source0, source1}, Cache.NONE, interpolation);
+        super(control, new Module[]{source0, source1}, interpolation);
         this.control = control;
         this.source0 = source0;
         this.source1 = source1;
@@ -44,60 +42,72 @@ public class Select extends Selector {
     }
 
     @Override
-    public String getName() {
-        return "select";
-    }
-
-    @Override
-    public void toNode(Node node) {
-        super.toNode(node);
-        node.set("bound0", Util.round5(lowerBound));
-        node.set("bound1", Util.round5(upperBound));
-        node.set("falloff", Util.round5(edgeFalloff));
-    }
-
-    @Override
     public float selectValue(float x, float y, float value) {
         if (edgeFalloff == 0) {
             if (value < lowerCurveMax) {
-                return selectOne(source0, 0,x, y);
+                return source0.getValue(x, y);
             }
 
             if (value > upperCurveMin) {
-                return selectOne(source1, 1, x, y);
+                return source1.getValue(x, y);
             }
 
-            return selectOne(source0, 0, x, y);
+            return source0.getValue(x, y);
         }
 
         if (value < lowerCurveMin) {
-            return selectOne(source0, 0, x, y);
+            return source0.getValue(x, y);
         }
 
         // curve
         if (value < lowerCurveMax) {
             float alpha = (value - lowerCurveMin) / lowerCurveRange;
-            return selectTwo(source0, source1, 0, 1, x, y, alpha);
+            return blendValues(source0.getValue(x, y), source1.getValue(x, y), alpha);
         }
 
         if (value < upperCurveMin) {
-            return selectOne(source1, 1, x, y);
+            return source1.getValue(x, y);
         }
 
         if (value < upperCurveMax) {
             float alpha = (value - upperCurveMin) / upperCurveRange;
-            return selectTwo(source1, source0, 1, 0, x, y, alpha);
+            return blendValues(source1.getValue(x, y), source0.getValue(x, y), alpha);
         }
 
-        return selectOne(source0, 0, x, y);
+        return source0.getValue(x, y);
     }
 
     @Override
-    public String toString() {
-        return getName() + "{"
-                + "selector=" + control
-                + ",source0=" + source0
-                + ",source1=" + source1
-                + "}";
+    public List<?> selectTags(float x, float y, float value) {
+        if (edgeFalloff == 0) {
+            if (value < lowerCurveMax) {
+                return source0.getTags(x, y);
+            }
+
+            if (value > upperCurveMin) {
+                return source1.getTags(x, y);
+            }
+
+            return source0.getTags(x, y);
+        }
+
+        if (value < lowerCurveMin) {
+            return source0.getTags(x, y);
+        }
+
+        // curve
+        if (value < lowerCurveMax) {
+            return getTags();
+        }
+
+        if (value < upperCurveMin) {
+            return source1.getTags(x, y);
+        }
+
+        if (value < upperCurveMax) {
+            return getTags();
+        }
+
+        return source0.getTags(x, y);
     }
 }

@@ -1,7 +1,7 @@
 package me.dags.noise.combiner.selector;
 
+import java.util.List;
 import me.dags.noise.Module;
-import me.dags.noise.cache.Cache;
 import me.dags.noise.func.Interpolation;
 
 /**
@@ -15,7 +15,7 @@ public class MultiBlend extends Selector {
     private final float blendRange;
 
     public MultiBlend(float blend, Interpolation interpolation, Module control, Module... sources) {
-        super(control, sources, Cache.NONE, interpolation);
+        super(control, sources, interpolation);
 
         float spacing = 1F / (sources.length);
         float radius = spacing / 2F;
@@ -37,33 +37,53 @@ public class MultiBlend extends Selector {
 
     @Override
     public float selectValue(float x, float y, float selector) {
+        int index = Math.round(selector * maxIndex);
+
+        Node min = nodes[index];
+        Node max = min;
+
+        if (blendRange == 0) {
+            return min.source.getValue(x, y);
+        }
+
+        if (selector > min.max) {
+            max = nodes[index + 1];
+        } else if (selector < min.min) {
+            min = nodes[index - 1];
+        } else {
+            return min.source.getValue(x ,y);
+        }
+
+        float alpha = Math.min(1, Math.max(0, (selector - min.max) / blendRange));
+        return blendValues(min.source.getValue(x, y), max.source.getValue(x, y), alpha);
+    }
+
+    @Override
+    public List<?> selectTags(float x, float y, float selector) {
         int index0 = Math.round(selector * maxIndex);
         int index1 = index0;
 
         Node min = nodes[index0];
-        Node max = min;
 
         if (blendRange == 0) {
-            return selectOne(min.source, index0, x, y);
+            return min.source.getTags(x, y);
         }
 
         if (selector > min.max) {
             index1 = index0 + 1;
-            max = nodes[index1];
         } else if (selector < min.min) {
             index0 = index0 - 1;
             min = nodes[index0];
         } else {
-            return selectOne(min.source, index0, x ,y);
+            return min.source.getTags(x, y);
         }
 
         float alpha = Math.min(1, Math.max(0, (selector - min.max) / blendRange));
-        return selectTwo(min.source, max.source, index0, index1, x, y, alpha);
+        return blendTags(index0, index1, alpha);
     }
 
-    @Override
-    public String getName() {
-        return "multi_blend";
+    protected List<?> blendTags(int index0, int index1, float alpha) {
+        return getTags();
     }
 
     private static class Node {

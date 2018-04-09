@@ -1,16 +1,13 @@
 package me.dags.noise.source;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import me.dags.noise.Module;
 import me.dags.noise.Source;
-import me.dags.noise.cache.Cache;
-import me.dags.noise.cache.ValueCache;
 import me.dags.noise.func.CellFunc;
 import me.dags.noise.func.DistanceFunc;
 import me.dags.noise.func.EdgeFunc;
 import me.dags.noise.func.Interpolation;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author dags <dags@dags.me>
@@ -34,7 +31,6 @@ public class Builder {
     private float gain = GAIN;
     private float lacunarity = LACUNARITY;
     private float frequency = FREQUENCY;
-    private Cache cache = Cache.NONE;
     private Module source = SOURCE;
     private CellFunc cellFunc = CELL_FUNC;
     private EdgeFunc edgeFunc = EDGE_FUNC;
@@ -65,10 +61,6 @@ public class Builder {
 
     public Interpolation getInterp() {
         return interpolation;
-    }
-
-    public Cache getCache() {
-        return cache;
     }
 
     public CellFunc getCellFunc() {
@@ -139,11 +131,6 @@ public class Builder {
 
     public Builder source(Module source) {
         this.source = source;
-        return this;
-    }
-
-    public Builder cached() {
-        this.cache = new ValueCache();
         return this;
     }
 

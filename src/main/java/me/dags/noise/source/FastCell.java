@@ -1,12 +1,10 @@
 package me.dags.noise.source;
 
-import me.dags.config.Node;
 import me.dags.noise.Module;
 import me.dags.noise.func.CellFunc;
 import me.dags.noise.func.DistanceFunc;
 import me.dags.noise.util.Noise;
 import me.dags.noise.util.NoiseUtil;
-import me.dags.noise.util.Util;
 
 /**
  * https://github.com/Auburns/FastNoise_Java
@@ -25,18 +23,13 @@ public class FastCell extends FastSource {
         lookup = builder.getSource();
         cellFunc = builder.getCellFunc();
         distFunc = builder.getDistFunc();
-        min = cellFunc == CellFunc.NOISE_LOOKUP ? lookup.minValue() : -1;
-        max = cellFunc == CellFunc.NOISE_LOOKUP ? lookup.maxValue() : 1;
+        min = min(cellFunc, lookup);
+        max = max(cellFunc, lookup);
         range = max - min;
     }
 
     @Override
-    public String getName() {
-        return "cell";
-    }
-
-    @Override
-    public float value(float x, float y) {
+    public float getValue(float x, float y) {
         x *= frequency;
         y *= frequency;
         float value = Noise.singleCellular(x, y, seed, cellFunc, distFunc, lookup);
@@ -51,22 +44,23 @@ public class FastCell extends FastSource {
                 .distFunc(distFunc);
     }
 
-    @Override
-    public void toNode(Node node) {
-        super.toNode(node);
-        Util.setNonDefault(node, "cell", cellFunc, Builder.CELL_FUNC);
-        Util.setNonDefault(node, "dist", distFunc, Builder.DIST_FUNC);
-        if (lookup != Builder.SOURCE) {
-            lookup.toNode(node.node("getSource"));
+    private static float min(CellFunc func, Module lookup) {
+        if (func == CellFunc.NOISE_LOOKUP) {
+            return lookup.minValue();
         }
+        if (func == CellFunc.DISTANCE) {
+            return -1;
+        }
+        return -1;
     }
 
-    @Override
-    public String toString() {
-        return getName() + "{"
-                + properties()
-                + ", cell=" + cellFunc
-                + ", dist=" + distFunc
-                + "}";
+    private static float max(CellFunc func, Module lookup) {
+        if (func == CellFunc.NOISE_LOOKUP) {
+            return lookup.maxValue();
+        }
+        if (func == CellFunc.DISTANCE) {
+            return 0.25F;
+        }
+        return 1;
     }
 }

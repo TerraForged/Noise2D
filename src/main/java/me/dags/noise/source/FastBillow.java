@@ -13,12 +13,7 @@ public class FastBillow extends FastPerlin {
     }
 
     @Override
-    public String getName() {
-        return "billow";
-    }
-
-    @Override
-    public float value(float x, float y) {
+    public float getValue(float x, float y) {
         x *= frequency;
         y *= frequency;
 
@@ -38,11 +33,6 @@ public class FastBillow extends FastPerlin {
     @Override
     protected float minSignal() {
         return 0F;
-    }
-
-    @Override
-    protected float maxSignal() {
-        return 0.5F;
     }
 
     @Override

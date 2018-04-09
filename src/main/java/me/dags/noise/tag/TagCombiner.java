@@ -1,11 +1,8 @@
 package me.dags.noise.tag;
 
-import me.dags.config.Node;
+import java.util.List;
 import me.dags.noise.Module;
 import me.dags.noise.Tagged;
-import me.dags.noise.cache.TagCache;
-
-import java.util.List;
 
 /**
  * @author dags <dags@dags.me>
@@ -14,7 +11,6 @@ public class TagCombiner<T> implements Tagged<T> {
 
     private final Module source;
     private final Tagged<T> tagSource;
-    private final TagCache<T> cache = new TagCache<>();
 
     public TagCombiner(Module source, Tagged<T> tagSource) {
         this.source = source;
@@ -23,16 +19,7 @@ public class TagCombiner<T> implements Tagged<T> {
 
     @Override
     public float getValue(float x, float y) {
-        if (!cache.isCached(x, y)) {
-            float value = source.getValue(x, y);
-            return getCache().cacheValue(x, y, value);
-        }
-        return cache.getValue();
-    }
-
-    @Override
-    public TagCache<T> getCache() {
-        return cache;
+        return source.getValue(x, y);
     }
 
     @Override
@@ -41,8 +28,8 @@ public class TagCombiner<T> implements Tagged<T> {
     }
 
     @Override
-    public String getName() {
-        return "tag_combine_" + source.getName();
+    public List<T> getTags(float x, float y) {
+        return tagSource.getTags(x, y);
     }
 
     @Override
@@ -53,10 +40,5 @@ public class TagCombiner<T> implements Tagged<T> {
     @Override
     public float maxValue() {
         return source.maxValue();
-    }
-
-    @Override
-    public void toNode(Node node) {
-
     }
 }

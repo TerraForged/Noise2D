@@ -1,8 +1,6 @@
 package me.dags.noise.modifier;
 
-import me.dags.config.Node;
 import me.dags.noise.Module;
-import me.dags.noise.util.Util;
 
 /**
  * @author dags <dags@dags.me>
@@ -21,11 +19,6 @@ public class Scale extends Modifier {
     }
 
     @Override
-    public String getName() {
-        return "scale";
-    }
-
-    @Override
     public float minValue() {
         return min;
     }
@@ -38,11 +31,5 @@ public class Scale extends Modifier {
     @Override
     public float modify(float x, float y, float noiseValue) {
         return noiseValue * scale;
-    }
-
-    @Override
-    public void toNode(Node node) {
-        super.toNode(node);
-        node.set("scale", Util.round5(scale));
     }
 }

@@ -1,11 +1,10 @@
 package me.dags.noise;
 
+import java.util.Random;
 import me.dags.noise.func.CellFunc;
 import me.dags.noise.func.EdgeFunc;
 import me.dags.noise.source.Builder;
 import me.dags.noise.source.Constant;
-
-import java.util.Random;
 
 /**
  * @author dags <dags@dags.me>

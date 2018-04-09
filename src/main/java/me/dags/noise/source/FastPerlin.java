@@ -1,10 +1,8 @@
 package me.dags.noise.source;
 
-import me.dags.config.Node;
 import me.dags.noise.func.Interpolation;
 import me.dags.noise.util.Noise;
 import me.dags.noise.util.NoiseUtil;
-import me.dags.noise.util.Util;
 
 /**
  * https://github.com/Auburns/FastNoise_Java
@@ -25,12 +23,7 @@ public class FastPerlin extends FastSource {
     }
 
     @Override
-    public String getName() {
-        return "perlin";
-    }
-
-    @Override
-    public float value(float x, float y) {
+    public float getValue(float x, float y) {
         x *= frequency;
         y *= frequency;
 
@@ -53,26 +46,12 @@ public class FastPerlin extends FastSource {
                 .interp(interpolation);
     }
 
-    @Override
-    public void toNode(Node node) {
-        super.toNode(node);
-        Util.setNonDefault(node, "interpolation", interpolation, Builder.INTERP);
-    }
-
-    @Override
-    public String toString() {
-        return getName() + "{"
-                + properties()
-                + ", interpolation=" + interpolation
-                + "}";
-    }
-
     protected float minSignal() {
-        return -0.5F;
+        return -0.775F;
     }
 
     protected float maxSignal() {
-        return 0.5F;
+        return 0.775F;
     }
 
     protected float calculateBound(float signal, int octaves, float gain) {

@@ -1,7 +1,6 @@
 package me.dags.noise.combiner;
 
 import me.dags.noise.Module;
-import me.dags.noise.cache.Cache;
 
 /**
  * @author dags <dags@dags.me>
@@ -9,16 +8,7 @@ import me.dags.noise.cache.Cache;
 public class Min extends Combiner {
 
     public Min(Module... modules) {
-        this(Cache.NONE, modules);
-    }
-
-    public Min(Cache cache, Module... modules) {
-        super(cache, modules);
-    }
-
-    @Override
-    public String getName() {
-        return "min";
+        super(modules);
     }
 
     @Override

@@ -12,11 +12,6 @@ public class Invert extends Modifier {
     }
 
     @Override
-    public String getName() {
-        return "invert";
-    }
-
-    @Override
     public float modify(float x, float y, float noiseValue) {
         if (noiseValue > source.maxValue()) {
             return source.minValue();

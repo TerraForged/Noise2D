@@ -12,11 +12,6 @@ public class Abs extends Modifier {
     }
 
     @Override
-    public String getName() {
-        return "abs";
-    }
-
-    @Override
     public float modify(float x, float y, float noiseValue) {
         return Math.abs(noiseValue);
     }
