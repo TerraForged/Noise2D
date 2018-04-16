@@ -21,8 +21,8 @@ public class Base extends Selector {
         this.lower = lower;
         this.upper = upper;
         this.min = lower.maxValue();
-        this.max = min + falloff;
-        this.falloff = falloff == 0 ? 1F : falloff;
+        this.max = lower.maxValue() + falloff;
+        this.falloff = falloff;
         this.maxValue = Math.max(lower.maxValue(), upper.maxValue());
     }
 
@@ -31,9 +31,9 @@ public class Base extends Selector {
         if (upperValue < max) {
             float lowerValue = lower.getValue(x, y);
             if (falloff > 0) {
-                float clamp = Math.min(max, Math.max(min, upperValue));
+                float clamp = Math.max(min, upperValue);
                 float alpha = (max - clamp) / falloff;
-                return blendValues(lowerValue, upperValue, alpha);
+                return blendValues(upperValue, lowerValue, alpha);
             }
             return lowerValue;
         }

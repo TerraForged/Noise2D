@@ -67,6 +67,10 @@ public interface Module {
         return backing;
     }
 
+    default Module cache() {
+        return new Cache(this);
+    }
+
     default Modifier abs() {
         return new Abs(this);
     }
@@ -131,8 +135,8 @@ public interface Module {
         return new Blend(this, source0, source1, (float) midpoint, (float) blendRange, interpolation);
     }
 
-    default Combiner multiBlend(double blend, Interpolation interpolation, Module control, Module... sources) {
-        return new MultiBlend((float) blend, interpolation, control, sources);
+    default Combiner multiBlend(double blend, Interpolation interpolation, Module... sources) {
+        return new MultiBlend((float) blend, interpolation, this, sources);
     }
 
     default Combiner blendVar(Module variable, Module source0, Module source1, double midpoint, double min, double max, Interpolation interpolation) {
@@ -182,8 +186,8 @@ public interface Module {
         return blend(source0, source1, (float) midpoint, (float) blendRange, DEFAULT_INTERP);
     }
 
-    default Combiner multiBlend(double blend, Module control, Module... sources) {
-        return multiBlend(blend, DEFAULT_INTERP, control, sources);
+    default Combiner multiBlend(double blend, Module... sources) {
+        return multiBlend(blend, DEFAULT_INTERP, sources);
     }
 
     default Combiner blendVar(Module variable, Module source0, Module source1, double midpoint, double min, double max) {

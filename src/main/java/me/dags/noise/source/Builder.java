@@ -19,19 +19,17 @@ public class Builder {
     public static final float GAIN = 0.5F;
     public static final float LACUNARITY = 2F;
     public static final float FREQUENCY = 0.01F;
-    public static final float CONST_VALUE = 0F;
     public static final CellFunc CELL_FUNC = CellFunc.CELL_VALUE;
     public static final EdgeFunc EDGE_FUNC = EdgeFunc.DISTANCE_2;
     public static final DistanceFunc DIST_FUNC = DistanceFunc.EUCLIDEAN;
     public static final Interpolation INTERP = Interpolation.CURVE3;
-    public static final Source SOURCE = new Constant(CONST_VALUE);
 
     private int seed = SEED;
     private int octaves = OCTAVES;
     private float gain = GAIN;
     private float lacunarity = LACUNARITY;
     private float frequency = FREQUENCY;
-    private Module source = SOURCE;
+    private Module source = Source.ZERO;
     private CellFunc cellFunc = CELL_FUNC;
     private EdgeFunc edgeFunc = EDGE_FUNC;
     private DistanceFunc distFunc = DIST_FUNC;

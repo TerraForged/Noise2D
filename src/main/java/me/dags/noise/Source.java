@@ -1,6 +1,6 @@
 package me.dags.noise;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import me.dags.noise.func.CellFunc;
 import me.dags.noise.func.EdgeFunc;
 import me.dags.noise.source.Builder;
@@ -13,7 +13,11 @@ import me.dags.noise.source.Constant;
  */
 public interface Source extends Module {
 
-    Random SEED_RANDOM = new Random();
+    Source ONE = Source.constant(1);
+
+    Source ZERO = Source.constant(0);
+
+    Source HALF = Source.constant(0.5);
 
     Builder toBuilder();
 
@@ -22,7 +26,7 @@ public interface Source extends Module {
     }
 
     static Source perlin(int scale, int octaves) {
-        return perlin(SEED_RANDOM.nextInt(), scale, octaves);
+        return perlin(ThreadLocalRandom.current().nextInt(), scale, octaves);
     }
 
     static Source perlin(int seed, int scale, int octaves) {
@@ -30,7 +34,7 @@ public interface Source extends Module {
     }
 
     static Source billow(int scale, int octaves) {
-        return billow(SEED_RANDOM.nextInt(), scale, octaves);
+        return billow(ThreadLocalRandom.current().nextInt(), scale, octaves);
     }
 
     static Source billow(int seed, int scale, int octaves) {
@@ -38,7 +42,7 @@ public interface Source extends Module {
     }
 
     static Source ridge(int scale, int octaves) {
-        return ridge(SEED_RANDOM.nextInt(), scale, octaves);
+        return ridge(ThreadLocalRandom.current().nextInt(), scale, octaves);
     }
 
     static Source ridge(int seed, int scale, int octaves) {
@@ -46,7 +50,7 @@ public interface Source extends Module {
     }
 
     static Source cubic(int scale, int octaves) {
-        return cubic(SEED_RANDOM.nextInt(), scale, octaves);
+        return cubic(ThreadLocalRandom.current().nextInt(), scale, octaves);
     }
 
     static Source cubic(int seed, int scale, int octaves) {
@@ -54,11 +58,11 @@ public interface Source extends Module {
     }
 
     static Source cell(int scale) {
-        return cell(SEED_RANDOM.nextInt(), scale);
+        return cell(ThreadLocalRandom.current().nextInt(), scale);
     }
 
     static Source cell(int scale, CellFunc cellFunc) {
-        return cell(SEED_RANDOM.nextInt(), scale, cellFunc);
+        return cell(ThreadLocalRandom.current().nextInt(), scale, cellFunc);
     }
 
     static Source cell(int seed, int scale) {
@@ -70,7 +74,7 @@ public interface Source extends Module {
     }
 
     static Source cellNoise(int scale, Module source) {
-        return cellNoise(SEED_RANDOM.nextInt(), scale, source);
+        return cellNoise(ThreadLocalRandom.current().nextInt(), scale, source);
     }
 
     static Source cellNoise(int seed, int scale, Module source) {
@@ -78,11 +82,11 @@ public interface Source extends Module {
     }
 
     static Source cellEdge(int scale) {
-        return cellEdge(SEED_RANDOM.nextInt(), scale);
+        return cellEdge(ThreadLocalRandom.current().nextInt(), scale);
     }
 
     static Source cellEdge(int scale, EdgeFunc func) {
-        return cellEdge(SEED_RANDOM.nextInt(), scale, func);
+        return cellEdge(ThreadLocalRandom.current().nextInt(), scale, func);
     }
 
     static Source cellEdge(int seed, int scale) {
