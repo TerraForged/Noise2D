@@ -3,12 +3,4 @@ plugins {
 }
 
 group 'me.dags'
-version '0.1-SNAPSHOT'
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    compile group: 'com.google.guava', name: 'guava', version: '24.1-jre'
-}
+version '0.2-SNAPSHOT'

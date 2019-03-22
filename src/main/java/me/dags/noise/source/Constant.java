@@ -1,12 +1,11 @@
 package me.dags.noise.source;
 
 import me.dags.noise.Module;
-import me.dags.noise.Source;
 
 /**
  * @author dags <dags@dags.me>
  */
-public class Constant implements Source {
+public class Constant implements Module {
 
     private final float value;
 
@@ -27,10 +26,5 @@ public class Constant implements Source {
     @Override
     public float maxValue() {
         return value;
-    }
-
-    @Override
-    public Builder toBuilder() {
-        return Module.builder();
     }
 }

@@ -1,8 +1,8 @@
 package me.dags.noise.combiner.selector;
 
-import java.util.List;
 import me.dags.noise.Module;
 import me.dags.noise.func.Interpolation;
+import me.dags.noise.util.NoiseUtil;
 
 /**
  * @Author <dags@dags.me>
@@ -37,7 +37,7 @@ public class MultiBlend extends Selector {
 
     @Override
     public float selectValue(float x, float y, float selector) {
-        int index = Math.round(selector * maxIndex);
+        int index = NoiseUtil.round(selector * maxIndex);
 
         Node min = nodes[index];
         Node max = min;
@@ -56,34 +56,6 @@ public class MultiBlend extends Selector {
 
         float alpha = Math.min(1, Math.max(0, (selector - min.max) / blendRange));
         return blendValues(min.source.getValue(x, y), max.source.getValue(x, y), alpha);
-    }
-
-    @Override
-    public List<?> selectTags(float x, float y, float selector) {
-        int index0 = Math.round(selector * maxIndex);
-        int index1 = index0;
-
-        Node min = nodes[index0];
-
-        if (blendRange == 0) {
-            return min.source.getTags(x, y);
-        }
-
-        if (selector > min.max) {
-            index1 = index0 + 1;
-        } else if (selector < min.min) {
-            index0 = index0 - 1;
-            min = nodes[index0];
-        } else {
-            return min.source.getTags(x, y);
-        }
-
-        float alpha = Math.min(1, Math.max(0, (selector - min.max) / blendRange));
-        return blendTags(index0, index1, alpha);
-    }
-
-    protected List<?> blendTags(int index0, int index1, float alpha) {
-        return getTags();
     }
 
     private static class Node {

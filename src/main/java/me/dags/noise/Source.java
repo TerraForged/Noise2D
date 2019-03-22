@@ -1,103 +1,124 @@
 package me.dags.noise;
 
-import java.util.concurrent.ThreadLocalRandom;
 import me.dags.noise.func.CellFunc;
 import me.dags.noise.func.EdgeFunc;
 import me.dags.noise.source.Builder;
 import me.dags.noise.source.Constant;
 
-/**
- * @author dags <dags@dags.me>
- *
- * Source modules are expected to return values between 0 and 1.0
- */
-public interface Source extends Module {
+import java.util.concurrent.ThreadLocalRandom;
 
-    Source ONE = Source.constant(1);
+public final class Source {
 
-    Source ZERO = Source.constant(0);
+    public static final Module ONE = Source.constant(1);
+    public static final Module ZERO = Source.constant(0);
+    public static final Module HALF = Source.constant(0.5);
 
-    Source HALF = Source.constant(0.5);
+    private Source() {
 
-    Builder toBuilder();
+    }
 
-    static Builder builder() {
+    public static Builder builder() {
         return new Builder();
     }
 
-    static Source perlin(int scale, int octaves) {
+    public static Builder build(int scale, int octaves) {
+        return build(ThreadLocalRandom.current().nextInt(), scale, octaves);
+    }
+
+    public static Builder build(int seed, int scale, int octaves) {
+        return builder().seed(seed).scale(scale).octaves(octaves);
+    }
+
+    public static Module perlin(int scale, int octaves) {
         return perlin(ThreadLocalRandom.current().nextInt(), scale, octaves);
     }
 
-    static Source perlin(int seed, int scale, int octaves) {
+    public static Module perlin(int seed, int scale, int octaves) {
         return Source.builder().seed(seed).scale(scale).octaves(octaves).perlin();
     }
 
-    static Source billow(int scale, int octaves) {
+    public static Module simplex(int scale, int octaves) {
+        return simplex(ThreadLocalRandom.current().nextInt(), scale, octaves);
+    }
+
+    public static Module simplex(int seed, int scale, int octaves) {
+        return Source.builder().seed(seed).scale(scale).octaves(octaves).simplex();
+    }
+
+    public static Module billow(int scale, int octaves) {
         return billow(ThreadLocalRandom.current().nextInt(), scale, octaves);
     }
 
-    static Source billow(int seed, int scale, int octaves) {
+    public static Module billow(int seed, int scale, int octaves) {
         return Source.builder().seed(seed).scale(scale).octaves(octaves).billow();
     }
 
-    static Source ridge(int scale, int octaves) {
+    public static Module ridge(int scale, int octaves) {
         return ridge(ThreadLocalRandom.current().nextInt(), scale, octaves);
     }
 
-    static Source ridge(int seed, int scale, int octaves) {
+    public static Module ridge(int seed, int scale, int octaves) {
         return Source.builder().seed(seed).scale(scale).octaves(octaves).ridge();
     }
 
-    static Source cubic(int scale, int octaves) {
+    public static Module cubic(int scale, int octaves) {
         return cubic(ThreadLocalRandom.current().nextInt(), scale, octaves);
     }
 
-    static Source cubic(int seed, int scale, int octaves) {
+    public static Module cubic(int seed, int scale, int octaves) {
         return Source.builder().seed(seed).scale(scale).octaves(octaves).cubic();
     }
 
-    static Source cell(int scale) {
+    public static Module cell(int scale) {
         return cell(ThreadLocalRandom.current().nextInt(), scale);
     }
 
-    static Source cell(int scale, CellFunc cellFunc) {
+    public static Module cell(int scale, CellFunc cellFunc) {
         return cell(ThreadLocalRandom.current().nextInt(), scale, cellFunc);
     }
 
-    static Source cell(int seed, int scale) {
+    public static Module cell(int seed, int scale) {
         return Source.cell(seed, scale, CellFunc.CELL_VALUE);
     }
 
-    static Source cell(int seed, int scale, CellFunc cellFunc) {
+    public static Module cell(int seed, int scale, CellFunc cellFunc) {
         return Source.builder().seed(seed).scale(scale).cellFunc(cellFunc).cell();
     }
 
-    static Source cellNoise(int scale, Module source) {
+    public static Module cellNoise(int scale, Module source) {
         return cellNoise(ThreadLocalRandom.current().nextInt(), scale, source);
     }
 
-    static Source cellNoise(int seed, int scale, Module source) {
+    public static Module cellNoise(int seed, int scale, Module source) {
         return builder().seed(seed).scale(scale).cellFunc(CellFunc.NOISE_LOOKUP).source(source).cell();
     }
 
-    static Source cellEdge(int scale) {
+    public static Module cellEdge(int scale) {
         return cellEdge(ThreadLocalRandom.current().nextInt(), scale);
     }
 
-    static Source cellEdge(int scale, EdgeFunc func) {
+    public static Module cellEdge(int scale, EdgeFunc func) {
         return cellEdge(ThreadLocalRandom.current().nextInt(), scale, func);
     }
 
-    static Source cellEdge(int seed, int scale) {
+    public static Module cellEdge(int seed, int scale) {
         return Source.builder().seed(seed).scale(scale).cellEdge();
     }
 
-    static Source cellEdge(int seed, int scale, EdgeFunc func) {
+    public static Module cellEdge(int seed, int scale, EdgeFunc func) {
         return Source.builder().seed(seed).scale(scale).edgeFunc(func).cellEdge();
     }
 
-    static Source constant(double value) {
+    public static Module constant(double value) {
+        if (value == 0) {
+            return ZERO;
+        }
+        if (value == 0.5) {
+            return HALF;
+        }
+        if (value == 1) {
+            return ONE;
+        }
         return new Constant((float) value);
     }
 }

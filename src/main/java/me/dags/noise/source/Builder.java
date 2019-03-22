@@ -1,7 +1,5 @@
 package me.dags.noise.source;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import me.dags.noise.Module;
 import me.dags.noise.Source;
 import me.dags.noise.func.CellFunc;
@@ -9,33 +7,38 @@ import me.dags.noise.func.DistanceFunc;
 import me.dags.noise.func.EdgeFunc;
 import me.dags.noise.func.Interpolation;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * @author dags <dags@dags.me>
  */
 public class Builder {
 
-    public static final int SEED = 1337;
-    public static final int OCTAVES = 3;
-    public static final float GAIN = 0.5F;
-    public static final float LACUNARITY = 2F;
-    public static final float FREQUENCY = 0.01F;
-    public static final CellFunc CELL_FUNC = CellFunc.CELL_VALUE;
-    public static final EdgeFunc EDGE_FUNC = EdgeFunc.DISTANCE_2;
-    public static final DistanceFunc DIST_FUNC = DistanceFunc.EUCLIDEAN;
-    public static final Interpolation INTERP = Interpolation.CURVE3;
+    public static final int DEFAULT_SEED = 1337;
+    public static final int DEFAULT_OCTAVES = 3;
+    public static final float DEFAULT_GAIN = 0.5F;
+    public static final float DEFAULT_RIDGE_GAIN = 0.975F;
+    public static final float DEFAULT_LACUNARITY = 2F;
+    public static final float DEFAULT_FREQUENCY = 0.01F;
+    public static final CellFunc DEFAULT_CELL_FUNC = CellFunc.CELL_VALUE;
+    public static final EdgeFunc DEFAULT_EDGE_FUNC = EdgeFunc.DISTANCE_2;
+    public static final DistanceFunc DEFAULT_DIST_FUNC = DistanceFunc.EUCLIDEAN;
+    public static Interpolation DEFAULT_INTERPOLATION = Interpolation.CURVE3;
 
-    private int seed = SEED;
-    private int octaves = OCTAVES;
-    private float gain = GAIN;
-    private float lacunarity = LACUNARITY;
-    private float frequency = FREQUENCY;
+    private int seed = DEFAULT_SEED;
+    private int octaves = DEFAULT_OCTAVES;
+    private float gain = Float.MAX_VALUE;
+    private float lacunarity = DEFAULT_LACUNARITY;
+    private float frequency = DEFAULT_FREQUENCY;
     private Module source = Source.ZERO;
-    private CellFunc cellFunc = CELL_FUNC;
-    private EdgeFunc edgeFunc = EDGE_FUNC;
-    private DistanceFunc distFunc = DIST_FUNC;
-    private Interpolation interpolation = INTERP;
+    private CellFunc cellFunc = DEFAULT_CELL_FUNC;
+    private EdgeFunc edgeFunc = DEFAULT_EDGE_FUNC;
+    private DistanceFunc distFunc = DEFAULT_DIST_FUNC;
+    private Interpolation interpolation = DEFAULT_INTERPOLATION;
 
-    public Builder() {}
+    public Builder() {
+    }
 
     public int getSeed() {
         return seed;
@@ -46,6 +49,9 @@ public class Builder {
     }
 
     public float getGain() {
+        if (gain == Float.MAX_VALUE) {
+            gain = DEFAULT_GAIN;
+        }
         return gain;
     }
 
@@ -132,33 +138,40 @@ public class Builder {
         return this;
     }
 
-    public Source perlin() {
+    public Module perlin() {
         return new FastPerlin(this);
     }
 
-    public Source ridge() {
-        return new FlowRidge(this);
+    public Module simplex() {
+        return new FastSimplex(this);
     }
 
-    public Source billow() {
+    public Module ridge() {
+        if (gain == Float.MAX_VALUE) {
+            gain = DEFAULT_RIDGE_GAIN;
+        }
+        return new FastRidge(this);
+    }
+
+    public Module billow() {
         return new FastBillow(this);
     }
 
-    public Source cubic() {
+    public Module cubic() {
         return new FastCubic(this);
     }
 
-    public Source cell() {
+    public Module cell() {
         return new FastCell(this);
     }
 
-    public Source cellEdge() {
+    public Module cellEdge() {
         return new FastCellEdge(this);
     }
 
-    public Source build(Class<? extends Source> type) {
+    public Module build(Class<? extends Module> type) {
         try {
-            Constructor<? extends Source> constructor = type.getConstructor(Builder.class);
+            Constructor<? extends Module> constructor = type.getConstructor(Builder.class);
             return constructor.newInstance(this);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             e.printStackTrace();

@@ -7,37 +7,39 @@ import me.dags.noise.Module;
  */
 public class Map extends Modifier {
 
+    private final Module min;
+    private final Module max;
     private final float sourceRange;
-    private final float outMin;
-    private final float outMax;
-    private final float outRange;
 
-    public Map(Module source, float min1, float max1) {
+    public Map(Module source, Module min, Module max) {
         super(source);
-        this.outMin = min1;
-        this.outMax = max1;
-        this.outRange = max1 - min1;
+        this.min = min;
+        this.max = max;
         this.sourceRange = source.maxValue() - source.minValue();
     }
 
     @Override
     public float minValue() {
-        return outMin;
+        return min.minValue();
     }
 
     @Override
     public float maxValue() {
-        return outMax;
+        return max.maxValue();
     }
 
     @Override
     public float modify(float x, float y, float noiseValue) {
+        float min = this.min.getValue(x, y);
+        float max = this.max.getValue(x, y);
+        float range = max - min;
+
         if (source.maxValue() != source.minValue()) {
             noiseValue = Math.min(source.maxValue(), Math.max(source.minValue(), noiseValue));
             noiseValue = (noiseValue - source.minValue()) / sourceRange;
-            return (noiseValue - outMin) / outRange;
+            return (noiseValue - min) / range;
         } else {
-            return Math.min(outMax, Math.max(outMin, noiseValue));
+            return Math.min(max, Math.max(min, noiseValue));
         }
     }
 }

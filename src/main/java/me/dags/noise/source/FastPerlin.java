@@ -1,6 +1,5 @@
 package me.dags.noise.source;
 
-import me.dags.noise.func.Interpolation;
 import me.dags.noise.util.Noise;
 import me.dags.noise.util.NoiseUtil;
 
@@ -9,16 +8,14 @@ import me.dags.noise.util.NoiseUtil;
  */
 public class FastPerlin extends FastSource {
 
-    protected final Interpolation interpolation;
     protected final float min;
     protected final float max;
     protected final float range;
 
     public FastPerlin(Builder builder) {
         super(builder);
-        interpolation = builder.getInterp();
-        min = calculateBound(minSignal(), builder.getOctaves(), builder.getGain());
-        max = calculateBound(maxSignal(), builder.getOctaves(), builder.getGain());
+        min = min(builder.getOctaves(), builder.getGain());
+        max = max(builder.getOctaves(), builder.getGain());
         range = Math.abs(max - min);
     }
 
@@ -27,40 +24,38 @@ public class FastPerlin extends FastSource {
         x *= frequency;
         y *= frequency;
 
-        float amp = 1;
-        float sum = Noise.singlePerlin(x, y, seed, interpolation);
+        float sum = 0;
+        float amp = gain;
 
-        for (int i = 1; i < octaves; i++) {
-            amp *= gain;
+        for (int i = 0; i < octaves; i++) {
+            sum += Noise.singlePerlin(x, y, seed + i, interpolation) * amp;
             x *= lacunarity;
             y *= lacunarity;
-            sum += Noise.singlePerlin(x, y, seed + i, interpolation) * amp;
+            amp *= gain;
         }
 
         return NoiseUtil.map(sum, min, max, range);
     }
 
-    @Override
-    public Builder toBuilder() {
-        return super.toBuilder()
-                .interp(interpolation);
+    protected float min(int octaves, float gain) {
+        return -max(octaves, gain);
     }
 
-    protected float minSignal() {
-        return -0.775F;
-    }
-
-    protected float maxSignal() {
-        return 0.775F;
-    }
-
-    protected float calculateBound(float signal, int octaves, float gain) {
-        float amp = 1F;
-        float value = signal;
-        for (int i = 1; i < octaves; i++) {
+    protected float max(int octaves, float gain) {
+        float signal = signal(octaves);
+        float sum = 0;
+        float amp = gain;
+        for (int i = 0; i < octaves; i++) {
+            sum += signal * amp;
             amp *= gain;
-            value += signal * amp;
         }
-        return value;
+        return sum;
     }
+
+    protected static float signal(int octaves) {
+        int index = Math.min(octaves, signals.length - 1);
+        return signals[index];
+    }
+
+    private static final float[] signals = {1F, 0.900F, 0.825F, 0.750F, 0.628F, 0.614F, 0.604F};
 }

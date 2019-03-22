@@ -36,15 +36,7 @@ public class FastCell extends FastSource {
         return NoiseUtil.map(value, min, max, range);
     }
 
-    @Override
-    public Builder toBuilder() {
-        return super.toBuilder()
-                .source(lookup)
-                .cellFunc(cellFunc)
-                .distFunc(distFunc);
-    }
-
-    private static float min(CellFunc func, Module lookup) {
+    static float min(CellFunc func, Module lookup) {
         if (func == CellFunc.NOISE_LOOKUP) {
             return lookup.minValue();
         }
@@ -54,7 +46,7 @@ public class FastCell extends FastSource {
         return -1;
     }
 
-    private static float max(CellFunc func, Module lookup) {
+    static float max(CellFunc func, Module lookup) {
         if (func == CellFunc.NOISE_LOOKUP) {
             return lookup.maxValue();
         }

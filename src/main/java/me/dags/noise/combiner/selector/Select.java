@@ -1,6 +1,5 @@
 package me.dags.noise.combiner.selector;
 
-import java.util.List;
 import me.dags.noise.Module;
 import me.dags.noise.func.Interpolation;
 
@@ -8,8 +7,6 @@ import me.dags.noise.func.Interpolation;
  * @author dags <dags@dags.me>
  */
 public class Select extends Selector {
-
-    public static final Interpolation INTERPOLATION = Interpolation.CURVE3;
 
     protected final Module control;
     protected final Module source0;
@@ -75,39 +72,5 @@ public class Select extends Selector {
         }
 
         return source0.getValue(x, y);
-    }
-
-    @Override
-    public List<?> selectTags(float x, float y, float value) {
-        if (edgeFalloff == 0) {
-            if (value < lowerCurveMax) {
-                return source0.getTags(x, y);
-            }
-
-            if (value > upperCurveMin) {
-                return source1.getTags(x, y);
-            }
-
-            return source0.getTags(x, y);
-        }
-
-        if (value < lowerCurveMin) {
-            return source0.getTags(x, y);
-        }
-
-        // curve
-        if (value < lowerCurveMax) {
-            return getTags();
-        }
-
-        if (value < upperCurveMin) {
-            return source1.getTags(x, y);
-        }
-
-        if (value < upperCurveMax) {
-            return getTags();
-        }
-
-        return source0.getTags(x, y);
     }
 }

@@ -1,6 +1,5 @@
 package me.dags.noise.combiner.selector;
 
-import java.util.List;
 import me.dags.noise.Module;
 import me.dags.noise.func.Interpolation;
 
@@ -9,27 +8,25 @@ import me.dags.noise.func.Interpolation;
  */
 public class Base extends Selector {
 
-    private final Module lower;
-    private final Module upper;
+    private final Module base;
     protected final float min;
     protected final float max;
     protected final float maxValue;
     protected final float falloff;
 
-    public Base(Module lower, Module upper, float falloff, Interpolation interpolation) {
-        super(upper, new Module[]{lower, upper}, interpolation);
-        this.lower = lower;
-        this.upper = upper;
-        this.min = lower.maxValue();
-        this.max = lower.maxValue() + falloff;
+    public Base(Module base, Module source, float falloff, Interpolation interpolation) {
+        super(source, new Module[]{base, source}, interpolation);
+        this.base = base;
+        this.min = base.maxValue();
+        this.max = base.maxValue() + falloff;
         this.falloff = falloff;
-        this.maxValue = Math.max(lower.maxValue(), upper.maxValue());
+        this.maxValue = Math.max(base.maxValue(), source.maxValue());
     }
 
     @Override
     protected float selectValue(float x, float y, float upperValue) {
         if (upperValue < max) {
-            float lowerValue = lower.getValue(x, y);
+            float lowerValue = base.getValue(x, y);
             if (falloff > 0) {
                 float clamp = Math.max(min, upperValue);
                 float alpha = (max - clamp) / falloff;
@@ -41,19 +38,8 @@ public class Base extends Selector {
     }
 
     @Override
-    protected List<?> selectTags(float x, float y, float upperValue) {
-        if (upperValue < max) {
-            if (falloff > 0) {
-                return getTags();
-            }
-            return lower.getTags(x, y);
-        }
-        return upper.getTags(x, y);
-    }
-
-    @Override
     public float minValue() {
-        return lower.minValue();
+        return base.minValue();
     }
 
     @Override

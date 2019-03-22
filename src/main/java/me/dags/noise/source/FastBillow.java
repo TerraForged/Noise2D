@@ -31,12 +31,13 @@ public class FastBillow extends FastPerlin {
     }
 
     @Override
-    protected float minSignal() {
-        return 0F;
+    protected float min(int octaves, float gain) {
+        return 0;
     }
 
     @Override
-    protected float calculateBound(float signal, int octaves, float gain) {
+    protected float max(int octaves, float gain) {
+        float signal = signal(octaves);
         // min output when signal = 0.5 -> 0.5 * 2 - 1 = -1
         // max output when signal = 0.0 -> 0.0 * 2 - 1 =  0
         float amp = 1F;

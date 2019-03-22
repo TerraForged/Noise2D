@@ -7,15 +7,15 @@ import me.dags.noise.Module;
  */
 public class Scale extends Modifier {
 
-    private final float scale;
+    private final Module scale;
     private final float min;
     private final float max;
 
-    public Scale(Module source, float scale) {
+    public Scale(Module source, Module scale) {
         super(source);
         this.scale = scale;
-        this.min = source.minValue() * scale;
-        this.max = source.maxValue() * scale;
+        this.min = source.minValue() * scale.minValue();
+        this.max = source.maxValue() * scale.maxValue();
     }
 
     @Override
@@ -30,6 +30,6 @@ public class Scale extends Modifier {
 
     @Override
     public float modify(float x, float y, float noiseValue) {
-        return noiseValue * scale;
+        return noiseValue * scale.getValue(x, y);
     }
 }

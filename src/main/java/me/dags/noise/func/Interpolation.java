@@ -5,7 +5,7 @@ import me.dags.noise.util.NoiseUtil;
 /**
  * https://github.com/Auburns/FastNoise_Java
  */
-public enum Interpolation {
+public enum Interpolation implements CurveFunc {
     LINEAR {
         @Override
         public float apply(float f) {
@@ -15,13 +15,13 @@ public enum Interpolation {
     CURVE3 {
         @Override
         public float apply(float f) {
-            return NoiseUtil.InterpHermiteFunc(f);
+            return NoiseUtil.interpHermite(f);
         }
     },
     CURVE4 {
         @Override
         public float apply(float f) {
-            return NoiseUtil.InterpQuinticFunc(f);
+            return NoiseUtil.interpQuintic(f);
         }
     },;
 

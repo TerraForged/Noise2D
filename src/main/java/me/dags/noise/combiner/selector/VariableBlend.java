@@ -1,6 +1,5 @@
 package me.dags.noise.combiner.selector;
 
-import java.util.List;
 import me.dags.noise.Module;
 import me.dags.noise.func.Interpolation;
 
@@ -42,21 +41,5 @@ public class VariableBlend extends Selector {
 
         float alpha = (selector - min) / (max - min);
         return blendValues(source0.getValue(x, y), source1.getValue(x, y), alpha);
-    }
-
-    protected List<?> selectTags(float x, float y, float selector) {
-        float radius = minBlend + variator.getValue(x, y) * maxBlend;
-
-        float min = Math.max(0, midpoint - radius);
-        if (selector < min) {
-            return source0.getTags(x, y);
-        }
-
-        float max = Math.min(1, midpoint + radius);
-        if (selector > max) {
-            return source1.getTags(x, y);
-        }
-
-        return getTags();
     }
 }

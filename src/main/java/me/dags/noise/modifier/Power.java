@@ -7,15 +7,15 @@ import me.dags.noise.Module;
  */
 public class Power extends Modifier {
 
-    private final float n;
+    private final Module n;
 
-    public Power(Module source, float n) {
+    public Power(Module source, Module n) {
         super(source);
         this.n = n;
     }
 
     @Override
     public float modify(float x, float y, float noiseValue) {
-        return (float) Math.pow(noiseValue, n);
+        return (float) Math.pow(noiseValue, n.getValue(x, y));
     }
 }

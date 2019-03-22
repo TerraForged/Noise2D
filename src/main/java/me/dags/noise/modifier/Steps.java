@@ -1,22 +1,21 @@
 package me.dags.noise.modifier;
 
 import me.dags.noise.Module;
+import me.dags.noise.util.NoiseUtil;
 
 /**
  * @author dags <dags@dags.me>
  */
 public class Steps extends Modifier {
 
-    private final float steps;
-    private final int maxIndex;
+    private final Module steps;
 
-    public Steps(Module source, int steps) {
+    public Steps(Module source, Module steps) {
         super(source.map(0, 1));
-        if (steps < 1) {
+        if (steps.minValue() < 1) {
             throw new IllegalArgumentException("steps cannot less than 1");
         }
         this.steps = steps;
-        this.maxIndex = steps - 1;
     }
 
     @Override
@@ -30,8 +29,8 @@ public class Steps extends Modifier {
 
     @Override
     public float modify(float x, float y, float value) {
-        value = (int) (value * steps);
-        value = Math.min(maxIndex, value);
+        float steps = this.steps.getValue(x, y);
+        value = NoiseUtil.round(value * steps);
         return value / steps;
     }
 }

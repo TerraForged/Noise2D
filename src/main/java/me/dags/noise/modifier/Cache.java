@@ -8,9 +8,7 @@ import me.dags.noise.Module;
 public class Cache implements Module {
 
     private final Module source;
-    private float x = 0;
-    private float y = 0;
-    private float value = 0;
+    private final ThreadLocal<Value> value = ThreadLocal.withInitial(Value::new);
 
     public Cache(Module source) {
         this.source = source;
@@ -29,11 +27,30 @@ public class Cache implements Module {
 
     @Override
     public float getValue(float x, float y) {
-        if (x != this.x || y != this.y) {
+        Value value = this.value.get();
+        if (value.matches(x, y)) {
+            return value.value;
+        }
+        return value.set(x, y, source.getValue(x, y));
+    }
+
+    private static class Value {
+
+        private boolean set = false;
+        private float x = 0;
+        private float y = 0;
+        private float value = 0;
+
+        private boolean matches(float x, float y) {
+            return set && x == this.x && y == this.y;
+        }
+
+        private float set(float x, float y, float value) {
             this.x = x;
             this.y = y;
-            this.value = source.getValue(x, y);
+            this.value = value;
+            this.set = true;
+            return value;
         }
-        return value;
     }
 }

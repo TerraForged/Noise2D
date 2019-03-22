@@ -7,7 +7,7 @@ import me.dags.noise.util.NoiseUtil;
 /**
  * @author dags <dags@dags.me>
  */
-public class FlowRidge extends FastSource {
+public class FastRidge extends FastSource {
 
     private static final int RIDGED_MAX_OCTAVE = 30;
 
@@ -17,7 +17,7 @@ public class FlowRidge extends FastSource {
     private final float max;
     private final float range;
 
-    public FlowRidge(Builder builder) {
+    public FastRidge(Builder builder) {
         super(builder);
         this.interpolation = builder.getInterp();
         this.spectralWeights = new float[RIDGED_MAX_OCTAVE];
@@ -29,7 +29,7 @@ public class FlowRidge extends FastSource {
             frequency *= lacunarity;
         }
 
-        min = calculateBound(0.5F, builder.getOctaves(), builder.getGain());
+        min = 0;
         max = calculateBound(0.0F, builder.getOctaves(), builder.getGain());
         range = Math.abs(max - min);
     }
@@ -44,22 +44,26 @@ public class FlowRidge extends FastSource {
         float weight = 1.0F;
 
         float offset = 1.0F;
-        float gain = 2.0F;
+        float amp = 2.0F;
 
-        for (int curOctave = 0; curOctave < octaves; curOctave++) {
-            signal = Noise.singlePerlin(x, y, seed + curOctave, interpolation);
+        for (int octave = 0; octave < octaves; octave++) {
+            signal = Noise.singlePerlin(x, y, seed + octave, interpolation);
             signal = Math.abs(signal);
             signal = offset - signal;
             signal *= signal;
+
             signal *= weight;
-
-            weight = signal * gain;
+            weight = signal * amp;
             weight = Math.min(1F, Math.max(0F, weight));
-
-            value += (signal * spectralWeights[curOctave]);
+            value += (signal * spectralWeights[octave]);
 
             x *= lacunarity;
             y *= lacunarity;
+            amp *= gain;
+        }
+
+        if (value <= min) {
+            System.out.println("!");
         }
 
         return NoiseUtil.map(value, min, max, range);
@@ -78,11 +82,10 @@ public class FlowRidge extends FastSource {
             noise = offset - noise;
             noise *= noise;
             noise *= weight;
-
             weight = noise * amp;
             weight = Math.min(1F, Math.max(0F, weight));
-
             value += (noise * spectralWeights[curOctave]);
+            amp *= gain;
         }
 
         return value;
