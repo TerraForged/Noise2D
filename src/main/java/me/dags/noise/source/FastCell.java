@@ -32,7 +32,7 @@ public class FastCell extends FastSource {
     public float getValue(float x, float y) {
         x *= frequency;
         y *= frequency;
-        float value = Noise.singleCellular(x, y, seed, cellFunc, distFunc, lookup);
+        float value = Noise.cell(x, y, seed, cellFunc, distFunc, lookup);
         return NoiseUtil.map(value, min, max, range);
     }
 

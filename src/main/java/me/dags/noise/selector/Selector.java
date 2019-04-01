@@ -1,4 +1,4 @@
-package me.dags.noise.combiner.selector;
+package me.dags.noise.selector;
 
 import me.dags.noise.Module;
 import me.dags.noise.combiner.Combiner;

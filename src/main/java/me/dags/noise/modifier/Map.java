@@ -29,17 +29,15 @@ public class Map extends Modifier {
     }
 
     @Override
-    public float modify(float x, float y, float noiseValue) {
+    public float modify(float x, float y, float value) {
         float min = this.min.getValue(x, y);
         float max = this.max.getValue(x, y);
-        float range = max - min;
-
         if (source.maxValue() != source.minValue()) {
-            noiseValue = Math.min(source.maxValue(), Math.max(source.minValue(), noiseValue));
-            noiseValue = (noiseValue - source.minValue()) / sourceRange;
-            return (noiseValue - min) / range;
+            value = Math.min(source.maxValue(), Math.max(source.minValue(), value));
+            value = (value - source.minValue()) / sourceRange;
+            return (value - min) / (max - min);
         } else {
-            return Math.min(max, Math.max(min, noiseValue));
+            return Math.min(max, Math.max(min, value));
         }
     }
 }

@@ -111,6 +111,34 @@ public class Noise {
                 * NoiseUtil.CUBIC_2D_BOUNDING;
     }
 
+    public static float cell(float x, float y, int seed, CellFunc cellFunc, DistanceFunc distanceFunc, Module lookup) {
+        int xr = NoiseUtil.round(x);
+        int yr = NoiseUtil.round(y);
+
+        int cellX = 0;
+        int cellY = 0;
+        float distance = Float.MAX_VALUE;
+
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                int xi = xr + dx;
+                int yi = yr + dy;
+                Vec2f vec = NoiseUtil.CELL_2D[NoiseUtil.hash2D(seed, xi, yi) & 255];
+
+                float vecX = xi - x + vec.x;
+                float vecY = yi - y + vec.y;
+                float newDistance = distanceFunc.apply(vecX, vecY);
+                if (newDistance < distance) {
+                    distance = newDistance;
+                    cellX = xi;
+                    cellY = yi;
+                }
+            }
+        }
+
+        return cellFunc.apply(cellX, cellY, distance, seed, lookup);
+    }
+
     public static float singleCellular(float x, float y, int seed, CellFunc cellFunc, DistanceFunc distanceFunc, Module lookup) {
         int xr = NoiseUtil.round(x);
         int yr = NoiseUtil.round(y);
@@ -119,8 +147,8 @@ public class Noise {
         int cellY = 0;
         float distance = Float.MAX_VALUE;
 
-        for (int dy = -1; dy < 2; dy++) {
-            for (int dx = -1; dx < 2; dx++) {
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
                 int xi = xr + dx;
                 int yi = yr + dy;
                 Vec2f vec = NoiseUtil.CELL_2D[NoiseUtil.hash2D(seed, xi, yi) & 255];

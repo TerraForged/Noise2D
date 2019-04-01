@@ -1,12 +1,8 @@
 package me.dags.noise;
 
-public interface NoiseFunc {
+public interface Noise2D {
 
     float getValue(float x, float y);
-
-    default void apply(float x, float y, Value value) {
-        value.value = getValue(x, y);
-    }
 
     default float maxValue() {
         return 1;

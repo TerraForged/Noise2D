@@ -9,9 +9,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public final class Source {
 
-    public static final Module ONE = Source.constant(1);
-    public static final Module ZERO = Source.constant(0);
-    public static final Module HALF = Source.constant(0.5);
+    public static final Module ONE = new Constant(1F);
+    public static final Module ZERO = new Constant(0F);
+    public static final Module HALF = new Constant(0.5F);
 
     private Source() {
 

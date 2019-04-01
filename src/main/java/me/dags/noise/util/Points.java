@@ -6,15 +6,12 @@ import java.util.Random;
 
 public class Points {
 
-    private static final float SQRT2 = (float) Math.sqrt(2);
-    private static final float PI2 = (float) (Math.PI * 2F);
-
     public static List<Vec2f> poisson(int seedX, int seedZ, int width, int height, float radius, int samples) {
         return poisson(new Random(NoiseUtil.seed(seedX, seedZ)), width, height, radius, samples);
     }
 
     public static List<Vec2f> poisson(Random random, int width, int height, float radius, int samples) {
-        float cellSize = radius / SQRT2;
+        float cellSize = radius / NoiseUtil.SQRT2;
         float maxDistance = radius * 2F;
         int w = (int) Math.ceil(width / cellSize);
         int h = (int) Math.ceil(height / cellSize);
@@ -30,7 +27,7 @@ public class Points {
             boolean valid = false;
 
             for (int i = 0; i < samples; i++) {
-                float angle = random.nextFloat() * PI2;
+                float angle = random.nextFloat() * NoiseUtil.PI2;
                 float distance = radius + (random.nextFloat() * maxDistance);
                 float x = spawn.x + NoiseUtil.sin(angle) * distance;
                 float z = spawn.y + NoiseUtil.cos(angle) * distance;

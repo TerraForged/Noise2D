@@ -1,16 +1,18 @@
 package me.dags.noise;
 
 import me.dags.noise.combiner.*;
-import me.dags.noise.combiner.selector.*;
+import me.dags.noise.func.CurveFunc;
 import me.dags.noise.func.Interpolation;
 import me.dags.noise.modifier.*;
+import me.dags.noise.selector.*;
 import me.dags.noise.source.FastPerlin;
 import me.dags.noise.source.FastSource;
+import me.dags.noise.util.NoiseUtil;
 
 /**
  * @author dags <dags@dags.me>
  */
-public interface Module extends NoiseFunc {
+public interface Module extends Noise2D {
 
     default Module abs() {
         if (this instanceof Abs) {
@@ -21,6 +23,17 @@ public interface Module extends NoiseFunc {
 
     default Module add(Module other) {
         return new Add(this, other);
+    }
+
+    default Module alpha(double alpha) {
+        return alpha(Source.constant(alpha));
+    }
+
+    default Module alpha(Module alpha) {
+        if (alpha.minValue() < 0 || alpha.maxValue() > 1) {
+            return this;
+        }
+        return new Alpha(this, alpha);
     }
 
     default Module base(Module other, double falloff, Interpolation interpolation) {
@@ -36,6 +49,10 @@ public interface Module extends NoiseFunc {
 
     default Module bias(double bias) {
         return bias(Source.constant(bias));
+    }
+
+    default Module blend(Module source0, Module source1, double midpoint, double blendRange) {
+        return blend(source0, source1, midpoint, blendRange, Interpolation.LINEAR);
     }
 
     default Module blend(Module source0, Module source1, double midpoint, double blendRange, Interpolation interpolation) {
@@ -64,6 +81,21 @@ public interface Module extends NoiseFunc {
         return clamp(Source.constant(min), Source.constant(max));
     }
 
+    default Module curve(CurveFunc func) {
+        return new Curve(this, func);
+    }
+
+    default Module curve(double mid, double steepness) {
+        return new Curve(this, new CurveFunc() {
+            private final float m = (float) mid;
+            private final float s = (float) steepness;
+            @Override
+            public float apply(float value) {
+                return NoiseUtil.curve(value, m, s);
+            }
+        });
+    }
+
     default Module invert() {
         return new Invert(this);
     }
@@ -87,12 +119,19 @@ public interface Module extends NoiseFunc {
         return new Min(this, other);
     }
 
-    default Modifier mod(Module direction, Module power) {
-        return new Modulate(this, direction, power);
+    default Module mod(Module direction, Module strength) {
+        return new Modulate(this, direction, strength);
     }
 
     default Module mult(Module other) {
+        if (other.minValue() == 1F && other.maxValue() == 1F) {
+            return this;
+        }
         return new Multiply(this, other);
+    }
+
+    default Module multiBlend(double blend, Module... sources) {
+        return new MultiBlend((float) blend, Interpolation.LINEAR, this, sources);
     }
 
     default Module multiBlend(double blend, Interpolation interpolation, Module... sources) {
@@ -100,6 +139,12 @@ public interface Module extends NoiseFunc {
     }
 
     default Module pow(Module n) {
+        if (n.minValue() == 0 && n.maxValue() == 0) {
+            return Source.ONE;
+        }
+        if (n.minValue() == 1 && n.maxValue() == 1) {
+            return this;
+        }
         return new Power(this, n);
     }
 
@@ -118,6 +163,10 @@ public interface Module extends NoiseFunc {
         return scale(Source.constant(scale));
     }
 
+    default Module select(Module source0, Module source1, double lowerBound, double upperBound, double falloff) {
+        return select(source0, source1, lowerBound, upperBound, falloff, Interpolation.CURVE3);
+    }
+
     default Module select(Module source0, Module source1, double lowerBound, double upperBound, double falloff, Interpolation interpolation) {
         return new Select(this, source0, source1, (float) lowerBound, (float) upperBound, (float) falloff, interpolation);
     }
@@ -132,6 +181,10 @@ public interface Module extends NoiseFunc {
 
     default Module sub(Module other) {
         return new Sub(this, other);
+    }
+
+    default Module warp(Module warpX, Module warpZ, double power) {
+        return warp(warpX, warpZ, Source.constant(power));
     }
 
     default Module warp(Module warpX, Module warpZ, Module power) {
