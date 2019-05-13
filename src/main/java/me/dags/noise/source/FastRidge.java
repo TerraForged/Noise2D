@@ -61,11 +61,6 @@ public class FastRidge extends FastSource {
             y *= lacunarity;
             amp *= gain;
         }
-
-        if (value <= min) {
-            System.out.println("!");
-        }
-
         return NoiseUtil.map(value, min, max, range);
     }
 

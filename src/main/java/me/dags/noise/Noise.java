@@ -1,6 +1,6 @@
 package me.dags.noise;
 
-public interface Noise2D {
+public interface Noise {
 
     float getValue(float x, float y);
 

@@ -58,13 +58,17 @@ public class NoiseUtil {
     private static final float[] SIN;
 
     public static float map(float value, float min, float max, float range) {
-        if (value <= min) {
+        if (value < min) {
             return min;
         }
-        if (value >= max) {
+        if (value > max) {
             return max;
         }
-        return (value - min) / range;
+        float dif = value - min;
+        if (dif > range) {
+            return 1F;
+        }
+        return dif / range;
     }
 
     public static float dot(float x0, float y0, float x1, float y1) {

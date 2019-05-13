@@ -12,7 +12,7 @@ import me.dags.noise.util.NoiseUtil;
 /**
  * @author dags <dags@dags.me>
  */
-public interface Module extends Noise2D {
+public interface Module extends Noise {
 
     default Module abs() {
         if (this instanceof Abs) {
@@ -34,6 +34,10 @@ public interface Module extends Noise2D {
             return this;
         }
         return new Alpha(this, alpha);
+    }
+
+    default Module base(Module other, double falloff) {
+        return base(other, falloff, Interpolation.CURVE3);
     }
 
     default Module base(Module other, double falloff, Interpolation interpolation) {
@@ -96,6 +100,10 @@ public interface Module extends Noise2D {
         });
     }
 
+    default Module curve(Module mid, Module steepness) {
+        return new VariableCurve(this, mid, steepness);
+    }
+
     default Module invert() {
         return new Invert(this);
     }
@@ -130,11 +138,11 @@ public interface Module extends Noise2D {
         return new Multiply(this, other);
     }
 
-    default Module multiBlend(double blend, Module... sources) {
-        return new MultiBlend((float) blend, Interpolation.LINEAR, this, sources);
+    default Module blend(double blend, Module... sources) {
+        return blend(blend, Interpolation.LINEAR, sources);
     }
 
-    default Module multiBlend(double blend, Interpolation interpolation, Module... sources) {
+    default Module blend(double blend, Interpolation interpolation, Module... sources) {
         return new MultiBlend((float) blend, interpolation, this, sources);
     }
 
@@ -163,12 +171,12 @@ public interface Module extends Noise2D {
         return scale(Source.constant(scale));
     }
 
-    default Module select(Module source0, Module source1, double lowerBound, double upperBound, double falloff) {
-        return select(source0, source1, lowerBound, upperBound, falloff, Interpolation.CURVE3);
+    default Module select(Module lower, Module upper, double lowerBound, double upperBound, double falloff) {
+        return select(lower, upper, lowerBound, upperBound, falloff, Interpolation.CURVE3);
     }
 
-    default Module select(Module source0, Module source1, double lowerBound, double upperBound, double falloff, Interpolation interpolation) {
-        return new Select(this, source0, source1, (float) lowerBound, (float) upperBound, (float) falloff, interpolation);
+    default Module select(Module lower, Module upper, double lowerBound, double upperBound, double falloff, Interpolation interpolation) {
+        return new Select(this, lower, upper, (float) lowerBound, (float) upperBound, (float) falloff, interpolation);
     }
 
     default Module steps(Module steps) {

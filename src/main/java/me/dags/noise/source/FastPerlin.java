@@ -8,6 +8,7 @@ import me.dags.noise.util.NoiseUtil;
  */
 public class FastPerlin extends FastSource {
 
+    private static final float[] signals = {1F, 0.900F, 0.83F, 0.75F, 0.64F, 0.62F, 0.61F};
     protected final float min;
     protected final float max;
     protected final float range;
@@ -52,10 +53,8 @@ public class FastPerlin extends FastSource {
         return sum;
     }
 
-    protected static float signal(int octaves) {
+    private static float signal(int octaves) {
         int index = Math.min(octaves, signals.length - 1);
         return signals[index];
     }
-
-    private static final float[] signals = {1F, 0.900F, 0.825F, 0.750F, 0.628F, 0.614F, 0.604F};
 }
