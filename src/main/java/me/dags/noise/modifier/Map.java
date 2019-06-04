@@ -30,14 +30,17 @@ public class Map extends Modifier {
 
     @Override
     public float modify(float x, float y, float value) {
+        float alpha = (value - source.minValue()) / sourceRange;
         float min = this.min.getValue(x, y);
         float max = this.max.getValue(x, y);
-        if (source.maxValue() != source.minValue()) {
-            value = Math.min(source.maxValue(), Math.max(source.minValue(), value));
-            value = (value - source.minValue()) / sourceRange;
-            return (value - min) / (max - min);
-        } else {
-            return Math.min(max, Math.max(min, value));
-        }
+        return min + (alpha * (max - min));
+
+//        if (source.maxValue() != source.minValue()) {
+//            value = Math.min(source.maxValue(), Math.max(source.minValue(), value));
+//            value = (value - source.minValue()) / sourceRange;
+//            return (value - min) / (max - min);
+//        } else {
+//            return Math.min(max, Math.max(min, value));
+//        }
     }
 }
