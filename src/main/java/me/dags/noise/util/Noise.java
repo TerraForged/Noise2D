@@ -156,7 +156,7 @@ public class Noise {
                 float vecX = xi - x + vec.x;
                 float vecY = yi - y + vec.y;
                 float newDistance = distanceFunc.apply(vecX, vecY);
-                if (newDistance < distance) {
+                if (newDistance <= distance) {
                     distance = newDistance;
                     cellX = xi;
                     cellY = yi;
