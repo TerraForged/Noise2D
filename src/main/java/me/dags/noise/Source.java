@@ -109,6 +109,10 @@ public final class Source {
         return Source.builder().seed(seed).scale(scale).edgeFunc(func).cellEdge();
     }
 
+    public static Module sin(int scale, Module source) {
+        return Source.builder().scale(scale).source(source).sin();
+    }
+
     public static Module constant(double value) {
         if (value == 0) {
             return ZERO;
