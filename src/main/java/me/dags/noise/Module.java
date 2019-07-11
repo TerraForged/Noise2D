@@ -105,6 +105,14 @@ public interface Module extends Noise {
         return new VariableCurve(this, mid, steepness);
     }
 
+    default Module grad(double lower, double upper, double strength) {
+        return grad(Source.constant(lower), Source.constant(upper), Source.constant(strength));
+    }
+
+    default Module grad(Module lower, Module upper, Module strength) {
+        return new Grad(this, lower, upper, strength);
+    }
+
     default Module invert() {
         return new Invert(this);
     }
@@ -190,6 +198,14 @@ public interface Module extends Noise {
 
     default Module sub(Module other) {
         return new Sub(this, other);
+    }
+
+    default Module terrace(double lowerCurve, double upperCurve, int steps, double blendRange) {
+        return terrace(Source.constant(lowerCurve), Source.constant(upperCurve), steps, blendRange);
+    }
+
+    default Module terrace(Module lowerCurve, Module upperCurve, int steps, double blendRange) {
+        return new Terrace(this, lowerCurve, upperCurve, steps, (float) blendRange);
     }
 
     default Module warp(Module warpX, Module warpZ, double power) {
