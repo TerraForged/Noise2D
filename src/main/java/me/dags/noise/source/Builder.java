@@ -169,6 +169,10 @@ public class Builder {
         return new FastCellEdge(this);
     }
 
+    public Module sin() {
+        return new FastSin(this);
+    }
+
     public Module build(Class<? extends Module> type) {
         try {
             Constructor<? extends Module> constructor = type.getConstructor(Builder.class);
