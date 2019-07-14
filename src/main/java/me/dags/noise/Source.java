@@ -1,6 +1,7 @@
 package me.dags.noise;
 
 import me.dags.noise.func.CellFunc;
+import me.dags.noise.func.DistanceFunc;
 import me.dags.noise.func.EdgeFunc;
 import me.dags.noise.source.Builder;
 import me.dags.noise.source.Constant;
@@ -81,8 +82,16 @@ public final class Source {
         return Source.cell(seed, scale, CellFunc.CELL_VALUE);
     }
 
+    public static Module cell(int seed, int scale, DistanceFunc distFunc) {
+        return Source.builder().seed(seed).scale(scale).distFunc(distFunc).cell();
+    }
+
     public static Module cell(int seed, int scale, CellFunc cellFunc) {
         return Source.builder().seed(seed).scale(scale).cellFunc(cellFunc).cell();
+    }
+
+    public static Module cell(int seed, int scale, DistanceFunc distFunc, CellFunc cellFunc) {
+        return Source.builder().seed(seed).scale(scale).distFunc(distFunc).cellFunc(cellFunc).cell();
     }
 
     public static Module cellNoise(int scale, Module source) {
@@ -91,6 +100,14 @@ public final class Source {
 
     public static Module cellNoise(int seed, int scale, Module source) {
         return builder().seed(seed).scale(scale).cellFunc(CellFunc.NOISE_LOOKUP).source(source).cell();
+    }
+
+    public static Module cellNoise(int seed, int scale, DistanceFunc distFunc, Module source) {
+        return builder().seed(seed).scale(scale)
+                .cellFunc(CellFunc.NOISE_LOOKUP)
+                .distFunc(distFunc)
+                .source(source)
+                .cell();
     }
 
     public static Module cellEdge(int scale) {
@@ -107,6 +124,10 @@ public final class Source {
 
     public static Module cellEdge(int seed, int scale, EdgeFunc func) {
         return Source.builder().seed(seed).scale(scale).edgeFunc(func).cellEdge();
+    }
+
+    public static Module cellEdge(int seed, int scale, DistanceFunc distFunc, EdgeFunc edgeFunc) {
+        return Source.builder().seed(seed).scale(scale).distFunc(distFunc).edgeFunc(edgeFunc).cellEdge();
     }
 
     public static Module sin(int scale, Module source) {
