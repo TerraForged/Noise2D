@@ -169,6 +169,10 @@ public interface Module extends Noise {
         return pow(Source.constant(n));
     }
 
+    default Module powCurve(double n) {
+        return new PowerCurve(this, (float) n);
+    }
+
     default Module scale(Module scale) {
         if (scale.minValue() == 1 && scale.maxValue() == 1) {
             return this;
