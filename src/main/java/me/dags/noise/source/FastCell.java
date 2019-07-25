@@ -33,7 +33,10 @@ public class FastCell extends FastSource {
         x *= frequency;
         y *= frequency;
         float value = Noise.cell(x, y, seed, cellFunc, distFunc, lookup);
-        return NoiseUtil.map(value, min, max, range);
+        if (cellFunc != CellFunc.NOISE_LOOKUP) {
+            return NoiseUtil.map(value, min, max, range);
+        }
+        return value;
     }
 
     static float min(CellFunc func, Module lookup) {

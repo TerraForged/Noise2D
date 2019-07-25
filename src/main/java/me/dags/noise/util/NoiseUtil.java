@@ -75,6 +75,10 @@ public class NoiseUtil {
         return x0 * x1 + y0 * y1;
     }
 
+    public static float div(int num, int denom) {
+        return (float) num / denom;
+    }
+
     public static int floor(float f) {
         return (f >= 0 ? (int) f : (int) f - 1);
     }

@@ -10,24 +10,23 @@ import me.dags.noise.util.Vec2f;
 public enum CellFunc {
     CELL_VALUE {
         @Override
-        public float apply(int xc, int yc, float distance, int seed, Module lookup) {
+        public float apply(int xc, int yc, float distance, int seed, Vec2f vec2f, Module lookup) {
             return NoiseUtil.valCoord2D(seed, xc, yc);
         }
     },
     NOISE_LOOKUP {
         @Override
-        public float apply(int xc, int yc, float distance, int seed, Module lookup) {
-            Vec2f vec = NoiseUtil.CELL_2D[NoiseUtil.hash2D(seed, xc, yc) & 255];
-            return lookup.getValue(xc + vec.x, yc + vec.y);
+        public float apply(int xc, int yc, float distance, int seed, Vec2f vec2f, Module lookup) {
+            return lookup.getValue(xc + vec2f.x, yc + vec2f.y);
         }
     },
     DISTANCE {
         @Override
-        public float apply(int xc, int yc, float distance, int seed, Module lookup) {
+        public float apply(int xc, int yc, float distance, int seed, Vec2f vec2f, Module lookup) {
             return distance - 1;
         }
     },
     ;
 
-    public abstract float apply(int xc, int yc, float distance, int seed, Module lookup);
+    public abstract float apply(int xc, int yc, float distance, int seed, Vec2f vec2f, Module lookup);
 }
