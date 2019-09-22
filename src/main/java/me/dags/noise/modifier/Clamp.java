@@ -35,6 +35,12 @@ public class Clamp extends Modifier {
     public float modify(float x, float y, float noiseValue) {
         float min = this.min.getValue(x, y);
         float max = this.max.getValue(x, y);
-        return Math.min(max, Math.max(min, noiseValue));
+        if (noiseValue < min) {
+            return min;
+        }
+        if (noiseValue > max) {
+            return max;
+        }
+        return noiseValue;
     }
 }

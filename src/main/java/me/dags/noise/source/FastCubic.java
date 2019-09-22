@@ -30,11 +30,10 @@ public class FastCubic extends FastSource {
     }
 
     @Override
-    public float getValue(float x, float y) {
+    public float getValue(float x, float y, int seed) {
         x *= frequency;
         y *= frequency;
 
-        int seed = this.seed;
         float sum = Noise.singleCubic(x, y, seed);
         float amp = 1;
         int i = 0;

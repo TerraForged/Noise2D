@@ -35,7 +35,7 @@ public class FastRidge extends FastSource {
     }
 
     @Override
-    public float getValue(float x, float y) {
+    public float getValue(float x, float y, int seed) {
         x *= frequency;
         y *= frequency;
 

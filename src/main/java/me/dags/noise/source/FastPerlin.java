@@ -38,6 +38,23 @@ public class FastPerlin extends FastSource {
         return NoiseUtil.map(sum, min, max, range);
     }
 
+    public float getValue(float x, float y, int seed) {
+        x *= frequency;
+        y *= frequency;
+
+        float sum = 0;
+        float amp = gain;
+
+        for (int i = 0; i < octaves; i++) {
+            sum += Noise.singlePerlin(x, y, seed + i, interpolation) * amp;
+            x *= lacunarity;
+            y *= lacunarity;
+            amp *= gain;
+        }
+
+        return NoiseUtil.map(sum, min, max, range);
+    }
+
     protected float min(int octaves, float gain) {
         return -max(octaves, gain);
     }

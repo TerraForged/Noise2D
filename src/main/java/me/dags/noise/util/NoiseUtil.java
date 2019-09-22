@@ -83,6 +83,11 @@ public class NoiseUtil {
         return (f >= 0 ? (int) f : (int) f - 1);
     }
 
+    public static  int toInt(float f) {
+        int i = Float.floatToRawIntBits(f);
+        return i ^ (i >> 16);
+    }
+
     public static int round(float f) {
         return (f >= 0) ? (int) (f + (float) 0.5) : (int) (f - (float) 0.5);
     }
@@ -123,6 +128,14 @@ public class NoiseUtil {
         x *= x;
         x *= x;
         return x;
+    }
+
+    public static int hash(int x, int y) {
+        int hash = x;
+        hash ^= Y_PRIME * y;
+        hash = hash * hash * hash * 60493;
+        hash = (hash >> 13) ^ hash;
+        return hash;
     }
 
     public static int hash2D(int seed, int x, int y) {

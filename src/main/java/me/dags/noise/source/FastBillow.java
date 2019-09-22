@@ -7,7 +7,7 @@ public class FastBillow extends FastRidge {
     }
 
     @Override
-    public float getValue(float x, float y) {
-        return 1 - super.getValue(x, y);
+    public float getValue(float x, float y, int seed) {
+        return 1 - super.getValue(x, y, seed);
     }
 }

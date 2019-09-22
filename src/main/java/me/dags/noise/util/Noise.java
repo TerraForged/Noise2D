@@ -164,4 +164,11 @@ public class Noise {
 
         return edgeFunc.apply(distance, distance2);
     }
+
+    public static float white(float x, float y, int seed) {
+        int xi = NoiseUtil.toInt(x);
+        int yi = NoiseUtil.toInt(y);
+        return NoiseUtil.valCoord2D(seed, xi, yi);
+    }
+
 }

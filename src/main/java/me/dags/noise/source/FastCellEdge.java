@@ -20,7 +20,7 @@ public class FastCellEdge extends FastSource {
     }
 
     @Override
-    public float getValue(float x, float y) {
+    public float getValue(float x, float y, int seed) {
         x *= frequency;
         y *= frequency;
         float value = Noise.cellEdge(x, y, seed, edgeFunc, distFunc);

@@ -25,4 +25,11 @@ public abstract class FastSource implements Module {
         this.frequency = builder.getFrequency();
         this.interpolation = builder.getInterp();
     }
+
+    @Override
+    public float getValue(float x, float y) {
+        return getValue(x, y, seed);
+    }
+
+    public abstract float getValue(float x, float y, int seed);
 }

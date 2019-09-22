@@ -13,7 +13,7 @@ public class FastSin extends FastSource {
     }
 
     @Override
-    public float getValue(float x, float y) {
+    public float getValue(float x, float y, int seed) {
         float a = alpha.getValue(x, y);
         x *= frequency;
         y *= frequency;

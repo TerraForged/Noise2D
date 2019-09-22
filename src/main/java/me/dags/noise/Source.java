@@ -34,6 +34,10 @@ public final class Source {
         return perlin(ThreadLocalRandom.current().nextInt(), scale, octaves);
     }
 
+    public static Module perlin(int seed, double freq, int octaves) {
+        return Source.builder().seed(seed).frequency(freq).octaves(octaves).perlin();
+    }
+
     public static Module perlin(int seed, int scale, int octaves) {
         return Source.builder().seed(seed).scale(scale).octaves(octaves).perlin();
     }

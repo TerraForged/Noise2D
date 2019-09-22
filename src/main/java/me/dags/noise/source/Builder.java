@@ -138,38 +138,38 @@ public class Builder {
         return this;
     }
 
-    public Module perlin() {
+    public FastSource perlin() {
         return new FastPerlin(this);
     }
 
-    public Module simplex() {
+    public FastSource simplex() {
         return new FastSimplex(this);
     }
 
-    public Module ridge() {
+    public FastSource ridge() {
         if (gain == Float.MAX_VALUE) {
             gain = DEFAULT_RIDGE_GAIN;
         }
         return new FastRidge(this);
     }
 
-    public Module billow() {
+    public FastSource billow() {
         return new FastBillow(this);
     }
 
-    public Module cubic() {
+    public FastSource cubic() {
         return new FastCubic(this);
     }
 
-    public Module cell() {
+    public FastSource cell() {
         return new FastCell(this);
     }
 
-    public Module cellEdge() {
+    public FastSource cellEdge() {
         return new FastCellEdge(this);
     }
 
-    public Module sin() {
+    public FastSource sin() {
         return new FastSin(this);
     }
 
