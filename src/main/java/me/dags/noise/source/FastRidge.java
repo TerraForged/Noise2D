@@ -54,7 +54,7 @@ public class FastRidge extends FastSource {
 
             signal *= weight;
             weight = signal * amp;
-            weight = Math.min(1F, Math.max(0F, weight));
+            weight = NoiseUtil.clamp(weight, 0, 1);
             value += (signal * spectralWeights[octave]);
 
             x *= lacunarity;

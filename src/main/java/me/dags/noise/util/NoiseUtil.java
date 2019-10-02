@@ -71,6 +71,16 @@ public class NoiseUtil {
         return dif / range;
     }
 
+    public static float clamp(float value, float min, float max) {
+        if (value < min) {
+            return min;
+        }
+        if (value > max) {
+            return max;
+        }
+        return value;
+    }
+
     public static float dot(float x0, float y0, float x1, float y1) {
         return x0 * x1 + y0 * y1;
     }

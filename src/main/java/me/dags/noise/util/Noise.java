@@ -157,7 +157,12 @@ public class Noise {
                 float vecY = yi - y + vec.y;
                 float newDistance = distanceFunc.apply(vecX, vecY);
 
-                distance2 = Math.max(Math.min(distance2, newDistance), distance);
+                if (newDistance < distance2) {
+                    distance2 = Math.max(distance, newDistance);
+                } else {
+                    distance2 = Math.max(distance, distance2);
+                }
+//                distance2 = Math.max(Math.min(distance2, newDistance), distance);
                 distance = Math.min(distance, newDistance);
             }
         }

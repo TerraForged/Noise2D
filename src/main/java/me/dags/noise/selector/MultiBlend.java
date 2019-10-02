@@ -54,7 +54,9 @@ public class MultiBlend extends Selector {
             return min.source.getValue(x ,y);
         }
 
-        float alpha = Math.min(1, Math.max(0, (selector - min.max) / blendRange));
+        float alpha = (selector - min.max) / blendRange;
+        alpha = NoiseUtil.clamp(alpha, 0, 1);
+
         return blendValues(min.source.getValue(x, y), max.source.getValue(x, y), alpha);
     }
 
