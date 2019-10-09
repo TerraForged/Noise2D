@@ -212,6 +212,14 @@ public interface Module extends Noise {
         return new Terrace(this, lowerCurve, upperCurve, steps, (float) blendRange);
     }
 
+    default Module threshold(double threshold) {
+        return new Threshold(this, Source.constant(threshold));
+    }
+
+    default Module threshold(Module threshold) {
+        return new Threshold(this, threshold);
+    }
+
     default Module warp(Module warpX, Module warpZ, double power) {
         return warp(warpX, warpZ, Source.constant(power));
     }

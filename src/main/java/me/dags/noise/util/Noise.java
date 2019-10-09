@@ -171,8 +171,8 @@ public class Noise {
     }
 
     public static float white(float x, float y, int seed) {
-        int xi = NoiseUtil.toInt(x);
-        int yi = NoiseUtil.toInt(y);
+        int xi = NoiseUtil.round(x);
+        int yi = NoiseUtil.round(y);
         return NoiseUtil.valCoord2D(seed, xi, yi);
     }
 

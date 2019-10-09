@@ -152,6 +152,7 @@ public class Visualizer {
     }
 
     private static int shade(float value, float min, float max) {
+        value = NoiseUtil.clamp(value, min, max);
         float brightness = min + (value * (max - min));
         return Color.HSBtoRGB(0F, 0F, brightness);
     }

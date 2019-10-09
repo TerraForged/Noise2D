@@ -7,22 +7,20 @@ import me.dags.noise.util.NoiseUtil;
 public class Rand implements Module {
 
     private final int seed;
+    private final float frequency;
 
     public Rand(Builder builder) {
         seed = builder.getSeed();
-    }
-
-    public Rand(long seed) {
-        this((int) seed);
-    }
-
-    public Rand(int seed) {
-        this.seed = seed;
+        frequency = builder.getFrequency();
     }
 
     @Override
     public float getValue(float x, float y) {
-        return Noise.white(x, y, seed);
+        x *= frequency;
+        y *= frequency;
+        // -1 to 1
+        float value = Noise.white(x, y, seed);
+        return Math.abs(value);
     }
 
     public float getValue(float x, float y, int childSeed) {

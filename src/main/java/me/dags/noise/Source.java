@@ -151,6 +151,14 @@ public enum Source {
         return Source.builder().seed(seed).scale(scale).distFunc(distFunc).edgeFunc(edgeFunc).cellEdge();
     }
 
+    public static Module rand(int scale) {
+        return rand(ThreadLocalRandom.current().nextInt(), scale);
+    }
+
+    public static Module rand(int seed, int scale) {
+        return Source.build(seed, scale, 0).rand();
+    }
+
     public static Module sin(int scale, Module source) {
         return Source.builder().scale(scale).source(source).sin();
     }
