@@ -13,12 +13,13 @@ public enum Source {
     BILLOW(Builder::billow),
     CELL(Builder::cell),
     CELL_EDGE(Builder::cellEdge),
+    CONST(Builder::constant),
     CUBIC(Builder::cubic),
     PERLIN(Builder::perlin),
     RIDGE(Builder::ridge),
     SIMPLEX(Builder::simplex),
     SIN(Builder::sin),
-    ;
+    RAND(Builder::rand);
 
     public static final Module ONE = new Constant(1F);
     public static final Module ZERO = new Constant(0F);

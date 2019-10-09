@@ -8,6 +8,10 @@ public class Rand implements Module {
 
     private final int seed;
 
+    public Rand(Builder builder) {
+        seed = builder.getSeed();
+    }
+
     public Rand(long seed) {
         this((int) seed);
     }

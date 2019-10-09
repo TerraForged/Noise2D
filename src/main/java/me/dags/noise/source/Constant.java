@@ -9,6 +9,10 @@ public class Constant implements Module {
 
     private final float value;
 
+    public Constant(Builder builder) {
+        value = builder.getFrequency();
+    }
+
     public Constant(float value) {
         this.value = value;
     }

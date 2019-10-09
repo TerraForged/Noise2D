@@ -173,6 +173,14 @@ public class Builder {
         return new FastSin(this);
     }
 
+    public Module constant() {
+        return new Constant(this);
+    }
+
+    public Module rand() {
+        return new Rand(this);
+    }
+
     public Module build(Source source) {
         return source.build(this);
     }
