@@ -1,36 +1,25 @@
 import me.dags.noise.Module;
 import me.dags.noise.Source;
-import me.dags.noise.source.*;
+import me.dags.noise.util.NoiseUtil;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class Visualizer {
 
-    private static final JSlider scale = slider(8, 1, 50);
+    private static final JSlider scale = slider(8, 1, 100);
     private static final JSlider octaves = slider(1, 1, 5);
     private static final JSlider strength = slider(16, 0, 100);
-    private static final JComboBox<String> type = new JComboBox<>();
+    private static final JComboBox<Source> type = new JComboBox<>(Source.values());
     private static final ImageIcon icon = new ImageIcon();
     private static final JLabel view = new JLabel(icon);
-    private static final Map<String, Class<? extends Module>> TYPES = new LinkedHashMap<String, Class<? extends Module>>(){{
-        put("billow", FastBillow.class);
-        put("cell", FastCell.class);
-        put("cubic", FastCubic.class);
-        put("perlin", FastPerlin.class);
-        put("ridge", FastRidge.class);
-        put("simplex", FastSimplex.class);
-    }};
 
     static {
         type.setPreferredSize(new Dimension(200, 20));
-        type.setModel(new DefaultComboBoxModel<>(TYPES.keySet().toArray(new String[0])));
-        type.setSelectedItem("perlin");
+        type.setSelectedItem(Source.PERLIN);
         type.addActionListener(e -> render(null));
     }
 
@@ -118,18 +107,22 @@ public class Visualizer {
         int scale = Visualizer.scale.getValue();
         int octaves = Visualizer.octaves.getValue();
         int strength = Visualizer.strength.getValue();
-        Class<? extends Module> noiseType = TYPES.get(type.getSelectedItem() + "");
+        Source noiseType = (Source) type.getSelectedItem();
+        if (noiseType == null) {
+            return;
+        }
 
         Module x = Source.build(456, scale, octaves).build(noiseType);
         Module y = Source.build(789, scale, octaves).build(noiseType);
         Module source = Source.cell(123, 180)
-                .warp(101112, 90, 1, 70)
+                .warp(101112, 200, 3, 100)
                 .warp(x, y, strength);
+
         BufferedImage image = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
 
         visit(image, (img, ix, iy, px, pz) -> {
             float value = source.getValue(px, pz);
-            int color = color(value, 0, 0.7F);
+            int color = color(value, 0, 1);
             img.setRGB(ix, iy, color);
         });
 
@@ -155,7 +148,12 @@ public class Visualizer {
 
     private static int color(float value, float min, float max) {
         float hue = min + (value * (max - min));
-        return Color.HSBtoRGB(hue, 0.7F, 0.7F);
+        return Color.HSBtoRGB(hue, 0.8F, 0.8F);
+    }
+
+    private static int shade(float value, float min, float max) {
+        float brightness = min + (value * (max - min));
+        return Color.HSBtoRGB(0F, 0F, brightness);
     }
 
     private static void input(JComponent comp, String key, String name, Action action) {

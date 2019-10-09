@@ -7,15 +7,31 @@ import me.dags.noise.source.Builder;
 import me.dags.noise.source.Constant;
 
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 
-public final class Source {
+public enum Source {
+    BILLOW(Builder::billow),
+    CELL(Builder::cell),
+    CELL_EDGE(Builder::cellEdge),
+    CUBIC(Builder::cubic),
+    PERLIN(Builder::perlin),
+    RIDGE(Builder::ridge),
+    SIMPLEX(Builder::simplex),
+    SIN(Builder::sin),
+    ;
 
     public static final Module ONE = new Constant(1F);
     public static final Module ZERO = new Constant(0F);
     public static final Module HALF = new Constant(0.5F);
 
-    private Source() {
+    private final Function<Builder, Module> fn;
 
+    Source(Function<Builder, Module> fn) {
+        this.fn = fn;
+    }
+
+    public Module build(Builder builder) {
+        return fn.apply(builder);
     }
 
     public static Builder builder() {

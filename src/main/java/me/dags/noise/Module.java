@@ -221,7 +221,14 @@ public interface Module extends Noise {
     }
 
     default Module warp(int seed, int scale, int octaves, double power) {
-        return warp(FastPerlin.class, seed, scale, octaves, power);
+        return warp(Source.PERLIN, seed, scale, octaves, power);
+    }
+
+    default Module warp(Source source, int seed, int scale, int octaves, double power) {
+        Module x = Source.build(seed, scale, octaves).build(source);
+        Module y = Source.build(seed + 1, scale, octaves).build(source);
+        Module p = Source.constant(power);
+        return warp(x, y, p);
     }
 
     default Module warp(Class<? extends FastSource> source, int seed, int scale, int octaves, double power) {
