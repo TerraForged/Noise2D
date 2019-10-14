@@ -177,7 +177,7 @@ public class Builder {
         return new Constant(this);
     }
 
-    public Module rand() {
+    public Rand rand() {
         return new Rand(this);
     }
 

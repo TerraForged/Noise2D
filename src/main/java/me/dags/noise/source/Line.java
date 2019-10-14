@@ -2,14 +2,15 @@ package me.dags.noise.source;
 
 import me.dags.noise.Module;
 import me.dags.noise.util.NoiseUtil;
+import me.dags.noise.util.Vec2f;
 import me.dags.noise.util.Vec2i;
 
 public class Line implements Module {
 
-    private final int x1;
-    private final int y1;
-    private final int dx;
-    private final int dy;
+    private final float x1;
+    private final float y1;
+    private final float dx;
+    private final float dy;
     private final float length2;
     private final Module maxDistance;
 
@@ -17,7 +18,11 @@ public class Line implements Module {
         this(pos1.x, pos1.y, pos2.x, pos2.y, maxDistance);
     }
 
-    public Line(int x1, int y1, int x2, int y2, Module maxDistance) {
+    public Line(Vec2f pos1, Vec2f pos2, Module maxDistance) {
+        this(pos1.x, pos1.y, pos2.x, pos2.y, maxDistance);
+    }
+
+    public Line(float x1, float y1, float x2, float y2, Module maxDistance) {
         this.x1 = x1;
         this.y1 = y1;
         this.dx = x2 - x1;

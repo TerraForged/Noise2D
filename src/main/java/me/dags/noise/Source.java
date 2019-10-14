@@ -6,6 +6,7 @@ import me.dags.noise.func.EdgeFunc;
 import me.dags.noise.source.Builder;
 import me.dags.noise.source.Constant;
 import me.dags.noise.source.Line;
+import me.dags.noise.source.Rand;
 import me.dags.noise.util.Vec2i;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -153,11 +154,11 @@ public enum Source {
         return Source.builder().seed(seed).scale(scale).distFunc(distFunc).edgeFunc(edgeFunc).cellEdge();
     }
 
-    public static Module rand(int scale) {
+    public static Rand rand(int scale) {
         return rand(ThreadLocalRandom.current().nextInt(), scale);
     }
 
-    public static Module rand(int seed, int scale) {
+    public static Rand rand(int seed, int scale) {
         return Source.build(seed, scale, 0).rand();
     }
 
