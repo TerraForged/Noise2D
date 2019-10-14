@@ -5,6 +5,8 @@ import me.dags.noise.func.DistanceFunc;
 import me.dags.noise.func.EdgeFunc;
 import me.dags.noise.source.Builder;
 import me.dags.noise.source.Constant;
+import me.dags.noise.source.Line;
+import me.dags.noise.util.Vec2i;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
@@ -161,6 +163,22 @@ public enum Source {
 
     public static Module sin(int scale, Module source) {
         return Source.builder().scale(scale).source(source).sin();
+    }
+
+    public static Module line(Vec2i p1, Vec2i p2, double max) {
+        return new Line(p1, p2, Source.constant(max));
+    }
+
+    public static Module line(Vec2i p1, Vec2i p2, Module max) {
+        return new Line(p1, p2, max);
+    }
+
+    public static Module line(int x1, int y1, int x2, int y2, double max) {
+        return new Line(x1, y1, x2, y2, Source.constant(max));
+    }
+
+    public static Module line(int x1, int y1, int x2, int y2, Module max) {
+        return new Line(x1, y1, x2, y2, max);
     }
 
     public static Module constant(double value) {

@@ -1,5 +1,6 @@
 import me.dags.noise.Module;
 import me.dags.noise.Source;
+import me.dags.noise.source.Line;
 import me.dags.noise.util.NoiseUtil;
 
 import javax.swing.*;
@@ -12,7 +13,9 @@ public class Visualizer {
 
     private static final JSlider scale = slider(8, 1, 100);
     private static final JSlider octaves = slider(1, 1, 5);
-    private static final JSlider strength = slider(16, 0, 100);
+    private static final JSlider distance = slider(16, 0, 200);
+    private static final FloatSlider gain = slider(5, 1, 100, 10);
+    private static final FloatSlider lacunarity = slider(20, 1, 100, 10);
     private static final JComboBox<Source> type = new JComboBox<>(Source.values());
     private static final ImageIcon icon = new ImageIcon();
     private static final JLabel view = new JLabel(icon);
@@ -31,10 +34,10 @@ public class Visualizer {
         render(null);
 
         GridBagLayout layout = new GridBagLayout();
-        layout.columnWidths = new int[]{80, 200};
+        layout.columnWidths = new int[]{100, 200};
 
         JLabel source = new JLabel("Source ");
-        source.setPreferredSize(new Dimension(80, 20));
+        source.setPreferredSize(new Dimension(100, 20));
 
         JPanel panel = new JPanel();
         panel.add(source);
@@ -46,8 +49,12 @@ public class Visualizer {
         add(controls, scale, 1, 1);
         add(controls, label("Octaves", octaves), 0, 2);
         add(controls, octaves, 1, 2);
-        add(controls, label("Distance", strength), 0, 3);
-        add(controls, strength, 1, 3);
+        add(controls, label("Gain", gain), 0, 3);
+        add(controls, gain, 1, 3);
+        add(controls, label("Lacunarity", lacunarity), 0, 4);
+        add(controls, lacunarity, 1, 4);
+        add(controls, label("Distance", distance), 0, 5);
+        add(controls, distance, 1, 5);
 
         JPanel root = new JPanel();
         root.setAlignmentY(JPanel.TOP_ALIGNMENT);
@@ -78,13 +85,20 @@ public class Visualizer {
     }
 
     private static Component label(String text, JSlider slider) {
+        return label(text, "", slider);
+    }
+
+    private static Component label(String text, String hover, JSlider slider) {
         JLabel label = new JLabel(text);
+        label.setToolTipText(hover);
+        label.createToolTip().setTipText("pls");
+
         label.setPreferredSize(new Dimension(60, 20));
 
-        JLabel value = new JLabel(String.format("%02d", slider.getValue()));
-        value.setPreferredSize(new Dimension(20, 20));
+        JLabel value = new JLabel(slider.toString());
+        value.setPreferredSize(new Dimension(40, 20));
 
-        slider.addChangeListener(e -> value.setText(String.format("%02d", slider.getValue())));
+        slider.addChangeListener(e -> value.setText(slider.toString()));
 
         JPanel root = new JPanel();
         root.add(label);
@@ -93,8 +107,18 @@ public class Visualizer {
         return root;
     }
 
-    private static JSlider slider(int value, int min, int max) {
-        JSlider slider = new JSlider();
+    private static FloatSlider slider(int value, int min, int max, int scale) {
+        FloatSlider slider = new FloatSlider(scale);
+        slider.setValue(value);
+        slider.setMinimum(min);
+        slider.setMaximum(max);
+        slider.addChangeListener(Visualizer::render);
+        slider.setPreferredSize(new Dimension(200, 20));
+        return slider;
+    }
+
+    private static IntSlider slider(int value, int min, int max) {
+        IntSlider slider = new IntSlider();
         slider.setValue(value);
         slider.setMinimum(min);
         slider.setMaximum(max);
@@ -106,23 +130,35 @@ public class Visualizer {
     private static void render(ChangeEvent event) {
         int scale = Visualizer.scale.getValue();
         int octaves = Visualizer.octaves.getValue();
-        int strength = Visualizer.strength.getValue();
+        int strength = Visualizer.distance.getValue();
+        float gain = Visualizer.gain.getValueF();
+        float lacunarity = Visualizer.lacunarity.getValueF();
         Source noiseType = (Source) type.getSelectedItem();
         if (noiseType == null) {
             return;
         }
 
-        Module x = Source.build(456, scale, octaves).build(noiseType);
-        Module y = Source.build(789, scale, octaves).build(noiseType);
+        Module x = Source.build(456, scale, octaves)
+                .lacunarity(lacunarity)
+                .gain(gain)
+                .build(noiseType);
+        Module y = Source.build(789, scale, octaves)
+                .lacunarity(lacunarity)
+                .gain(gain)
+                .build(noiseType);
+
         Module source = Source.cell(123, 180)
                 .warp(101112, 200, 3, 100)
                 .warp(x, y, strength);
 
+        Module line = new Line(-100, -400, 500, 800, 1000)
+                .clamp(0.94, 1).map(0, 1);
+
         BufferedImage image = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
 
         visit(image, (img, ix, iy, px, pz) -> {
-            float value = source.getValue(px, pz);
-            int color = color(value, 0, 1);
+            float value = line.getValue(px, pz);
+            int color = shade(value, 0, 1);
             img.setRGB(ix, iy, color);
         });
 
@@ -181,6 +217,31 @@ public class Visualizer {
                 render(null);
             }
         };
+    }
+
+    private static class IntSlider extends JSlider {
+        @Override
+        public String toString() {
+            return String.format("%02d", getValue());
+        }
+    }
+
+    private static class FloatSlider extends JSlider {
+
+        private final float scale;
+
+        private FloatSlider(float scale) {
+            this.scale = scale;
+        }
+
+        public float getValueF() {
+            return super.getValue() / scale;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%.1f", getValueF());
+        }
     }
 
     public interface Visitor {
