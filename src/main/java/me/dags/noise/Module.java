@@ -156,14 +156,6 @@ public interface Module extends Noise {
         return new MultiBlend((float) blend, interpolation, this, sources);
     }
 
-    default Module line(Vec2i p1, Vec2i p2) {
-        return Source.line(p1, p2, this);
-    }
-
-    default Module line(int x1, int y1, int x2, int y2) {
-        return Source.line(x1, y1, x2, y2, this);
-    }
-
     default Module pow(Module n) {
         if (n.minValue() == 0 && n.maxValue() == 0) {
             return Source.ONE;

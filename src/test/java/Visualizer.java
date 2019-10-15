@@ -151,8 +151,8 @@ public class Visualizer {
                 .warp(101112, 200, 3, 100)
                 .warp(x, y, strength);
 
-        Module line = new Line(-100, -400, 500, 800, 1000)
-                .clamp(0.94, 1).map(0, 1);
+        Module line = Source.line(-200, -500, 400, 500, 8, 0.1, 0.01)
+                .warp(12342341, 200, 1, 200);
 
         BufferedImage image = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
 

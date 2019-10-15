@@ -166,20 +166,12 @@ public enum Source {
         return Source.builder().scale(scale).source(source).sin();
     }
 
-    public static Module line(Vec2i p1, Vec2i p2, double max) {
-        return new Line(p1, p2, Source.constant(max));
+    public static Module line(int x1, int y1, int x2, int y2, double radius, double fadeIn, double fadeOut) {
+        return new Line(x1, y1, x2, y2, Source.constant(radius * radius), Source.constant(fadeIn), Source.constant(fadeOut));
     }
 
-    public static Module line(Vec2i p1, Vec2i p2, Module max) {
-        return new Line(p1, p2, max);
-    }
-
-    public static Module line(int x1, int y1, int x2, int y2, double max) {
-        return new Line(x1, y1, x2, y2, Source.constant(max));
-    }
-
-    public static Module line(int x1, int y1, int x2, int y2, Module max) {
-        return new Line(x1, y1, x2, y2, max);
+    public static Module line(int x1, int y1, int x2, int y2, Module radius2, Module fadeIn, Module fadeOut) {
+        return new Line(x1, y1, x2, y2, radius2, fadeIn, fadeOut);
     }
 
     public static Module constant(double value) {

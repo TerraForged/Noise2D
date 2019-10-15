@@ -2,52 +2,75 @@ package me.dags.noise.source;
 
 import me.dags.noise.Module;
 import me.dags.noise.util.NoiseUtil;
-import me.dags.noise.util.Vec2f;
-import me.dags.noise.util.Vec2i;
 
 public class Line implements Module {
 
     private final float x1;
     private final float y1;
+    private final float x2;
+    private final float y2;
     private final float dx;
     private final float dy;
     private final float length2;
-    private final Module maxDistance;
+    private final Module fadeIn;
+    private final Module fadeOut;
+    private final Module radius;
 
-    public Line(Vec2i pos1, Vec2i pos2, Module maxDistance) {
-        this(pos1.x, pos1.y, pos2.x, pos2.y, maxDistance);
-    }
-
-    public Line(Vec2f pos1, Vec2f pos2, Module maxDistance) {
-        this(pos1.x, pos1.y, pos2.x, pos2.y, maxDistance);
-    }
-
-    public Line(float x1, float y1, float x2, float y2, Module maxDistance) {
+    public Line(float x1, float y1, float x2, float y2, Module radius2, Module fadeIn, Module fadeOut) {
         this.x1 = x1;
         this.y1 = y1;
+        this.x2 = x2;
+        this.y2 = y2;
         this.dx = x2 - x1;
         this.dy = y2 - y1;
         this.length2 = dx * dx + dy * dy;
-        this.maxDistance = maxDistance;
+        this.fadeIn = fadeIn;
+        this.fadeOut = fadeOut;
+        this.radius = radius2;
     }
 
     @Override
     public float getValue(float x, float y) {
         float dist2 = getDistance2(x, y);
-        float max = maxDistance.getValue(x, y);
-        float max2 = max * max;
-        if (dist2 > max2) {
-            dist2 = max2;
+        float radius2 = radius.getValue(x, y);
+        if (dist2 > radius2) {
+            return 0;
         }
-        return 1 - (dist2 / max2);
+        float value = dist2 / radius2;
+        float fade = getFade(x, y);
+        return (1 - value) * fade;
     }
 
-    public float getDistance2(float x, float y) {
+    private float getDistance2(float x, float y) {
         float t = ((x - x1) * dx) + ((y - y1) * dy);
         float s = NoiseUtil.clamp(t / length2, 0, 1);
         float ix = x1 + s * dx;
         float iy = y1 + s * dy;
         return dist2(x, y, ix, iy);
+    }
+
+    private float getFade(float x, float y) {
+        float d1 = dist2(x, y, x1, y1);
+        float d2 = dist2(x, y, x2, y2);
+
+        final float dist;
+        final float fade;
+        if (d1 < d2) {
+            dist = d1;
+            fade = fadeIn.getValue(x, y);
+        } else if (d2 < d1) {
+            dist = d2;
+            fade = fadeOut.getValue(x, y);
+        } else {
+            return 1F;
+        }
+
+        float fadeLength = length2 * fade;
+        if (dist > fadeLength) {
+            return 1;
+        }
+
+        return dist / fadeLength;
     }
 
     private static float dist2(float x1, float y1, float x2, float y2) {
