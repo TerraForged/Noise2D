@@ -12,7 +12,7 @@ public class Terrace extends Modifier {
     private final Module upperCurve;
 
     public Terrace(Module source, Module lowerCurve, Module upperCurve, int steps, float blendRange) {
-        super(source.map(0, 1));
+        super(source);
         this.maxIndex = steps - 1;
         this.steps = new Step[steps];
         this.lowerCurve = lowerCurve;
@@ -29,24 +29,44 @@ public class Terrace extends Modifier {
     }
 
     @Override
+    public float getValue(float x, float y) {
+        float value = source.getValue(x, y);
+        value = NoiseUtil.clamp(value, 0, 1);
+        return modify(x, y, value);
+    }
+
+    @Override
     public float modify(float x, float y, float noiseValue) {
         int index = NoiseUtil.round(noiseValue * maxIndex);
         Step step = steps[index];
         if (noiseValue < step.lowerBound) {
-            Step lower = steps[index - 1];
-            float alpha = (noiseValue - lower.upperBound) / (step.lowerBound - lower.upperBound);
-            alpha = 1 - Interpolation.CURVE3.apply(alpha);
-            float range = step.value - lower.value;
-            return step.value - (alpha * range * upperCurve.getValue(x, y));
+            if (index > 0) {
+                Step lower = steps[index - 1];
+                float alpha = (noiseValue - lower.upperBound) / (step.lowerBound - lower.upperBound);
+                alpha = 1 - Interpolation.CURVE3.apply(alpha);
+                float range = step.value - lower.value;
+                return step.value - (alpha * range * upperCurve.getValue(x, y));
+            }
         } else if (noiseValue > step.upperBound) {
-            Step upper = steps[index + 1];
-            float alpha = (noiseValue - step.upperBound) / (upper.lowerBound - step.upperBound);
-            alpha = Interpolation.CURVE3.apply(alpha);
-            float range = upper.value - step.value;
-            return step.value + (alpha * range * lowerCurve.getValue(x, y));
-        } else {
-            return step.value;
+            if (index < maxIndex) {
+                Step upper = steps[index + 1];
+                float alpha = (noiseValue - step.upperBound) / (upper.lowerBound - step.upperBound);
+                alpha = Interpolation.CURVE3.apply(alpha);
+                float range = upper.value - step.value;
+                return step.value + (alpha * range * lowerCurve.getValue(x, y));
+            }
         }
+        return step.value;
+    }
+
+    private int getIndex(float value) {
+        int index = NoiseUtil.round(value * maxIndex);
+        if (index > maxIndex) {
+            return maxIndex;
+        } else if (index < 0) {
+            return 0;
+        }
+        return index;
     }
 
     private static class Step {
