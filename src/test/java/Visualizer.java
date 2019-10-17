@@ -1,5 +1,6 @@
 import me.dags.noise.Module;
 import me.dags.noise.Source;
+import me.dags.noise.domain.Domain;
 import me.dags.noise.source.Line;
 import me.dags.noise.util.NoiseUtil;
 
@@ -148,8 +149,7 @@ public class Visualizer {
                 .build(noiseType);
 
         Module source = Source.cell(123, 180)
-                .warp(101112, 200, 3, 100)
-                .warp(x, y, strength);
+                .warp(Domain.warp(x, y, Source.constant(strength)).cache());
 
         Module line = Source.line(-200, -500, 400, 500, 8, 0.1, 0.01)
                 .warp(12342341, 200, 1, 200);
@@ -157,7 +157,7 @@ public class Visualizer {
         BufferedImage image = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
 
         visit(image, (img, ix, iy, px, pz) -> {
-            float value = line.getValue(px, pz);
+            float value = source.getValue(px, pz);
             int color = shade(value, 0, 1);
             img.setRGB(ix, iy, color);
         });

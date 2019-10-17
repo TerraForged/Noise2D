@@ -1,6 +1,7 @@
 package me.dags.noise;
 
 import me.dags.noise.combiner.*;
+import me.dags.noise.domain.Domain;
 import me.dags.noise.func.CurveFunc;
 import me.dags.noise.func.Interpolation;
 import me.dags.noise.modifier.*;
@@ -221,12 +222,16 @@ public interface Module extends Noise {
         return new Threshold(this, threshold);
     }
 
+    default Module warp(Domain domain) {
+        return new Warp(this, domain);
+    }
+
     default Module warp(Module warpX, Module warpZ, double power) {
         return warp(warpX, warpZ, Source.constant(power));
     }
 
     default Module warp(Module warpX, Module warpZ, Module power) {
-        return new Warp(this, warpX, warpZ, power);
+        return warp(Domain.warp(warpX, warpZ, power));
     }
 
     default Module warp(int seed, int scale, int octaves, double power) {

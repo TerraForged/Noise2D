@@ -12,7 +12,7 @@ public class Terrace extends Modifier {
     private final Module upperCurve;
 
     public Terrace(Module source, Module lowerCurve, Module upperCurve, int steps, float blendRange) {
-        super(source);
+        super(source.map(0, 1));
         this.maxIndex = steps - 1;
         this.steps = new Step[steps];
         this.lowerCurve = lowerCurve;
