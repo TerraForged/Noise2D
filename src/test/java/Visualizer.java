@@ -151,13 +151,13 @@ public class Visualizer {
         Module source = Source.cell(123, 180)
                 .warp(Domain.warp(x, y, Source.constant(strength)).cache());
 
-        Module line = Source.line(-200, -500, 400, 500, 8, 0.1, 0.01)
+        Module line = Source.line(-50, -20, 400, 500, 16, 0.8, 0.05, 0.4)
                 .warp(12342341, 200, 1, 200);
 
         BufferedImage image = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
 
         visit(image, (img, ix, iy, px, pz) -> {
-            float value = source.getValue(px, pz);
+            float value = line.getValue(px, pz);
             int color = shade(value, 0, 1);
             img.setRGB(ix, iy, color);
         });

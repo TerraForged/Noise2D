@@ -167,11 +167,19 @@ public enum Source {
     }
 
     public static Module line(int x1, int y1, int x2, int y2, double radius, double fadeIn, double fadeOut) {
-        return new Line(x1, y1, x2, y2, Source.constant(radius * radius), Source.constant(fadeIn), Source.constant(fadeOut));
+        return line(x1, y1, x2, y2, Source.constant(radius * radius), Source.constant(fadeIn), Source.constant(fadeOut));
+    }
+
+    public static Module line(int x1, int y1, int x2, int y2, double radius, double fadeIn, double fadeOut, double feather) {
+        return line(x1, y1, x2, y2, Source.constant(radius * radius), Source.constant(fadeIn), Source.constant(fadeOut), feather);
     }
 
     public static Module line(int x1, int y1, int x2, int y2, Module radius2, Module fadeIn, Module fadeOut) {
-        return new Line(x1, y1, x2, y2, radius2, fadeIn, fadeOut);
+        return line(x1, y1, x2, y2, radius2, fadeIn, fadeOut, 0.33);
+    }
+
+    public static Module line(int x1, int y1, int x2, int y2, Module radius2, Module fadeIn, Module fadeOut, double feather) {
+        return new Line(x1, y1, x2, y2, radius2, fadeIn, fadeOut, (float) feather);
     }
 
     public static Module constant(double value) {
