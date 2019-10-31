@@ -11,6 +11,10 @@ public class Line implements Module {
     private final float y2;
     private final float dx;
     private final float dy;
+    private final float orthX1;
+    private final float orthY1;
+    private final float orthX2;
+    private final float orthY2;
     private final float length2;
     private final float featherBias;
     private final float featherScale;
@@ -23,6 +27,10 @@ public class Line implements Module {
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
+        this.orthX1 = x1 + (y2 - y1);
+        this.orthY1 = y1 + (x1 - x2);
+        this.orthX2 = x2 + (y2 - y1);
+        this.orthY2 = y2 + (x1 - x2);
         this.dx = x2 - x1;
         this.dy = y2 - y1;
         this.fadeIn = fadeIn;
@@ -35,26 +43,39 @@ public class Line implements Module {
 
     @Override
     public float getValue(float x, float y) {
-        float fade = getFade(x, y);
+        float widthMod = getWidthModifier(x, y);
+        return getValue(x, y, widthMod);
+    }
+
+    public float getValue(float x, float y, float widthModifier) {
         float dist2 = getDistance2(x, y);
-        float radius2 = radius.getValue(x, y) * fade;
+        float radius2 = radius.getValue(x, y) * widthModifier;
         if (dist2 > radius2) {
             return 0;
         }
-        float feather = featherBias + (fade * featherScale);
         float value = dist2 / radius2;
+        if (featherScale == 0) {
+            return 1 - value;
+        }
+        float feather = featherBias + (widthModifier * featherScale);
         return (1 - value) * feather;
     }
 
-    private float getDistance2(float x, float y) {
-        float t = ((x - x1) * dx) + ((y - y1) * dy);
-        float s = NoiseUtil.clamp(t / length2, 0, 1);
-        float ix = x1 + s * dx;
-        float iy = y1 + s * dy;
-        return dist2(x, y, ix, iy);
+    /**
+     * Check if the position x,y is 'before' the start of this line
+     */
+    public boolean clipStart(float x, float y) {
+        return sign(x, y, x1, y1, orthX1, orthY1) > 0;
     }
 
-    private float getFade(float x, float y) {
+    /**
+     * Check if the position x,y is past the end of this line
+     */
+    public boolean clipEnd(float x, float y) {
+        return sign(x, y, x2, y2, orthX2, orthY2) < 0;
+    }
+
+    public float getWidthModifier(float x, float y) {
         float d1 = dist2(x, y, x1, y1);
         if (d1 == 0) {
             return 0;
@@ -74,6 +95,7 @@ public class Line implements Module {
                 fade *= (d1 / dist);
             }
         }
+
         if (out > 0) {
             float dist = out * length2;
             if (d2 < dist) {
@@ -83,9 +105,28 @@ public class Line implements Module {
         return fade;
     }
 
-    private static float dist2(float x1, float y1, float x2, float y2) {
+    private float getDistance2(float x, float y) {
+        float t = ((x - x1) * dx) + ((y - y1) * dy);
+        float s = NoiseUtil.clamp(t / length2, 0, 1);
+        float ix = x1 + s * dx;
+        float iy = y1 + s * dy;
+        return dist2(x, y, ix, iy);
+    }
+
+    public static float dist2(float x1, float y1, float x2, float y2) {
         float dx = x2 - x1;
         float dy = y2 - y1;
         return dx * dx + dy * dy;
+    }
+
+    public static int sign(float x, float y, float x1, float y1, float x2, float y2) {
+        float value = (x - x1) * (y2 - y1) - (y - y1) * (x2 - x1);
+        if (value == 0) {
+            return 0;
+        }
+        if (value < 0) {
+            return -1;
+        }
+        return 1;
     }
 }

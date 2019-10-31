@@ -143,6 +143,7 @@ public class Visualizer {
                 .lacunarity(lacunarity)
                 .gain(gain)
                 .build(noiseType);
+
         Module y = Source.build(789, scale, octaves)
                 .lacunarity(lacunarity)
                 .gain(gain)
@@ -151,14 +152,34 @@ public class Visualizer {
         Module source = Source.cell(123, 180)
                 .warp(Domain.warp(x, y, Source.constant(strength)).cache());
 
-        Module line = Source.line(-50, -20, 400, 500, 16, 0.8, 0.05, 0.4)
-                .warp(12342341, 200, 1, 200);
+        Domain domain = Domain.warp(123, 500, 1, 250);
+
+        int x1 = 200, z1 = 300;
+        int x2 = -200, z2 = -300;
+        Line line = Source.line(x1, z1, x2, z2, 20, 0, 0, 0);
 
         BufferedImage image = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
 
         visit(image, (img, ix, iy, px, pz) -> {
-            float value = line.getValue(px, pz);
+            if (line.clipStart(px, pz)) {
+                return;
+            }
+            if (line.clipEnd(px, pz)) {
+                return;
+            }
+
+            float pxw = domain.getX(px, pz);
+            float pzw = domain.getY(px, pz);
+            float value = line.getValue(pxw, pzw);
+
             int color = shade(value, 0, 1);
+            if (px == x1 && pz == z1) {
+                color = Color.RED.getRGB();
+            }
+
+            if (px == x2 && pz == z2) {
+                color = Color.RED.getRGB();
+            }
             img.setRGB(ix, iy, color);
         });
 

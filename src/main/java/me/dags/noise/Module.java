@@ -6,11 +6,8 @@ import me.dags.noise.func.CurveFunc;
 import me.dags.noise.func.Interpolation;
 import me.dags.noise.modifier.*;
 import me.dags.noise.selector.*;
-import me.dags.noise.source.Builder;
-import me.dags.noise.source.FastPerlin;
 import me.dags.noise.source.FastSource;
 import me.dags.noise.util.NoiseUtil;
-import me.dags.noise.util.Vec2i;
 
 /**
  * @author dags <dags@dags.me>
