@@ -211,6 +211,22 @@ public interface Module extends Noise {
         return new Terrace(this, lowerCurve, upperCurve, steps, (float) blendRange);
     }
 
+    default Module terrace(Module modulation, double slope, double blendMin, double blendMax, int steps) {
+        return terrace(modulation, Source.ONE, slope, blendMin, blendMax, steps);
+    }
+
+    default Module terrace(Module modulation, double slope, double blendMin, double blendMax, int steps, int octaves) {
+        return terrace(modulation, Source.ONE, Source.constant(slope), blendMin, blendMax, steps, octaves);
+    }
+
+    default Module terrace(Module modulation, Module mask, double slope, double blendMin, double blendMax, int steps) {
+        return terrace(modulation, mask, Source.constant(slope), blendMin, blendMax, steps, 1);
+    }
+
+    default Module terrace(Module modulation, Module mask, Module slope, double blendMin, double blendMax, int steps, int octaves) {
+        return new AdvancedTerrace(this, modulation, mask, slope, (float) blendMin, (float) blendMax, steps, octaves);
+    }
+
     default Module threshold(double threshold) {
         return new Threshold(this, Source.constant(threshold));
     }

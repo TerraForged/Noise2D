@@ -1,7 +1,5 @@
 import me.dags.noise.Module;
 import me.dags.noise.Source;
-import me.dags.noise.domain.Domain;
-import me.dags.noise.source.Line;
 import me.dags.noise.util.NoiseUtil;
 
 import javax.swing.*;
@@ -129,60 +127,16 @@ public class Visualizer {
     }
 
     private static void render(ChangeEvent event) {
-        int scale = Visualizer.scale.getValue();
-        int octaves = Visualizer.octaves.getValue();
-        int strength = Visualizer.distance.getValue();
-        float gain = Visualizer.gain.getValueF();
-        float lacunarity = Visualizer.lacunarity.getValueF();
-        Source noiseType = (Source) type.getSelectedItem();
-        if (noiseType == null) {
-            return;
-        }
-
-        Module x = Source.build(456, scale, octaves)
-                .lacunarity(lacunarity)
-                .gain(gain)
-                .build(noiseType);
-
-        Module y = Source.build(789, scale, octaves)
-                .lacunarity(lacunarity)
-                .gain(gain)
-                .build(noiseType);
-
-        Module source = Source.cell(123, 180)
-                .warp(Domain.warp(x, y, Source.constant(strength)).cache());
-
-        Domain domain = Domain.warp(123, 500, 1, 250);
-
-        int x1 = 200, z1 = 300;
-        int x2 = -200, z2 = -300;
-        Line line = Source.line(x1, z1, x2, z2, 20, 0, 0, 0);
-
+        Module module = Source.perlin(123123, 200, 1);
+        Module terrace = module.terrace(Source.ZERO, 0.5, 0, 0, 3, 4);
         BufferedImage image = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
-
         visit(image, (img, ix, iy, px, pz) -> {
-            if (line.clipStart(px, pz)) {
-                return;
+            float value = terrace.getValue(px, posZ);
+            float height = img.getHeight() * value;
+            if (img.getHeight() - height < iy) {
+                img.setRGB(ix, iy, Color.WHITE.getRGB());
             }
-            if (line.clipEnd(px, pz)) {
-                return;
-            }
-
-            float pxw = domain.getX(px, pz);
-            float pzw = domain.getY(px, pz);
-            float value = line.getValue(pxw, pzw);
-
-            int color = shade(value, 0, 1);
-            if (px == x1 && pz == z1) {
-                color = Color.RED.getRGB();
-            }
-
-            if (px == x2 && pz == z2) {
-                color = Color.RED.getRGB();
-            }
-            img.setRGB(ix, iy, color);
         });
-
         icon.setImage(image);
         view.repaint();
         view.requestFocusInWindow();

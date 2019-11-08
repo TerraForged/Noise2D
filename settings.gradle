@@ -1,1 +1,2 @@
 rootProject.name = "Noise2D"
+include "NoiseDesigner"

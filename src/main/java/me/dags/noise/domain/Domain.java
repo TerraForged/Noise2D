@@ -48,4 +48,15 @@ public interface Domain {
                 Source.constant(strength)
         );
     }
+
+    static Domain direction(Module direction, Module distance) {
+        return new DirectionWarp(direction, distance);
+    }
+
+    static Domain direction(int seed, int scale, int octaves, double strength) {
+        return direction(
+                Source.perlin(seed, scale, octaves),
+                Source.constant(strength)
+        );
+    }
 }
