@@ -1,5 +1,7 @@
 import me.dags.noise.Module;
 import me.dags.noise.Source;
+import me.dags.noise.domain.Domain;
+import me.dags.noise.source.Line;
 import me.dags.noise.util.NoiseUtil;
 
 import javax.swing.*;
@@ -127,16 +129,45 @@ public class Visualizer {
     }
 
     private static void render(ChangeEvent event) {
-        Module module = Source.perlin(123123, 200, 1);
-        Module terrace = module.terrace(Source.ZERO, 0.5, 0, 0, 3, 4);
+        int scale = Visualizer.scale.getValue();
+        int octaves = Visualizer.octaves.getValue();
+        int strength = Visualizer.distance.getValue();
+        float gain = Visualizer.gain.getValueF();
+        float lacunarity = Visualizer.lacunarity.getValueF();
+        Source noiseType = (Source) type.getSelectedItem();
+        if (noiseType == null) {
+            return;
+        }
+
+        Module x = Source.build(456, scale, octaves)
+                .lacunarity(lacunarity)
+                .gain(gain)
+                .build(noiseType);
+
+        Module y = Source.build(789, scale, octaves)
+                .lacunarity(lacunarity)
+                .gain(gain)
+                .build(noiseType);
+
+        Module source = Source.cell(123, 180)
+                .warp(Domain.warp(x, y, Source.constant(strength)).cache());
+
+        Domain domain = Domain.warp(Source.CUBIC, 532, 25, 1, 50)
+                .then(Domain.warp(134, 200, 1, 100))
+                .then(Domain.warp(134, 500, 1, 200));
+
         BufferedImage image = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
         visit(image, (img, ix, iy, px, pz) -> {
-            float value = terrace.getValue(px, posZ);
-            float height = img.getHeight() * value;
-            if (img.getHeight() - height < iy) {
-                img.setRGB(ix, iy, Color.WHITE.getRGB());
-            }
+            float pxw = domain.getX(px, pz);
+            float pyw = domain.getY(px, pz);
+
+            float value = source.getValue(pxw, pyw);
+
+            int color = shade(value, 0, 1);
+
+            img.setRGB(ix, iy, color);
         });
+
         icon.setImage(image);
         view.repaint();
         view.requestFocusInWindow();

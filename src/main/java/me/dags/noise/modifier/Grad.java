@@ -1,6 +1,7 @@
 package me.dags.noise.modifier;
 
 import me.dags.noise.Module;
+import me.dags.noise.util.NoiseUtil;
 
 public class Grad extends Modifier {
 
@@ -25,11 +26,11 @@ public class Grad extends Modifier {
         float amount = strength.getValue(x, y);
         float lowerBound = lower.getValue(x, y);
         if (noiseValue < lowerBound) {
-            return (float) Math.pow(noiseValue, 1 - amount);
+            return NoiseUtil.pow(noiseValue, 1 - amount);
         }
 
         float alpha = 1 - ((noiseValue - lowerBound) / (upperBound - lowerBound));
         float power = 1 - (amount * alpha);
-        return (float) Math.pow(noiseValue, power);
+        return NoiseUtil.pow(noiseValue, power);
     }
 }

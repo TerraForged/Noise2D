@@ -15,15 +15,13 @@ public class DomainWarp implements Domain {
     }
 
     @Override
-    public float getX(float x, float y) {
-        float ox = this.x.getValue(x, y) * this.distance.getValue(x, y);
-        return x + ox;
+    public float getOffsetX(float x, float y) {
+        return this.x.getValue(x, y) * this.distance.getValue(x, y);
     }
 
     @Override
-    public float getY(float x, float y) {
-        float oy = this.y.getValue(x, y) * this.distance.getValue(x, y);
-        return y + oy;
+    public float getOffsetY(float x, float y) {
+        return this.y.getValue(x, y) * this.distance.getValue(x, y);
     }
 
     // map the module to the range -0.5 to 0.5

@@ -40,11 +40,14 @@ public class AdvancedTerrace extends Modifier {
         }
 
         float result = value;
+        float slope = this.slope.getValue(x, y);
+        float modulation = this.modulation.getValue(x, y);
         for (int i = 1; i <= octaves; i++) {
-            float stepValue = getStepped(result, steps * i);
-            float modValue = getModulated(stepValue, x, y);
-            result = getSloped(value, modValue, x, y);
+            result = getStepped(result, steps * i);
+            result = getSloped(value, result, slope);
         }
+
+        result = getModulated(result, modulation);
 
         float alpha = getAlpha(value);
         if (mask != 1) {
@@ -54,9 +57,8 @@ public class AdvancedTerrace extends Modifier {
         return NoiseUtil.lerp(value, result, alpha);
     }
 
-    private float getModulated(float value, float x, float y) {
-        float mod = modulation.getValue(x, y);
-        return (value + mod) / modRange;
+    private float getModulated(float value, float modulation) {
+        return (value + modulation) / modRange;
     }
 
     private float getStepped(float value, int steps) {
@@ -64,11 +66,10 @@ public class AdvancedTerrace extends Modifier {
         return value / steps;
     }
 
-    private float getSloped(float value, float stepped, float x, float y) {
-        float amount = slope.getValue(x, y);
+    private float getSloped(float value, float stepped, float slope) {
         float delta = (value - stepped);
-        float slope = delta * amount;
-        return stepped + slope;
+        float amount = delta * slope;
+        return stepped + amount;
     }
 
     private float getAlpha(float value) {

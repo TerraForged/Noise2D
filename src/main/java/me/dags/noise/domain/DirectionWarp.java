@@ -1,7 +1,6 @@
 package me.dags.noise.domain;
 
 import me.dags.noise.Module;
-import me.dags.noise.Source;
 import me.dags.noise.util.NoiseUtil;
 
 public class DirectionWarp implements Domain {
@@ -20,13 +19,13 @@ public class DirectionWarp implements Domain {
     }
 
     @Override
-    public float getX(float x, float y) {
-        return x + update(x, y).ox;
+    public float getOffsetX(float x, float y) {
+        return update(x, y).ox;
     }
 
     @Override
-    public float getY(float x, float y) {
-        return y + update(x, y).oy;
+    public float getOffsetY(float x, float y) {
+        return update(x, y).oy;
     }
 
     private DirectionWarp update(float x, float y) {
@@ -38,11 +37,5 @@ public class DirectionWarp implements Domain {
             oy = NoiseUtil.cos(angle) * strength.getValue(x, y);
         }
         return this;
-    }
-
-    public static Domain of(Source type, int seed, int scale, int octaves, double strength) {
-        Module direction = Source.build(seed, scale, octaves).build(type);
-        Module power = Source.constant(strength);
-        return new DirectionWarp(direction, power);
     }
 }

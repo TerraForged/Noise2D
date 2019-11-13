@@ -58,13 +58,7 @@ public class NoiseUtil {
     private static final float[] SIN;
 
     public static float map(float value, float min, float max, float range) {
-        if (value < min) {
-            return min;
-        }
-        if (value > max) {
-            return max;
-        }
-        float dif = value - min;
+        float dif = clamp(value, min, max) - min;
         if (dif > range) {
             return 1F;
         }
@@ -163,6 +157,7 @@ public class NoiseUtil {
         int n = seed;
         n ^= X_PRIME * x;
         n ^= Y_PRIME * y;
+        //     (n * n * n * 60493) / 2147483648.0F;
         return (n * n * n * 60493) / 2147483648.0F;
     }
 
@@ -178,6 +173,10 @@ public class NoiseUtil {
     public static float gradCoord2D(int seed, int x, int y, float xd, float yd) {
         Vec2f g = coord2D(seed, x, y);
         return xd * g.x + yd * g.y;
+    }
+
+    public static float pow(float value, float power) {
+        return (float) FastMath.pow(value, power);
     }
 
     public static float sin(float r) {

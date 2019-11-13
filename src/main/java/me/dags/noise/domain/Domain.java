@@ -7,34 +7,42 @@ public interface Domain {
 
     Domain DIRECT = new Domain() {
         @Override
-        public float getX(float x, float y) {
-            return x;
+        public float getOffsetX(float x, float y) {
+            return 0;
         }
 
         @Override
-        public float getY(float x, float y) {
-            return y;
+        public float getOffsetY(float x, float y) {
+            return 0;
         }
     };
 
-    float getX(float x, float y);
+    float getOffsetX(float x, float y);
 
-    float getY(float x, float y);
+    float getOffsetY(float x, float y);
+
+    default float getX(float x, float y) {
+        return x + getOffsetX(x, y);
+    }
+
+    default float getY(float x, float y) {
+        return y + getOffsetY(x, y);
+    }
 
     default Domain cache() {
         return new Cache(this);
     }
 
-    default Domain then(Domain next) {
-        return new Combiner(this, next);
+    default Domain add(Domain next) {
+        return new CombineAdd(this, next);
     }
 
-    default Domain then(int seed, int scale, int octaves, double strength, boolean cache) {
-        Domain next = warp(seed, scale, octaves, strength);
-        if (cache) {
-            next = next.cache();
-        }
-        return then(next);
+    default Domain warp(Domain next) {
+        return new CombineWarp(this, next);
+    }
+
+    default Domain then(Domain next) {
+        return new Combiner(this, next);
     }
 
     static Domain warp(Module x, Module y, Module distance) {
@@ -42,9 +50,13 @@ public interface Domain {
     }
 
     static Domain warp(int seed, int scale, int octaves, double strength) {
+        return warp(Source.PERLIN, seed, scale, octaves, strength);
+    }
+
+    static Domain warp(Source type, int seed, int scale, int octaves, double strength) {
         return warp(
-                Source.perlin(seed, scale, octaves),
-                Source.perlin(seed + 1, scale, octaves),
+                Source.build(seed, scale, octaves).build(type),
+                Source.build(seed + 1, scale, octaves).build(type),
                 Source.constant(strength)
         );
     }
@@ -54,8 +66,12 @@ public interface Domain {
     }
 
     static Domain direction(int seed, int scale, int octaves, double strength) {
+        return direction(Source.PERLIN, seed, scale, octaves, strength);
+    }
+
+    static Domain direction(Source type, int seed, int scale, int octaves, double strength) {
         return direction(
-                Source.perlin(seed, scale, octaves),
+                Source.build(seed, scale, octaves).build(type),
                 Source.constant(strength)
         );
     }

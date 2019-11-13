@@ -22,10 +22,10 @@ public class FastRidge extends FastSource {
         this.interpolation = builder.getInterp();
         this.spectralWeights = new float[RIDGED_MAX_OCTAVE];
 
-        double h = 1.0;
-        double frequency = 1.0;
+        float h = 1.0F;
+        float frequency = 1.0F;
         for (int i = 0; i < RIDGED_MAX_OCTAVE; i++) {
-            spectralWeights[i] = (float) Math.pow(frequency, -h);
+            spectralWeights[i] = NoiseUtil.pow(frequency, -h);
             frequency *= lacunarity;
         }
 

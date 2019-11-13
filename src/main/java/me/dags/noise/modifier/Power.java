@@ -1,6 +1,7 @@
 package me.dags.noise.modifier;
 
 import me.dags.noise.Module;
+import me.dags.noise.util.NoiseUtil;
 
 /**
  * @author dags <dags@dags.me>
@@ -16,6 +17,6 @@ public class Power extends Modifier {
 
     @Override
     public float modify(float x, float y, float noiseValue) {
-        return (float) Math.pow(noiseValue, n.getValue(x, y));
+        return NoiseUtil.pow(noiseValue, n.getValue(x, y));
     }
 }

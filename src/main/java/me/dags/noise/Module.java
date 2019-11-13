@@ -67,6 +67,17 @@ public interface Module extends Noise {
         return new VariableBlend(this, variable, source0, source1, (float) midpoint, (float) min, (float) max, interpolation);
     }
 
+    default Module boost() {
+        return boost(1);
+    }
+
+    default Module boost(int iterations) {
+        if (iterations < 1) {
+            return this;
+        }
+        return new Boost(this, iterations);
+    }
+
     default Module cache() {
         if (this instanceof Cache) {
             return this;
@@ -221,6 +232,10 @@ public interface Module extends Noise {
 
     default Module terrace(Module modulation, Module mask, double slope, double blendMin, double blendMax, int steps) {
         return terrace(modulation, mask, Source.constant(slope), blendMin, blendMax, steps, 1);
+    }
+
+    default Module terrace(Module modulation, Module mask, Module slope, double blendMin, double blendMax, int steps) {
+        return new AdvancedTerrace(this, modulation, mask, slope, (float) blendMin, (float) blendMax, steps, 1);
     }
 
     default Module terrace(Module modulation, Module mask, Module slope, double blendMin, double blendMax, int steps, int octaves) {
