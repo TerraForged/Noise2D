@@ -166,6 +166,16 @@ class FastMath {
         }
     }
 
+    public static double pow(double d, long e) {
+        if (e == 0) {
+            return 1.0;
+        } else if (e > 0) {
+            return new Split(d).pow(e).full;
+        } else {
+            return new Split(d).reciprocal().pow(-e).full;
+        }
+    }
+
     private static double exp(double x, double extra, double[] hiPrec) {
         double intPartA;
         double intPartB;
@@ -506,6 +516,131 @@ class FastMath {
         }
 
         return a + b;
+    }
+
+    private static class Split {
+
+        /** Split version of NaN. */
+        public static final Split NAN = new Split(Double.NaN, 0);
+
+        /** Split version of positive infinity. */
+        public static final Split POSITIVE_INFINITY = new Split(Double.POSITIVE_INFINITY, 0);
+
+        /** Split version of negative infinity. */
+        public static final Split NEGATIVE_INFINITY = new Split(Double.NEGATIVE_INFINITY, 0);
+
+        /** Full number. */
+        private final double full;
+
+        /** High order bits. */
+        private final double high;
+
+        /** Low order bits. */
+        private final double low;
+
+        /** Simple constructor.
+         * @param x number to split
+         */
+        Split(final double x) {
+            full = x;
+            high = Double.longBitsToDouble(Double.doubleToRawLongBits(x) & ((-1L) << 27));
+            low  = x - high;
+        }
+
+        /** Simple constructor.
+         * @param high high order bits
+         * @param low low order bits
+         */
+        Split(final double high, final double low) {
+            this(high == 0.0 ? (low == 0.0 && Double.doubleToRawLongBits(high) == Long.MIN_VALUE /* negative zero */ ? -0.0 : low) : high + low, high, low);
+        }
+
+        /** Simple constructor.
+         * @param full full number
+         * @param high high order bits
+         * @param low low order bits
+         */
+        Split(final double full, final double high, final double low) {
+            this.full = full;
+            this.high = high;
+            this.low  = low;
+        }
+
+        /** Multiply the instance by another one.
+         * @param b other instance to multiply by
+         * @return product
+         */
+        public Split multiply(final Split b) {
+            // beware the following expressions must NOT be simplified, they rely on floating point arithmetic properties
+            final Split  mulBasic  = new Split(full * b.full);
+            final double mulError  = low * b.low - (((mulBasic.full - high * b.high) - low * b.high) - high * b.low);
+            return new Split(mulBasic.high, mulBasic.low + mulError);
+        }
+
+        /** Compute the reciprocal of the instance.
+         * @return reciprocal of the instance
+         */
+        public Split reciprocal() {
+
+            final double approximateInv = 1.0 / full;
+            final Split  splitInv       = new Split(approximateInv);
+
+            // if 1.0/d were computed perfectly, remultiplying it by d should give 1.0
+            // we want to estimate the error so we can fix the low order bits of approximateInvLow
+            // beware the following expressions must NOT be simplified, they rely on floating point arithmetic properties
+            final Split product = multiply(splitInv);
+            final double error  = (product.high - 1) + product.low;
+
+            // better accuracy estimate of reciprocal
+            return Double.isNaN(error) ? splitInv : new Split(splitInv.high, splitInv.low - error / full);
+
+        }
+
+        /** Computes this^e.
+         * @param e exponent (beware, here it MUST be > 0; the only exclusion is Long.MIN_VALUE)
+         * @return d^e, split in high and low bits
+         * @since 3.6
+         */
+        private Split pow(final long e) {
+
+            // prepare result
+            Split result = new Split(1);
+
+            // d^(2p)
+            Split d2p = new Split(full, high, low);
+
+            for (long p = e; p != 0; p >>>= 1) {
+
+                if ((p & 0x1) != 0) {
+                    // accurate multiplication result = result * d^(2p) using Veltkamp TwoProduct algorithm
+                    result = result.multiply(d2p);
+                }
+
+                // accurate squaring d^(2(p+1)) = d^(2p) * d^(2p) using Veltkamp TwoProduct algorithm
+                d2p = d2p.multiply(d2p);
+
+            }
+
+            if (Double.isNaN(result.full)) {
+                if (Double.isNaN(full)) {
+                    return Split.NAN;
+                } else {
+                    // some intermediate numbers exceeded capacity,
+                    // and the low order bits became NaN (because infinity - infinity = NaN)
+                    if (Math.abs(full) < 1) {
+                        return new Split(Math.copySign(0.0, full), 0.0);
+                    } else if (full < 0 && (e & 0x1) == 1) {
+                        return Split.NEGATIVE_INFINITY;
+                    } else {
+                        return Split.POSITIVE_INFINITY;
+                    }
+                }
+            } else {
+                return result;
+            }
+
+        }
+
     }
 
     private static final double[][] LN_QUICK_COEF = {

@@ -1,7 +1,6 @@
 import me.dags.noise.Module;
 import me.dags.noise.Source;
 import me.dags.noise.domain.Domain;
-import me.dags.noise.source.Line;
 import me.dags.noise.util.NoiseUtil;
 
 import javax.swing.*;
