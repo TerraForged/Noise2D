@@ -14,6 +14,11 @@ import me.dags.noise.util.NoiseUtil;
  */
 public interface Module extends Noise {
 
+    /**
+     * Create a Module who's output is the absolute value of this Module's output (ie negative values return positive)
+     *
+     * @return a new Abs Module
+     */
     default Module abs() {
         if (this instanceof Abs) {
             return this;
@@ -21,14 +26,34 @@ public interface Module extends Noise {
         return new Abs(this);
     }
 
+    /**
+     * Add the output of another Module to this Module's output
+     *
+     * @param other - the Module to add
+     * @return a new Add Module
+     */
     default Module add(Module other) {
         return new Add(this, other);
     }
 
+    /**
+     * A utility to Scale and Bias the output of this Module such that the output is scaled by the alpha amount
+     * and biased by 1 - alpha
+     *
+     * @param alpha - the alpha value (expected to be within the range 0-1)
+     * @return a new Alpha Module
+     */
     default Module alpha(double alpha) {
         return alpha(Source.constant(alpha));
     }
 
+    /**
+     * A utility to Scale and Bias the output of this Module such that the output is scaled by the alpha value
+     * and biased by 1 - alpha
+     *
+     * @param alpha - a Module who's output provides the alpha value
+     * @return a new Alpha Module
+     */
     default Module alpha(Module alpha) {
         if (alpha.minValue() < 0 || alpha.maxValue() > 1) {
             return this;
@@ -36,14 +61,45 @@ public interface Module extends Noise {
         return new Alpha(this, alpha);
     }
 
+    /**
+     * Combines this and the other Module by blending their outputs only when the other Module's output
+     * falls below the provided falloff value.
+     *
+     * This Module's output becomes more dominant the lower the other Module's output becomes.
+     *
+     * When the output is above the falloff value only the other Module's output is returned.
+     *
+     * @param other - the Module that this Module should form the 'base' for
+     * @param falloff - the value below which the blending will occur
+     * @return a new Base Module
+     */
     default Module base(Module other, double falloff) {
         return base(other, falloff, Interpolation.CURVE3);
     }
 
+    /**
+     * Combines this and the other Module by blending their outputs only when the other Module's output
+     * falls below the provided falloff value.
+     *
+     * This Module's output becomes more dominant the lower the other Module's output becomes.
+     *
+     * When the output is above the falloff value only the other Module's output is returned.
+     *
+     * @param other - the Module that this Module should form the 'base' for
+     * @param falloff - the value below which the blending will occur
+     * @param interpolation - the interpolation method to use while blending the outputs
+     * @return a new Base Module
+     */
     default Module base(Module other, double falloff, Interpolation interpolation) {
         return new Base(this, other, (float) falloff, interpolation);
     }
 
+    /**
+     * Modifies this Module's output by adding the bias Module's output to the returned value.
+     *
+     * @param bias - the Module that biases the output
+     * @return a new Bias Module
+     */
     default Module bias(Module bias) {
         if (bias.minValue() == 0 && bias.maxValue() == 0) {
             return this;
@@ -51,26 +107,77 @@ public interface Module extends Noise {
         return new Bias(this, bias);
     }
 
+    /**
+     * Modifies this Module's output by adding the bias to the returned value.
+     *
+     * @param bias - the amount to bias this Module's output by
+     * @return a new Bias Module
+     */
     default Module bias(double bias) {
         return bias(Source.constant(bias));
     }
 
+    /**
+     * Combine two other Modules by using this one to decide how much of each should be blended together
+     *
+     * @param source0 - the first of the two Modules to blend
+     * @param source1 - the second of the two Modules to blend
+     * @param midpoint - the value at which source0 & source1 will be blended 50%:50% - values either side of this point
+     *                 will strengthen the effect of either source Module proportionally to the distance from the midpoint
+     * @param blendRange - the range over which blending occurs, outside of which will produce 100% source 1 or 2
+     * @return a new Blend Module
+     */
     default Module blend(Module source0, Module source1, double midpoint, double blendRange) {
         return blend(source0, source1, midpoint, blendRange, Interpolation.LINEAR);
     }
 
+    /**
+     * Combine two other Modules by using this one to decide how much of each should be blended together
+     *
+     * @param source0 - the first of the two Modules to blend
+     * @param source1 - the second of the two Modules to blend
+     * @param midpoint - the value at which source0 & source1 will be blended 50%:50% - values either side of this point
+     *                 will strengthen the effect of either source Module proportionally to the distance from the midpoint
+     * @param blendRange - the range over which blending occurs, outside of which will produce 100% source 1 or 2
+     * @param interpolation - the interpolation method to use while blending the outputs
+     * @return a new Blend Module
+     */
     default Module blend(Module source0, Module source1, double midpoint, double blendRange, Interpolation interpolation) {
         return new Blend(this, source0, source1, (float) midpoint, (float) blendRange, interpolation);
     }
 
+    /**
+     * Similar to the Blend Module but uses an additional Module (blendVar) to vary the blend range at a given position
+     *
+     * @param variable
+     * @param source0 - the first of the two Modules to blend
+     * @param source1 - the second of the two Modules to blend
+     * @param midpoint - the value at which source0 & source1 will be blended 50%:50% - values either side of this point
+     *                  will strengthen the effect of either source Module proportionally to the distance from the midpoint
+     * @param min - the lowest possible bound of the blend range
+     * @param max - the highest possible bound of the blend range
+     * @param interpolation - the interpolation method to use while blending the outputs
+     * @return a new BlendVar Module
+     */
     default Module blendVar(Module variable, Module source0, Module source1, double midpoint, double min, double max, Interpolation interpolation) {
         return new VariableBlend(this, variable, source0, source1, (float) midpoint, (float) min, (float) max, interpolation);
     }
 
+    /**
+     * Modifies this Module's output by amplifying lower values while higher values amplify less
+     *
+     * @return a new Boost Module
+     */
     default Module boost() {
         return boost(1);
     }
 
+    /**
+     * Modifies this Module's output by amplifying lower values while higher values amplify less
+     *
+     * @param iterations - the number of times this Module should be boosted
+     * @return a new Boost Module
+     */
     default Module boost(int iterations) {
         if (iterations < 1) {
             return this;
@@ -78,6 +185,12 @@ public interface Module extends Noise {
         return new Boost(this, iterations);
     }
 
+    /**
+     * Caches this Module's output for a given x,y coordinate (useful when this Module is being reused)
+     * Cache Modules are not thread-safe.
+     *
+     * @return a new Cache Module
+     */
     default Module cache() {
         if (this instanceof Cache) {
             return this;
@@ -85,6 +198,13 @@ public interface Module extends Noise {
         return new Cache(this);
     }
 
+    /**
+     * Clamps the output of this Module between the provided min and max Module's output at a given coordinate
+     *
+     * @param min - a Module that provides the lower bound of the clamp
+     * @param max - a Module that provides the upper bound of the clamp
+     * @return a new Clamp Module
+     */
     default Module clamp(Module min, Module max) {
         if (min.minValue() == min.maxValue() && min.minValue() == minValue() && max.minValue() == max.maxValue() && max.maxValue() == maxValue()) {
             return this;
@@ -92,14 +212,34 @@ public interface Module extends Noise {
         return new Clamp(this, min, max);
     }
 
+    /**
+     * Clamps the output of this Module between the min and max values
+     *
+     * @param min - the lower bound of the clamp
+     * @param max - the upper bound of the clamp
+     * @return a new Clamp Module
+     */
     default Module clamp(double min, double max) {
         return clamp(Source.constant(min), Source.constant(max));
     }
 
+    /**
+     * Applies a Curve function to the output of this Module
+     *
+     * @param func - the Curve function to apply to the output
+     * @return a new Curve Module
+     */
     default Module curve(CurveFunc func) {
         return new Curve(this, func);
     }
 
+    /**
+     * Applies a custom Curve function to the output of this Module
+     *
+     * @param mid - the mid point of the curve
+     * @param steepness - the steepness of the curve
+     * @return a new Curve Module
+     */
     default Module curve(double mid, double steepness) {
         return new Curve(this, new CurveFunc() {
             private final float m = (float) mid;
@@ -111,22 +251,43 @@ public interface Module extends Noise {
         });
     }
 
+    /**
+     * Applies a custom Curve function to the output of this Module
+     *
+     * @param mid - the mid point of the curve
+     * @param steepness - the steepness of the curve
+     * @return a new Curve Module
+     */
     default Module curve(Module mid, Module steepness) {
         return new VariableCurve(this, mid, steepness);
     }
 
+    // TODO
     default Module grad(double lower, double upper, double strength) {
         return grad(Source.constant(lower), Source.constant(upper), Source.constant(strength));
     }
 
+    // TODO
     default Module grad(Module lower, Module upper, Module strength) {
         return new Grad(this, lower, upper, strength);
     }
 
+    /**
+     * Inverts the output of this Module (0.1 becomes 0.9 for a standard Module who's output is between 0 and 1)
+     *
+     * @return a new Invert Module
+     */
     default Module invert() {
         return new Invert(this);
     }
 
+    /**
+     * Maps the output of this Module so that it lies proportionally between the min and max values at a given coordinate
+     *
+     * @param min - the lower bound
+     * @param max - the upper bound
+     * @return a new Map module
+     */
     default Module map(Module min, Module max) {
         if (min.minValue() == min.maxValue() && min.minValue() == minValue() && max.minValue() == max.maxValue() && max.maxValue() == maxValue()) {
             return this;
@@ -134,22 +295,54 @@ public interface Module extends Noise {
         return new Map(this, min, max);
     }
 
+    /**
+     * Maps the output of this Module so that it lies proportionally between the min and max values at a given coordinate
+     *
+     * @param min - the lower bound
+     * @param max - the upper bound
+     * @return a new Map module
+     */
     default Module map(double min, double max) {
         return map(Source.constant(min), Source.constant(max));
     }
 
+    /**
+     * Returns the highest value out of this and the other Module's outputs
+     *
+     * @param other - the other Module to use
+     * @return a new Max Module
+     */
     default Module max(Module other) {
         return new Max(this, other);
     }
 
+    /**
+     * Returns the lowest value out of this and the other Module's outputs
+     *
+     * @param other - the other Module to use
+     * @return a new Min Module
+     */
     default Module min(Module other) {
         return new Min(this, other);
     }
 
+    /**
+     * Modulates the coordinates before querying this Module for an output
+     *
+     * @param direction - a Module that controls the direction of the modulation
+     * @param strength - a Module that controls the strength of deviation in the given direction
+     * @return a new Modulate Module
+     */
     default Module mod(Module direction, Module strength) {
         return new Modulate(this, direction, strength);
     }
 
+    /**
+     * Multiplies the outputs of this and the other Module
+     *
+     * @param other - the other Module to multiply
+     * @return a new Multiply Module
+     */
     default Module mult(Module other) {
         if (other.minValue() == 1F && other.maxValue() == 1F) {
             return this;
