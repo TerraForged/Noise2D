@@ -15,4 +15,12 @@ public class Vec2i {
         int dy = this.y - y;
         return (dx * dx) + (dy * dy);
     }
+
+    @Override
+    public String toString() {
+        return "Vec2i{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }
