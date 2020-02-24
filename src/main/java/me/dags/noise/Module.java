@@ -1,11 +1,63 @@
+/*
+ *
+ * MIT License
+ *
+ * Copyright (c) 2020 TerraForged
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package me.dags.noise;
 
-import me.dags.noise.combiner.*;
+import me.dags.noise.combiner.Add;
+import me.dags.noise.combiner.Max;
+import me.dags.noise.combiner.Min;
+import me.dags.noise.combiner.Multiply;
+import me.dags.noise.combiner.Sub;
 import me.dags.noise.domain.Domain;
 import me.dags.noise.func.CurveFunc;
 import me.dags.noise.func.Interpolation;
-import me.dags.noise.modifier.*;
-import me.dags.noise.selector.*;
+import me.dags.noise.modifier.Abs;
+import me.dags.noise.modifier.AdvancedTerrace;
+import me.dags.noise.modifier.Alpha;
+import me.dags.noise.modifier.Bias;
+import me.dags.noise.modifier.Boost;
+import me.dags.noise.modifier.Cache;
+import me.dags.noise.modifier.Clamp;
+import me.dags.noise.modifier.Curve;
+import me.dags.noise.modifier.Grad;
+import me.dags.noise.modifier.Invert;
+import me.dags.noise.modifier.Map;
+import me.dags.noise.modifier.Modulate;
+import me.dags.noise.modifier.Power;
+import me.dags.noise.modifier.PowerCurve;
+import me.dags.noise.modifier.Scale;
+import me.dags.noise.modifier.Steps;
+import me.dags.noise.modifier.Terrace;
+import me.dags.noise.modifier.Threshold;
+import me.dags.noise.modifier.VariableCurve;
+import me.dags.noise.modifier.Warp;
+import me.dags.noise.selector.Base;
+import me.dags.noise.selector.Blend;
+import me.dags.noise.selector.MultiBlend;
+import me.dags.noise.selector.Select;
+import me.dags.noise.selector.VariableBlend;
 import me.dags.noise.source.FastSource;
 import me.dags.noise.util.NoiseUtil;
 
