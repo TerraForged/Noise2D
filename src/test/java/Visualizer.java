@@ -53,7 +53,7 @@ public class Visualizer {
 
     private static float posX = 0F;
     private static float posZ = 0F;
-    private static int zoom = 1;
+    private static float zoom = 1;
 
     public static void main(String[] args) {
         render(null);
@@ -173,8 +173,7 @@ public class Visualizer {
                 .gain(gain)
                 .build(noiseType);
 
-        Module source = Source.cell(123, 180)
-                .warp(Domain.warp(x, y, Source.constant(strength)).cache());
+        Module source = Source.cellNoise(123, 100, Source.perlin(345, 10, 1));
 
         Domain domain = Domain.warp(Source.CUBIC, 532, 25, 1, 50)
                 .then(Domain.warp(134, 200, 1, 100))
@@ -198,13 +197,13 @@ public class Visualizer {
     }
 
     private static void visit(BufferedImage img, Visitor visitor) {
-        int centerX = img.getWidth() / 2 / zoom;
-        int centerY = img.getHeight() / 2 / zoom;
+        int centerX = (int) (img.getWidth() / 2 / zoom);
+        int centerY = (int) (img.getHeight() / 2 / zoom);
 
         for (int y = 0; y < img.getHeight(); y++) {
             for (int x = 0; x < img.getWidth(); x++) {
-                int sx = x / zoom;
-                int sz = y / zoom;
+                float sx = x / zoom;
+                float sz = y / zoom;
                 float px = sx + posX - centerX;
                 float pz = sz + posZ - centerY;
                 visitor.visit(img, x, y, px, pz);
@@ -241,9 +240,16 @@ public class Visualizer {
 
     private static Action zoom(int direction) {
         return new AbstractAction() {
+
+            private final float zoomFactor = 1.1F;
+
             @Override
             public void actionPerformed(ActionEvent e) {
-                zoom = Math.max(1, zoom + direction);
+                if (direction < 0) {
+                    zoom /= zoomFactor;
+                } else {
+                    zoom *= zoomFactor;
+                }
                 render(null);
             }
         };
