@@ -36,8 +36,8 @@ import me.dags.noise.func.Interpolation;
  */
 public class Noise {
 
-    private final static float F2 = (float) (1.0 / 2.0);
-    private final static float G2 = (float) (1.0 / 4.0);
+    private final static float F2 = 0.366025403784439f;
+    private final static float G2 = 0.211324865405187f;
 
     public static float singlePerlin(float x, float y, int seed, Interpolation interp) {
         int x0 = NoiseUtil.floor(x);
@@ -82,8 +82,8 @@ public class Noise {
 
         float x1 = x0 - i1 + G2;
         float y1 = y0 - j1 + G2;
-        float x2 = x0 - 1 + F2;
-        float y2 = y0 - 1 + F2;
+        float x2 = x0 - 1 + 2 * G2;
+        float y2 = y0 - 1 + 2 * G2;
 
         float n0, n1, n2;
 
@@ -92,7 +92,7 @@ public class Noise {
             n0 = 0;
         } else {
             t *= t;
-            n0 = t * t * NoiseUtil.gradCoord2D(seed, i, j, x0, y0);
+            n0 = t * t * NoiseUtil.gradCoord2D_24(seed, i, j, x0, y0);
         }
 
         t = 0.5F - x1 * x1 - y1 * y1;
@@ -100,7 +100,7 @@ public class Noise {
             n1 = 0;
         } else {
             t *= t;
-            n1 = t * t * NoiseUtil.gradCoord2D(seed, i + i1, j + j1, x1, y1);
+            n1 = t * t * NoiseUtil.gradCoord2D_24(seed, i + i1, j + j1, x1, y1);
         }
 
         t = 0.5F - x2 * x2 - y2 * y2;
@@ -108,10 +108,11 @@ public class Noise {
             n2 = 0;
         } else {
             t *= t;
-            n2 = t * t * NoiseUtil.gradCoord2D(seed, i + 1, j + 1, x2, y2);
+            n2 = t * t * NoiseUtil.gradCoord2D_24(seed, i + 1, j + 1, x2, y2);
         }
 
-        return 50 * (n0 + n1 + n2);
+        // Replace with 99.83685446303647f for true -1 to 1 range
+        return 79.86948357042918f * (n0 + n1 + n2);
     }
 
     public static float singleCubic(float x, float y, int seed) {
