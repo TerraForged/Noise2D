@@ -45,6 +45,41 @@ public class NoiseUtil {
             new Vec2f(0, -1), new Vec2f(-1, 0), new Vec2f(0, 1), new Vec2f(1, 0),
     };
 
+    public static final Vec2f[] GRAD_2D_24 = {
+            new Vec2f( 0.130526192220052f, 0.99144486137381f),
+            new Vec2f( 0.38268343236509f,  0.923879532511287f),
+            new Vec2f( 0.608761429008721f, 0.793353340291235f),
+            new Vec2f( 0.608761429008721f, 0.793353340291235f), // Repeat due to selector math
+            new Vec2f( 0.793353340291235f, 0.608761429008721f),
+            new Vec2f( 0.923879532511287f, 0.38268343236509f),
+            new Vec2f( 0.99144486137381f,  0.130526192220051f),
+            new Vec2f( 0.99144486137381f,  0.130526192220051f), // Repeat
+            new Vec2f( 0.99144486137381f, -0.130526192220051f),
+            new Vec2f( 0.923879532511287f,-0.38268343236509f),
+            new Vec2f( 0.793353340291235f,-0.60876142900872f),
+            new Vec2f( 0.793353340291235f,-0.60876142900872f), // Repeat
+            new Vec2f( 0.608761429008721f,-0.793353340291235f),
+            new Vec2f( 0.38268343236509f, -0.923879532511287f),
+            new Vec2f( 0.130526192220052f,-0.99144486137381f),
+            new Vec2f( 0.130526192220052f,-0.99144486137381f), // Repeat
+            new Vec2f(-0.130526192220052f,-0.99144486137381f),
+            new Vec2f(-0.38268343236509f, -0.923879532511287f),
+            new Vec2f(-0.608761429008721f,-0.793353340291235f),
+            new Vec2f(-0.608761429008721f,-0.793353340291235f), // Repeat
+            new Vec2f(-0.793353340291235f,-0.608761429008721f),
+            new Vec2f(-0.923879532511287f,-0.38268343236509f),
+            new Vec2f(-0.99144486137381f, -0.130526192220052f),
+            new Vec2f(-0.99144486137381f, -0.130526192220052f), // Repeat
+            new Vec2f(-0.99144486137381f,  0.130526192220051f),
+            new Vec2f(-0.923879532511287f, 0.38268343236509f),
+            new Vec2f(-0.793353340291235f, 0.608761429008721f),
+            new Vec2f(-0.793353340291235f, 0.608761429008721f), // Repeat
+            new Vec2f(-0.608761429008721f, 0.793353340291235f),
+            new Vec2f(-0.38268343236509f,  0.923879532511287f),
+            new Vec2f(-0.130526192220052f, 0.99144486137381f),
+            new Vec2f(-0.130526192220052f, 0.99144486137381f) // Repeat
+    };
+
     public static final Vec2f[] CELL_2D = {
             new Vec2f(-0.4313539279f, 0.1281943404f), new Vec2f(-0.1733316799f, 0.415278375f), new Vec2f(-0.2821957395f, -0.3505218461f), new Vec2f(-0.2806473808f, 0.3517627718f), new Vec2f(0.3125508975f, -0.3237467165f), new Vec2f(0.3383018443f, -0.2967353402f), new Vec2f(-0.4393982022f, -0.09710417025f), new Vec2f(-0.4460443703f, -0.05953502905f),
             new Vec2f(-0.302223039f, 0.3334085102f), new Vec2f(-0.212681052f, -0.3965687458f), new Vec2f(-0.2991156529f, 0.3361990872f), new Vec2f(0.2293323691f, 0.3871778202f), new Vec2f(0.4475439151f, -0.04695150755f), new Vec2f(0.1777518f, 0.41340573f), new Vec2f(0.1688522499f, -0.4171197882f), new Vec2f(-0.0976597166f, 0.4392750616f),
@@ -195,8 +230,25 @@ public class NoiseUtil {
         return GRAD_2D[hash & 7];
     }
 
+    public static Vec2f coord2D_24(int seed, int x, int y) {
+        int hash = seed;
+        hash ^= X_PRIME * x;
+        hash ^= Y_PRIME * y;
+        hash = hash * hash * hash * 60493;
+        hash = (hash >> 13) ^ hash;
+        
+        // Fairly selects 24 gradients if you repeat every third one.
+        int selector24 = (int)((hash & 0x3FFFFF) * 1.3333333333333333f) & 31;
+        return GRAD_2D_24[selector24];
+    }
+
     public static float gradCoord2D(int seed, int x, int y, float xd, float yd) {
         Vec2f g = coord2D(seed, x, y);
+        return xd * g.x + yd * g.y;
+    }
+
+    public static float gradCoord2D_24(int seed, int x, int y, float xd, float yd) {
+        Vec2f g = coord2D_24(seed, x, y);
         return xd * g.x + yd * g.y;
     }
 
