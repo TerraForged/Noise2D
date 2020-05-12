@@ -41,6 +41,7 @@ import me.dags.noise.modifier.Boost;
 import me.dags.noise.modifier.Cache;
 import me.dags.noise.modifier.Clamp;
 import me.dags.noise.modifier.Curve;
+import me.dags.noise.modifier.Freq;
 import me.dags.noise.modifier.Grad;
 import me.dags.noise.modifier.Invert;
 import me.dags.noise.modifier.Map;
@@ -301,6 +302,14 @@ public interface Module extends Noise {
                 return NoiseUtil.curve(value, m, s);
             }
         });
+    }
+
+    default Module freq(double x, double y) {
+        return freq(Source.constant(x), Source.constant(y));
+    }
+
+    default Module freq(Module x, Module y) {
+        return new Freq(this, x, y);
     }
 
     /**

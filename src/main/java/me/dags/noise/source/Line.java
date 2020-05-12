@@ -73,8 +73,12 @@ public class Line implements Module {
     }
 
     public float getValue(float x, float y, float widthModifier) {
+        return getValue(x, y, 0, widthModifier);
+    }
+
+    public float getValue(float x, float y, float minWidth2, float widthModifier) {
         float dist2 = getDistance2(x, y);
-        float radius2 = radius.getValue(x, y) * widthModifier;
+        float radius2 = minWidth2 + radius.getValue(x, y) * widthModifier;
         if (dist2 > radius2) {
             return 0;
         }
@@ -153,5 +157,43 @@ public class Line implements Module {
             return -1;
         }
         return 1;
+    }
+
+    public static boolean intersect(float ax1, float ay1, float ax2, float ay2, float bx1, float by1, float bx2, float by2) {
+        return ((relativeCCW(ax1, ay1, ax2, ay2, bx1, by1) * relativeCCW(ax1, ay1, ax2, ay2, bx2, by2) <= 0)
+                && (relativeCCW(bx1, by1, bx2, by2, ax1, ay1) * relativeCCW(bx1, by1, bx2, by2, ax2, ay2) <= 0));
+    }
+
+    private static int relativeCCW(float x1, float y1, float x2, float y2, float px, float py) {
+        x2 -= x1;
+        y2 -= y1;
+        px -= x1;
+        py -= y1;
+        double ccw = px * y2 - py * x2;
+        if (ccw == 0F) {
+            // The point is colinear, classify based on which side of
+            // the segment the point falls on.  We can calculate a
+            // relative value using the projection of px,py onto the
+            // segment - a negative value indicates the point projects
+            // outside of the segment in the direction of the particular
+            // endpoint used as the origin for the projection.
+            ccw = px * x2 + py * y2;
+            if (ccw > 0.0) {
+                // Reverse the projection to be relative to the original x2,y2
+                // x2 and y2 are simply negated.
+                // px and py need to have (x2 - x1) or (y2 - y1) subtracted
+                //    from them (based on the original values)
+                // Since we really want to get a positive answer when the
+                //    point is "beyond (x2,y2)", then we want to calculate
+                //    the inverse anyway - thus we leave x2 & y2 negated.
+                px -= x2;
+                py -= y2;
+                ccw = px * x2 + py * y2;
+                if (ccw < 0.0) {
+                    ccw = 0.0;
+                }
+            }
+        }
+        return (ccw < 0F) ? -1 : ((ccw > 0F) ? 1 : 0);
     }
 }

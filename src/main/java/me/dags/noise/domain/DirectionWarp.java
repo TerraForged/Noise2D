@@ -57,7 +57,7 @@ public class DirectionWarp implements Domain {
         if (this.x != x || this.y != y) {
             this.x = x;
             this.y = y;
-            float angle = direction.getValue(x, y) * 2 * NoiseUtil.PI2;
+            float angle = direction.getValue(x, y) * NoiseUtil.PI2;
             ox = NoiseUtil.sin(angle) * strength.getValue(x, y);
             oy = NoiseUtil.cos(angle) * strength.getValue(x, y);
         }

@@ -188,7 +188,7 @@ public class Noise {
                 } else {
                     distance2 = Math.max(distance, distance2);
                 }
-//                distance2 = Math.max(Math.min(distance2, newDistance), distance);
+
                 distance = Math.min(distance, newDistance);
             }
         }

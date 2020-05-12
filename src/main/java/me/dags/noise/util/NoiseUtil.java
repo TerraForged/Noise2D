@@ -194,6 +194,39 @@ public class NoiseUtil {
         return x;
     }
 
+    public static float copySign(float value, float sign) {
+        if (sign < 0 && value > 0) {
+            return -value;
+        }
+        if (sign > 0 && value < 0) {
+            return -value;
+        }
+        return value;
+    }
+
+    public static float pow(float value, int power) {
+        if (power == 0) {
+            return 1;
+        }
+        if (power == 1) {
+            return value;
+        }
+        if (power == 2) {
+            return value * value;
+        }
+        if (power == 3) {
+            return value * value * value;
+        }
+        if (power == 4) {
+            return value * value * value * value;
+        }
+        float result = 1;
+        for (int i = 0; i < power; i++) {
+            result *= value;
+        }
+        return result;
+    }
+
     public static int hash(int x, int y) {
         int hash = x;
         hash ^= Y_PRIME * y;
