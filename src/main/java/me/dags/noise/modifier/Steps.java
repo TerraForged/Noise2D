@@ -26,6 +26,7 @@
 package me.dags.noise.modifier;
 
 import me.dags.noise.Module;
+import me.dags.noise.func.CurveFunc;
 import me.dags.noise.util.NoiseUtil;
 
 /**
@@ -34,28 +35,46 @@ import me.dags.noise.util.NoiseUtil;
 public class Steps extends Modifier {
 
     private final Module steps;
+    private final Module slopeMin;
+    private final Module slopeMax;
+    private final CurveFunc curve;
 
-    public Steps(Module source, Module steps) {
-        super(source.map(0, 1));
-        if (steps.minValue() < 1) {
-            throw new IllegalArgumentException("steps cannot less than 1");
-        }
+    public Steps(Module source, Module steps, Module slopeMin, Module slopeMax, CurveFunc slopeCurve) {
+        super(source);
         this.steps = steps;
+        this.curve = slopeCurve;
+        this.slopeMin = slopeMin;
+        this.slopeMax = slopeMax;
     }
 
     @Override
-    public float minValue() {
-        return 0F;
-    }
+    public float modify(float x, float y, float noiseValue) {
+        // round the noise down to the nearest step height
+        float stepCount = steps.getValue(x, y);
+        float value = ((int) (noiseValue * stepCount)) / stepCount;
 
-    public float maxValue() {
-        return 1F;
-    }
+        // the distance between steps where blending starts to occur
+        float min = slopeMin.getValue(x, y);
 
-    @Override
-    public float modify(float x, float y, float value) {
-        float steps = this.steps.getValue(x, y);
-        value = NoiseUtil.round(value * steps);
-        return value / steps;
+        // the distance between steps where blending is at 100%
+        float max = slopeMax.getValue(x, y);
+
+        // blend range
+        float range = max - min;
+        if (range <= 0) {
+            // no blending so we can just return the step value
+            return value;
+        }
+
+        // derive an alpha value from the difference between noise & step heights
+        float delta = noiseValue - value;
+
+        // alpha is equal to the delta divided by the size of one step (ie delta / (1F / stepCount))
+        // this can be simplified to delta * stepCount
+        // map this to the defined blend range
+        float alpha = NoiseUtil.map(delta * stepCount, min, max, range);
+
+        // lerp from step to noise value with curve applied to alpha
+        return NoiseUtil.lerp(value, noiseValue, curve.apply(alpha));
     }
 }

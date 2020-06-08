@@ -456,12 +456,24 @@ public interface Module extends Noise {
         return new Select(this, lower, upper, (float) lowerBound, (float) upperBound, (float) falloff, interpolation);
     }
 
-    default Module steps(Module steps) {
-        return new Steps(this, steps);
+    default Module steps(int steps) {
+        return steps(steps, 0, 0);
     }
 
-    default Module steps(int steps) {
-        return steps(Source.constant(steps));
+    default Module steps(int steps, double slopeMin, double slopeMax) {
+        return steps(steps, slopeMin, slopeMax, Interpolation.LINEAR);
+    }
+
+    default Module steps(int steps, double slopeMin, double slopeMax, CurveFunc curveFunc) {
+        return steps(Source.constant(steps), Source.constant(slopeMin), Source.constant(slopeMax), curveFunc);
+    }
+
+    default Module steps(Module steps, Module slopeMin, Module slopeMax) {
+        return steps(steps, slopeMin, slopeMax, Interpolation.LINEAR);
+    }
+
+    default Module steps(Module steps, Module slopeMin, Module slopeMax, CurveFunc curveFunc) {
+        return new Steps(this, steps, slopeMin, slopeMax, curveFunc);
     }
 
     default Module sub(Module other) {
