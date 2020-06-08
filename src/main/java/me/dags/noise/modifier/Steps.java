@@ -47,34 +47,35 @@ public class Steps extends Modifier {
         this.slopeMax = slopeMax;
     }
 
+
+
     @Override
     public float modify(float x, float y, float noiseValue) {
-        // round the noise down to the nearest step height
-        float stepCount = steps.getValue(x, y);
-        float value = ((int) (noiseValue * stepCount)) / stepCount;
+        float min = this.slopeMin.getValue(x, y);
+        float max = this.slopeMax.getValue(x, y);
+        float stepCount = this.steps.getValue(x, y);
 
-        // the distance between steps where blending starts to occur
-        float min = slopeMin.getValue(x, y);
-
-        // the distance between steps where blending is at 100%
-        float max = slopeMax.getValue(x, y);
-
-        // blend range
         float range = max - min;
-        if (range <= 0) {
-            // no blending so we can just return the step value
-            return value;
+        if (range <= 0.0F) {
+            // round the noise down to the nearest step height
+            return (int) (noiseValue * stepCount) / stepCount;
+        } else {
+            // invert noise
+            noiseValue = 1 - noiseValue;
+
+            // round the noise down to the nearest step height
+            float value = (int)(noiseValue * stepCount) / stepCount;
+
+            // derive an alpha value from the difference between noise & step heights
+            float delta = (noiseValue - value);
+
+            // alpha is equal to the delta divided by the size of one step (ie delta / (1F / stepCount))
+            // this can be simplified to delta * stepCount
+            // map this to the defined blend range
+            float alpha = NoiseUtil.map(delta * stepCount, min, max, range);
+
+            // lerp from step to noise value with curve applied to alpha & un-invert the result
+            return 1 - NoiseUtil.lerp(value, noiseValue, this.curve.apply(alpha));
         }
-
-        // derive an alpha value from the difference between noise & step heights
-        float delta = noiseValue - value;
-
-        // alpha is equal to the delta divided by the size of one step (ie delta / (1F / stepCount))
-        // this can be simplified to delta * stepCount
-        // map this to the defined blend range
-        float alpha = NoiseUtil.map(delta * stepCount, min, max, range);
-
-        // lerp from step to noise value with curve applied to alpha
-        return NoiseUtil.lerp(value, noiseValue, curve.apply(alpha));
     }
 }
