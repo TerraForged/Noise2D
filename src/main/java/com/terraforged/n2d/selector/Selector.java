@@ -45,11 +45,6 @@ public abstract class Selector extends Combiner {
     }
 
     @Override
-    public String getSpecName() {
-        return "Selector";
-    }
-
-    @Override
     public float getValue(float x, float y) {
         float select = selector.getValue(x, y);
         return selectValue(x, y, select);

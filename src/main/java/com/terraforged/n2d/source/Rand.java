@@ -42,6 +42,11 @@ public class Rand implements Module {
     }
 
     @Override
+    public String getSpecName() {
+        return "Rand";
+    }
+
+    @Override
     public float getValue(float x, float y) {
         x *= frequency;
         y *= frequency;

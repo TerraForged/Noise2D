@@ -43,6 +43,11 @@ public class Warp extends Modifier {
     }
 
     @Override
+    public String getSpecName() {
+        return "Warp";
+    }
+
+    @Override
     public float getValue(float x, float y) {
         return source.getValue(domain.getX(x, y), domain.getY(x, y));
     }

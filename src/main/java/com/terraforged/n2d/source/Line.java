@@ -71,6 +71,11 @@ public class Line implements Module {
     }
 
     @Override
+    public String getSpecName() {
+        return "Line";
+    }
+
+    @Override
     public float getValue(float x, float y) {
         float widthMod = getWidthModifier(x, y);
         return getValue(x, y, widthMod);

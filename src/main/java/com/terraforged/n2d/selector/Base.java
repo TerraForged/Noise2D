@@ -82,7 +82,7 @@ public class Base extends Selector {
 
     private static final DataFactory<Base> factory = (data, spec, context) -> new Base(
             spec.get("base", data, Module.class, context),
-            spec.get("source", data, Module.class, context),
+            spec.get("control", data, Module.class, context),
             spec.get("falloff", data, DataValue::asFloat),
             spec.get("interp", data, v -> v.asEnum(Interpolation.class))
     );

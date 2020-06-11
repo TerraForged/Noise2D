@@ -70,7 +70,7 @@ public interface Module extends Noise, SpecName {
 
     @Override
     default String getSpecName() {
-        return getClass().getSimpleName();
+        return "";
     }
 
     /**

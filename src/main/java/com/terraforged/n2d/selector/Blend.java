@@ -74,7 +74,7 @@ public class Blend extends Selector {
     }
 
     private static final DataFactory<Blend> factory = (data, spec, context) -> new Blend(
-            spec.get("selector", data, Module.class, context),
+            spec.get("control", data, Module.class, context),
             spec.get("lower", data, Module.class, context),
             spec.get("upper", data, Module.class, context),
             spec.get("midpoint", data, DataValue::asFloat),
