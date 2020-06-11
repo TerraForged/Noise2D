@@ -4,6 +4,23 @@ apply plugin: "maven-publish"
 group "me.dags"
 version "0.6.0-SNAPSHOT"
 
+configurations {
+    shade
+    compile.extendsFrom(shade)
+}
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    shade "com.github.TerraForged:Cereal:master-SNAPSHOT"
+}
+
+jar {
+    from { configurations.shade.collect { it.isDirectory() ? it : zipTree(it) } }
+    duplicatesStrategy = "EXCLUDE"
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
