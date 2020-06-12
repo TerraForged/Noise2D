@@ -74,6 +74,9 @@ public class Rand implements Module {
     );
 
     public static DataSpec<Rand> spec() {
-        return DataSpec.builder("Rand", Rand.class, factory).build();
+        return DataSpec.builder("Rand", Rand.class, factory)
+                .add("seed", 0, r -> r.seed)
+                .add("frequency", 1F, r -> r.frequency)
+                .build();
     }
 }

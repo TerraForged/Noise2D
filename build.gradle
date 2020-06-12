@@ -9,11 +9,11 @@ configurations {
     compile.extendsFrom(shade)
 }
 repositories {
-    maven { url "https://jitpack.io" }
+    maven { url "https://io.terraforged.com/repository/maven/" }
 }
 
 dependencies {
-    shade "com.github.TerraForged:Cereal:master-SNAPSHOT"
+    shade "com.terraforged:Cereal:0.0.1"
 }
 
 jar {

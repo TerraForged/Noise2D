@@ -43,7 +43,7 @@ public class FastBillow extends FastRidge {
         return 1 - super.getValue(x, y, seed);
     }
 
-    public static DataSpec<FastSource> spec() {
-        return spec("Billow", FastBillow::new);
+    public static DataSpec<FastBillow> billowSpec() {
+        return specBuilder("Billow", FastBillow.class, FastBillow::new).build();
     }
 }

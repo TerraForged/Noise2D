@@ -62,12 +62,12 @@ public class NoiseSpec {
     static {
         // sources
         DataSpecs.register(Constant.spec());
-        DataSpecs.register(FastBillow.spec());
+        DataSpecs.register(FastBillow.billowSpec());
         DataSpecs.register(FastCell.spec());
         DataSpecs.register(FastCellEdge.spec());
         DataSpecs.register(FastCubic.spec());
         DataSpecs.register(FastPerlin.spec());
-        DataSpecs.register(FastRidge.spec());
+        DataSpecs.register(FastRidge.ridgeSpec());
         DataSpecs.register(FastSimplex.spec());
         DataSpecs.register(FastSin.spec());
         DataSpecs.register(Line.spec());

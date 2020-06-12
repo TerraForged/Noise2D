@@ -90,7 +90,7 @@ public class FastCubic extends FastSource {
         return value;
     }
 
-    public static DataSpec<FastSource> spec() {
-        return spec("Cubic", FastCubic::new);
+    public static DataSpec<FastCubic> spec() {
+        return specBuilder("Cubic", FastCubic.class, FastCubic::new).build();
     }
 }

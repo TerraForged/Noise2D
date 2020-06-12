@@ -84,7 +84,7 @@ public class FastSimplex extends FastSource {
 
     private static final float[] signals = {1.00F, 0.989F, 0.810F, 0.781F, 0.708F, 0.702F, 0.696F};
 
-    public static DataSpec<FastSource> spec() {
-        return spec("Simplex", FastSimplex::new);
+    public static DataSpec<FastSimplex> spec() {
+        return specBuilder("Simplex", FastSimplex.class, FastSimplex::new).build();
     }
 }

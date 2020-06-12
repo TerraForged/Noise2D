@@ -77,10 +77,16 @@ public abstract class FastSource implements Module {
         builder.frequency(spec.get("frequency", data, DataValue::asDouble));
         builder.lacunarity(spec.get("lacunarity", data, DataValue::asDouble));
         builder.interp(spec.get("interp", data, v -> v.asEnum(Interpolation.class)));
-        builder.cellFunc(spec.get("cell_func", data, v -> v.asEnum(CellFunc.class)));
-        builder.edgeFunc(spec.get("edge_func", data, v -> v.asEnum(EdgeFunc.class)));
-        builder.distFunc(spec.get("dist_func", data, v -> v.asEnum(DistanceFunc.class)));
-        if (data.get("source").isNonNull()) {
+        if (data.has("cell_func")) {
+            builder.cellFunc(spec.get("cell_func", data, v -> v.asEnum(CellFunc.class)));
+        }
+        if (data.has("edge_func")) {
+            builder.edgeFunc(spec.get("edge_func", data, v -> v.asEnum(EdgeFunc.class)));
+        }
+        if (data.has("dist_func")) {
+            builder.distFunc(spec.get("dist_func", data, v -> v.asEnum(DistanceFunc.class)));
+        }
+        if (data.has("source")) {
             builder.source(spec.get("source", data, Module.class, context));
         }
         return builder;
@@ -88,10 +94,6 @@ public abstract class FastSource implements Module {
 
     private static <S extends FastSource> DataFactory<S> constructor(Function<Builder, S> constructor) {
         return (data, spec, context) -> constructor.apply(readData(data, spec, context));
-    }
-
-    public static DataSpec<FastSource> spec(String name, Function<Builder, FastSource> constructor) {
-        return specBuilder(name, FastSource.class, constructor(constructor)).build();
     }
 
     public static <S extends FastSource> DataSpec.Builder<S> specBuilder(String name, Class<S> type, Function<Builder, S> constructor) {
@@ -105,9 +107,6 @@ public abstract class FastSource implements Module {
                 .add("octaves", Builder.DEFAULT_OCTAVES, f -> f.octaves)
                 .add("frequency", Builder.DEFAULT_FREQUENCY, f -> f.frequency)
                 .add("lacunarity", Builder.DEFAULT_LACUNARITY, f -> f.lacunarity)
-                .add("interp", Builder.DEFAULT_INTERPOLATION, f -> f.interpolation)
-                .add("cell_func", Builder.DEFAULT_CELL_FUNC, f -> CellFunc.CELL_VALUE)
-                .add("edge_func", Builder.DEFAULT_EDGE_FUNC, f -> EdgeFunc.DISTANCE_2)
-                .add("dist_func", Builder.DEFAULT_DIST_FUNC, f -> DistanceFunc.EUCLIDEAN);
+                .add("interp", Builder.DEFAULT_INTERPOLATION, f -> f.interpolation);
     }
 }

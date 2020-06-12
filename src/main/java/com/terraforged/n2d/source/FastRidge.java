@@ -117,7 +117,7 @@ public class FastRidge extends FastSource {
         return value;
     }
 
-    public static DataSpec<FastSource> spec() {
-        return spec("Ridge", FastRidge::new);
+    public static DataSpec<FastRidge> ridgeSpec() {
+        return specBuilder("Ridge", FastRidge.class, FastRidge::new).build();
     }
 }

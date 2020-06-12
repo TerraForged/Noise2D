@@ -25,7 +25,9 @@
 
 package com.terraforged.n2d.source;
 
+import com.terraforged.cereal.spec.DataFactory;
 import com.terraforged.cereal.spec.DataSpec;
+import com.terraforged.cereal.value.DataValue;
 import com.terraforged.n2d.Module;
 import com.terraforged.n2d.util.NoiseUtil;
 
@@ -63,7 +65,14 @@ public class FastSin extends FastSource {
         return NoiseUtil.map(noise, -1, 1, 2);
     }
 
-    public static DataSpec<FastSource> spec() {
-        return spec("Sin", FastSin::new);
+    private static final DataFactory<FastSin> factory = (data, spec, context) -> new FastSin(
+            new Builder().frequency(spec.get("frequency", data, DataValue::asDouble)).source(spec.get("alpha", data, Module.class, context))
+    );
+
+    public static DataSpec<FastSin> spec() {
+        return DataSpec.builder("Sin", FastSin.class, factory)
+                .add("frequency", 1F, s -> s.frequency)
+                .addObj("alpha", s -> s.alpha)
+                .build();
     }
 }

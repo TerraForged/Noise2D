@@ -106,7 +106,7 @@ public class FastPerlin extends FastSource {
         return signals[index];
     }
 
-    public static DataSpec<FastSource> spec() {
-        return spec("Perlin", FastPerlin::new);
+    public static DataSpec<FastPerlin> spec() {
+        return specBuilder("Perlin", FastPerlin.class, FastPerlin::new).build();
     }
 }
