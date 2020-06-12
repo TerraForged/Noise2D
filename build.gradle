@@ -7,13 +7,16 @@ version "0.6.0-SNAPSHOT"
 configurations {
     shade
     compile.extendsFrom(shade)
+    all {
+        resolutionStrategy.cacheChangingModulesFor 0, "seconds"
+    }
 }
 repositories {
     maven { url "https://io.terraforged.com/repository/maven/" }
 }
 
 dependencies {
-    shade "com.terraforged:Cereal:0.0.1"
+    shade "com.terraforged:Cereal:0.0.1-SNAPSHOT"
 }
 
 jar {

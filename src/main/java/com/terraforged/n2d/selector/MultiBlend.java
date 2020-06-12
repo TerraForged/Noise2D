@@ -128,8 +128,8 @@ public class MultiBlend extends Selector {
         return DataSpec.builder(MultiBlend.class, factory)
                 .add("blend_range", 0, m -> m.blend)
                 .add("interp", Interpolation.LINEAR, m -> m.interpolation)
-                .addObj("control", m -> m.selector)
-                .addList("modules", m -> Arrays.asList(m.sources))
+                .addObj("control", Module.class, m -> m.selector)
+                .addList("modules", Module.class, m -> Arrays.asList(m.sources))
                 .build();
     }
 }

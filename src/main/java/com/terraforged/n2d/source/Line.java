@@ -226,9 +226,9 @@ public class Line implements Module {
                 .add("x2", 0F, l -> l.x2)
                 .add("y2", 0F, l -> l.y2)
                 .add("feather", 0F, l -> l.featherScale)
-                .addObj("radius", l -> l.radius)
-                .addObj("fade_in", l -> l.fadeIn)
-                .addObj("fade_out", l -> l.fadeOut)
+                .addObj("radius", Module.class,l -> l.radius)
+                .addObj("fade_in", Module.class,l -> l.fadeIn)
+                .addObj("fade_out", Module.class,l -> l.fadeOut)
                 .build();
     }
 }

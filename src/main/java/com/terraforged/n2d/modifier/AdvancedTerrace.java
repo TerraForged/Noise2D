@@ -125,14 +125,14 @@ public class AdvancedTerrace extends Modifier {
 
     public static DataSpec<AdvancedTerrace> spec() {
         return DataSpec.builder("AdvTerrace", AdvancedTerrace.class, factory)
-                .addObj("steps", a -> a.steps)
-                .addObj("octaves", a -> a.octaves)
-                .addObj("blend_min", a -> a.blendMin)
-                .addObj("blend_max", a -> a.blendMax)
-                .addObj("source", a -> a.source)
-                .addObj("modulation", a -> a.modulation)
-                .addObj("slope", a -> a.slope)
-                .addObj("mask", a -> a.mask)
+                .add("steps", 1F, a -> a.steps)
+                .add("octaves", 1F, a -> a.octaves)
+                .add("blend_min", 0F, a -> a.blendMin)
+                .add("blend_max", 1F, a -> a.blendMax)
+                .addObj("source", Module.class, a -> a.source)
+                .addObj("modulation", Module.class, a -> a.modulation)
+                .addObj("slope", Module.class, a -> a.slope)
+                .addObj("mask", Module.class, a -> a.mask)
                 .build();
     }
 }

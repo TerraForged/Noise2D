@@ -61,8 +61,8 @@ public class VariableCurve extends Modifier {
 
     public static DataSpec<VariableCurve> spec() {
         return Modifier.sourceBuilder("VariCurve", VariableCurve.class, factory)
-                .addObj("midpoint", v -> v.midpoint)
-                .addObj("gradient", v -> v.gradient)
+                .addObj("midpoint", Module.class, v -> v.midpoint)
+                .addObj("gradient", Module.class, v -> v.gradient)
                 .build();
     }
 }

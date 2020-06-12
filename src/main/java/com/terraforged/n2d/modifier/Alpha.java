@@ -56,7 +56,7 @@ public class Alpha extends Modifier {
 
     public static DataSpec<Alpha> spec() {
         return Modifier.sourceBuilder(Alpha.class, factory)
-                .addObj("alpha", a -> a.alpha)
+                .addObj("alpha", Module.class, a -> a.alpha)
                 .build();
     }
 }

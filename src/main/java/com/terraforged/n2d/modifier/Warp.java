@@ -65,8 +65,7 @@ public class Warp extends Modifier {
 
     public static DataSpec<Warp> spec() {
         return Modifier.sourceBuilder(Warp.class, factory)
-                .addObj("source", m -> m.source)
-                .addObj("domain", m -> m.domain)
+                .addObj("domain", Domain.class, m -> m.domain)
                 .build();
     }
 }

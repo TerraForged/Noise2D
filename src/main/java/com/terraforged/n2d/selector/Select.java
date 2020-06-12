@@ -123,9 +123,9 @@ public class Select extends Selector {
                 .add("upper_bound", 1, s -> s.upperBound)
                 .add("falloff", 0, s -> s.edgeFalloff)
                 .add("interp", Interpolation.LINEAR, s -> s.interpolation)
-                .addObj("control", s -> s.selector)
-                .addObj("lower", s -> s.source0)
-                .addObj("upper", s -> s.source1)
+                .addObj("control", Module.class, s -> s.selector)
+                .addObj("lower", Module.class, s -> s.source0)
+                .addObj("upper", Module.class, s -> s.source1)
                 .build();
     }
 }

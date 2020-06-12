@@ -60,6 +60,6 @@ public class Curve extends Modifier {
     );
 
     public static DataSpec<Curve> spec() {
-        return sourceBuilder(Curve.class, factory).addObj("curve", c -> c.func).build();
+        return sourceBuilder(Curve.class, factory).addObj("curve", CurveFunc.class, c -> c.func).build();
     }
 }

@@ -93,10 +93,10 @@ public class VariableBlend extends Selector {
                 .add("blend_min", 0F, v -> v.minBlend)
                 .add("blend_max", 1F, v -> v.maxBlend)
                 .add("interp", Interpolation.LINEAR, v -> v.interpolation)
-                .addObj("control", v -> v.selector)
-                .addObj("variator", v -> v.variator)
-                .addObj("lower", v -> v.source0)
-                .addObj("upper", v -> v.source1)
+                .addObj("control", Module.class, v -> v.selector)
+                .addObj("variator", Module.class, v -> v.variator)
+                .addObj("lower", Module.class, v -> v.source0)
+                .addObj("upper", Module.class, v -> v.source1)
                 .build();
     }
 }

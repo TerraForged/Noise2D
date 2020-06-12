@@ -129,11 +129,11 @@ public class Terrace extends Modifier {
 
     public static DataSpec<Terrace> spec() {
         return Modifier.specBuilder(Terrace.class, factory)
-                .addObj("steps", s -> s.steps.length)
-                .addObj("blend_range", s -> s.blend)
-                .addObj("source", s -> s.source)
-                .addObj("lower_curve", s -> s.lowerCurve)
-                .addObj("upper_curve", s -> s.upperCurve)
+                .add("steps", 1, s -> s.steps.length)
+                .add("blend_range", 1, s -> s.blend)
+                .addObj("source", Module.class, s -> s.source)
+                .addObj("lower_curve", Module.class, s -> s.lowerCurve)
+                .addObj("upper_curve", Module.class, s -> s.upperCurve)
                 .build();
     }
 }

@@ -61,7 +61,7 @@ public class Boost extends Modifier {
     public static DataSpec<Boost> spec() {
         return Modifier.specBuilder(Boost.class, factory)
                 .add("boost", 1, b -> b.iterations)
-                .addObj("source", b -> b.source)
+                .addObj("source", Module.class,  b -> b.source)
                 .build();
     }
 }

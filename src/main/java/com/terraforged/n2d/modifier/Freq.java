@@ -40,8 +40,8 @@ public class Freq extends Modifier {
 
     public static DataSpec<Freq> spec() {
         return sourceBuilder(Freq.class, factory)
-                .addObj("x", f -> f.x)
-                .addObj("y", f -> f.y)
+                .addObj("x", Module.class, f -> f.x)
+                .addObj("y", Module.class, f -> f.y)
                 .build();
     }
 }

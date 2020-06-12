@@ -87,9 +87,9 @@ public class Blend extends Selector {
                 .add("midpoint", 0.5F, b -> b.midpoint)
                 .add("blend_range", 0F, b -> b.blend)
                 .add("interp", Interpolation.LINEAR, b -> b.interpolation)
-                .addObj("control", b -> b.selector)
-                .addObj("lower", b -> b.source0)
-                .addObj("upper", b -> b.source1)
+                .addObj("control", Module.class, b -> b.selector)
+                .addObj("lower", Module.class, b -> b.source0)
+                .addObj("upper", Module.class, b -> b.source1)
                 .build();
     }
 }

@@ -84,8 +84,8 @@ public class Clamp extends Modifier {
 
     public static DataSpec<Clamp> spec() {
         return Modifier.sourceBuilder(Clamp.class, factory)
-                .addObj("min", c -> c.min)
-                .addObj("max", c -> c.max)
+                .addObj("min", Module.class, c -> c.min)
+                .addObj("max", Module.class, c -> c.max)
                 .build();
     }
 }

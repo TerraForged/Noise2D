@@ -36,11 +36,6 @@ public class DirectionWarp implements Domain {
     private final Module direction;
     private final Module strength;
 
-    private float x = Float.MAX_VALUE;
-    private float y = Float.MAX_VALUE;
-    private float ox = 0;
-    private float oy = 0;
-
     public DirectionWarp(Module direction, Module strength) {
         this.direction = direction;
         this.strength = strength;
@@ -72,8 +67,8 @@ public class DirectionWarp implements Domain {
 
     public static DataSpec<? extends Domain> spec() {
         return DataSpec.builder("DirectionWarp", DirectionWarp.class, DirectionWarp::create)
-                .addObj("direction", w -> w.direction)
-                .addObj("strength", w -> w.strength)
+                .addObj("direction", Module.class, w -> w.direction)
+                .addObj("strength", Module.class, w -> w.strength)
                 .build();
     }
 }

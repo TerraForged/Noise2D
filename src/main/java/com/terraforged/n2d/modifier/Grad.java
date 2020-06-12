@@ -75,9 +75,9 @@ public class Grad extends Modifier {
 
     public static DataSpec<Grad> spec() {
         return Modifier.sourceBuilder(Grad.class, factory)
-                .addObj("lower", g -> g.lower)
-                .addObj("upper", g -> g.upper)
-                .addObj("strength", g -> g.strength)
+                .addObj("lower", Module.class, g -> g.lower)
+                .addObj("upper", Module.class, g -> g.upper)
+                .addObj("strength", Module.class, g -> g.strength)
                 .build();
     }
 }

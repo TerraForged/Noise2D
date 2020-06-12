@@ -59,7 +59,7 @@ public class Threshold extends Modifier {
 
     public static DataSpec<Threshold> spec() {
         return Modifier.sourceBuilder(Threshold.class, factory)
-                .addObj("threshold", t -> t.threshold)
+                .addObj("threshold", Module.class, t -> t.threshold)
                 .build();
     }
 }

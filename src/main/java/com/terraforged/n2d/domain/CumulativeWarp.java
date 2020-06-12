@@ -28,6 +28,7 @@ package com.terraforged.n2d.domain;
 import com.terraforged.cereal.spec.Context;
 import com.terraforged.cereal.spec.DataSpec;
 import com.terraforged.cereal.value.DataObject;
+import com.terraforged.n2d.Module;
 
 public class CumulativeWarp implements Domain {
 
@@ -67,8 +68,8 @@ public class CumulativeWarp implements Domain {
 
     public static DataSpec<? extends Domain> spec() {
         return DataSpec.builder("CumulativeWarp", CumulativeWarp.class, CumulativeWarp::create)
-                .addObj("warp_1", w -> w.a)
-                .addObj("warp_2", w -> w.b)
+                .addObj("warp_1", Domain.class, w -> w.a)
+                .addObj("warp_2", Domain.class, w -> w.b)
                 .build();
     }
 }

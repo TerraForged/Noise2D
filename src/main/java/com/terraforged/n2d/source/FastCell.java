@@ -94,7 +94,7 @@ public class FastCell extends FastSource {
         return specBuilder("Cell", FastCell.class, FastCell::new)
                 .add("cell_func", Builder.DEFAULT_CELL_FUNC, f -> f.cellFunc.name())
                 .add("dist_func", Builder.DEFAULT_DIST_FUNC, f -> f.distFunc.name())
-                .addObj("source", f -> f.lookup)
+                .addObj("source", Module.class, f -> f.lookup)
                 .build();
     }
 }

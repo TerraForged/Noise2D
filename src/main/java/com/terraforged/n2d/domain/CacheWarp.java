@@ -28,6 +28,7 @@ package com.terraforged.n2d.domain;
 import com.terraforged.cereal.spec.Context;
 import com.terraforged.cereal.spec.DataSpec;
 import com.terraforged.cereal.value.DataObject;
+import com.terraforged.n2d.Module;
 
 public class CacheWarp implements Domain {
 
@@ -75,7 +76,7 @@ public class CacheWarp implements Domain {
 
     public static DataSpec<? extends Domain> spec() {
         return DataSpec.builder("CacheWarp", CacheWarp.class, CacheWarp::create)
-                .addObj("domain", w -> w.domain)
+                .addObj("domain", Domain.class, w -> w.domain)
                 .build();
     }
 }

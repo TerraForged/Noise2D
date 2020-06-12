@@ -74,7 +74,7 @@ public class Bias extends Modifier {
 
     public static DataSpec<Bias> spec() {
         return Modifier.sourceBuilder(Bias.class, factory)
-                .addObj("bias", b -> b.bias)
+                .addObj("bias", Module.class, b -> b.bias)
                 .build();
     }
 }

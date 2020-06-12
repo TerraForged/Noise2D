@@ -103,7 +103,7 @@ public abstract class Combiner implements Module {
 
     public static DataSpec<Combiner> spec(String name, Function<Module[], Combiner> constructor) {
         return DataSpec.builder(name, Combiner.class, constructor(constructor))
-                .addList("modules", c -> Arrays.asList(c.sources))
+                .addList("modules", Module.class, c -> Arrays.asList(c.sources))
                 .build();
     }
 }

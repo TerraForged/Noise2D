@@ -84,8 +84,8 @@ public class Map extends Modifier {
 
     public static DataSpec<Map> spec() {
         return Modifier.sourceBuilder(Map.class, factory)
-                .addObj("min", m -> m.min)
-                .addObj("max", m -> m.max)
+                .addObj("min", Module.class, m -> m.min)
+                .addObj("max", Module.class, m -> m.max)
                 .build();
     }
 }

@@ -71,6 +71,6 @@ public class Scale extends Modifier {
     );
 
     public static DataSpec<Scale> spec() {
-        return Modifier.sourceBuilder(Scale.class, factory).addObj("scale", s -> s.scale).build();
+        return Modifier.sourceBuilder(Scale.class, factory).addObj("scale", Module.class, s -> s.scale).build();
     }
 }

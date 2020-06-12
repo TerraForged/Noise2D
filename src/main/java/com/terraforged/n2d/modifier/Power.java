@@ -59,7 +59,7 @@ public class Power extends Modifier {
 
     public static DataSpec<Power> spec() {
         return sourceBuilder("Pow", Power.class, factory)
-                .addObj("power", p -> p.n)
+                .addObj("power", Module.class, p -> p.n)
                 .build();
     }
 }

@@ -94,11 +94,11 @@ public class Steps extends Modifier {
 
     public static DataSpec<Steps> spec() {
         return specBuilder(Steps.class, factory)
-                .addObj("curve", s -> s.curve)
-                .addObj("source", s -> s.source)
-                .addObj("steps", s -> s.steps)
-                .addObj("slope_min", s -> s.slopeMin)
-                .addObj("slope_max", s -> s.slopeMax)
+                .addObj("curve", CurveFunc.class, s -> s.curve)
+                .addObj("source", Module.class, s -> s.source)
+                .addObj("steps", Module.class, s -> s.steps)
+                .addObj("slope_min", Module.class, s -> s.slopeMin)
+                .addObj("slope_max", Module.class, s -> s.slopeMax)
                 .build();
     }
 }

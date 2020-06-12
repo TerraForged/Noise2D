@@ -89,10 +89,10 @@ public class Base extends Selector {
 
     public static DataSpec<Base> spec() {
         return DataSpec.builder("Base", Base.class, factory)
-                .addObj("control", b -> b.selector)
-                .addObj("base", b -> b.base)
                 .add("falloff", 0, b -> b.falloff)
                 .add("interp", Interpolation.LINEAR, b -> b.interpolation)
+                .addObj("control", Module.class,b -> b.selector)
+                .addObj("base", Module.class,b -> b.base)
                 .build();
     }
 }

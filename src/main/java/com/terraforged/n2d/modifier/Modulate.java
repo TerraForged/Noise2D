@@ -68,8 +68,8 @@ public class Modulate extends Modifier {
 
     public static DataSpec<Modulate> spec() {
         return Modifier.sourceBuilder(Modulate.class, factory)
-                .addObj("direction", m -> m.direction)
-                .addObj("strength", m -> m.direction)
+                .addObj("direction", Module.class, m -> m.direction)
+                .addObj("strength", Module.class, m -> m.direction)
                 .build();
     }
 }

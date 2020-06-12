@@ -71,7 +71,7 @@ public abstract class Modifier implements Module {
     }
 
     protected static <M extends Modifier> DataSpec.Builder<M> sourceBuilder(String name, Class<M> type, DataFactory<M> factory) {
-        return DataSpec.builder(name, type, factory).addObj("source", m -> m.source);
+        return DataSpec.builder(name, type, factory).addObj("source", Module.class, m -> m.source);
     }
 
     public static <M extends Modifier> DataSpec<M> spec(Class<M> type, Function<Module, M> constructor) {

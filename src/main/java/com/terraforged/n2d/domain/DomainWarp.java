@@ -86,9 +86,9 @@ public class DomainWarp implements Domain {
 
     public static DataSpec<? extends Domain> spec() {
         return DataSpec.builder("DomainWarp", DomainWarp.class, DomainWarp::create)
-                .addObj("x", w -> w.x)
-                .addObj("y", w -> w.y)
-                .addObj("distance", w -> w.distance)
+                .addObj("x", Module.class, w -> w.x)
+                .addObj("y", Module.class, w -> w.y)
+                .addObj("distance", Module.class, w -> w.distance)
                 .build();
     }
 }
