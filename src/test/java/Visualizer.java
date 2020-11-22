@@ -23,10 +23,10 @@
  * SOFTWARE.
  */
 
-import com.terraforged.n2d.Module;
-import com.terraforged.n2d.Source;
-import com.terraforged.n2d.domain.Domain;
-import com.terraforged.n2d.util.NoiseUtil;
+import com.terraforged.noise.Module;
+import com.terraforged.noise.Source;
+import com.terraforged.noise.domain.Domain;
+import com.terraforged.noise.util.NoiseUtil;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

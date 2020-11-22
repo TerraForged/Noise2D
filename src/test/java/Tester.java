@@ -1,7 +1,7 @@
 import com.terraforged.cereal.Cereal;
 import com.terraforged.cereal.spec.Context;
-import com.terraforged.n2d.Module;
-import com.terraforged.n2d.Source;
+import com.terraforged.noise.Module;
+import com.terraforged.noise.Source;
 
 import java.io.IOException;
 import java.io.StringReader;
