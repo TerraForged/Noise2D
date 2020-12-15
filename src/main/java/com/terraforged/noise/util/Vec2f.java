@@ -34,6 +34,8 @@ import java.util.Objects;
 
 public class Vec2f implements SpecName {
 
+    public static final Vec2f ZERO = new Vec2f(0, 0);
+
     public final float x;
     public final float y;
 
@@ -48,6 +50,10 @@ public class Vec2f implements SpecName {
 
     public int getBlockY() {
         return (int) y;
+    }
+
+    public Vec2f add(float x, float y) {
+        return new Vec2f(this.x + x, this.y + y);
     }
 
     public float dist2(float x, float y) {

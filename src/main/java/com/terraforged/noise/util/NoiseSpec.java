@@ -1,6 +1,7 @@
 package com.terraforged.noise.util;
 
 import com.terraforged.cereal.spec.Context;
+import com.terraforged.cereal.spec.DataAccessor;
 import com.terraforged.cereal.spec.DataSpec;
 import com.terraforged.cereal.spec.DataSpecs;
 import com.terraforged.cereal.value.DataObject;
@@ -56,6 +57,8 @@ import com.terraforged.noise.source.SimplexNoise;
 import com.terraforged.noise.source.Sin;
 import com.terraforged.noise.source.Line;
 import com.terraforged.noise.source.Rand;
+
+import java.util.function.Function;
 
 public class NoiseSpec {
 
@@ -130,12 +133,18 @@ public class NoiseSpec {
 
     public static void init() {}
 
-    public static int getSeed(DataObject data, DataSpec<?> spec, Context context) {
-        DataValue value = context.getData().get("seed");
-        if (value.isNonNull()) {
-            context.getData().add("seed", value.inc(1));
-            return value.asInt();
-        }
-        return spec.get("seed", data, DataValue::asInt);
+    // contextual seed
+    public static int seed(Context context) {
+        return context.getData().get("seed").asInt();
+    }
+
+    // seed offset added to contextual seed
+    public static int seed(DataObject data, DataSpec<?> spec, Context context) {
+        return spec.get("seed", data, DataValue::asInt) + seed(context);
+    }
+
+    // seed offset from difference between seed value & contextual seed
+    public static <T> DataAccessor<T, Integer> seed(Function<T, Integer> getter) {
+        return (t, context) -> getter.apply(t) - seed(context);
     }
 }

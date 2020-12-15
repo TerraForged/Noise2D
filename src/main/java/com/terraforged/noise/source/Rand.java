@@ -29,6 +29,7 @@ import com.terraforged.cereal.spec.DataFactory;
 import com.terraforged.cereal.spec.DataSpec;
 import com.terraforged.noise.Module;
 import com.terraforged.noise.util.Noise;
+import com.terraforged.noise.util.NoiseSpec;
 import com.terraforged.noise.util.NoiseUtil;
 
 public class Rand implements Module {
@@ -75,7 +76,7 @@ public class Rand implements Module {
 
     public static DataSpec<Rand> spec() {
         return DataSpec.builder("Rand", Rand.class, factory)
-                .add("seed", 0, r -> r.seed)
+                .add("seed", 0, NoiseSpec.seed(r -> r.seed))
                 .add("frequency", 1F, r -> r.frequency)
                 .build();
     }

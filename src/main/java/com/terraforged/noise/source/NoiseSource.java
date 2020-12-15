@@ -66,7 +66,7 @@ public abstract class NoiseSource implements Module {
 
     public static Builder readData(DataObject data, DataSpec<?> spec, Context context) {
         Builder builder = new Builder();
-        builder.seed(NoiseSpec.getSeed(data, spec, context));
+        builder.seed(NoiseSpec.seed(data, spec, context));
         builder.gain(spec.get("gain", data, DataValue::asDouble));
         builder.octaves(spec.get("octaves", data, DataValue::asInt));
         builder.frequency(spec.get("frequency", data, DataValue::asDouble));
@@ -97,7 +97,7 @@ public abstract class NoiseSource implements Module {
 
     public static <S extends NoiseSource> DataSpec.Builder<S> specBuilder(String name, Class<S> type, DataFactory<S> constructor) {
         return DataSpec.builder(name, type, constructor)
-                .add("seed", Builder.DEFAULT_SEED, f -> f.seed)
+                .add("seed", Builder.DEFAULT_SEED, NoiseSpec.seed(f -> f.seed))
                 .add("gain", Builder.DEFAULT_GAIN, f -> f.gain)
                 .add("octaves", Builder.DEFAULT_OCTAVES, f -> f.octaves)
                 .add("frequency", Builder.DEFAULT_FREQUENCY, f -> f.frequency)
