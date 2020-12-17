@@ -26,42 +26,65 @@
 package com.terraforged.noise.source;
 
 import com.terraforged.cereal.spec.DataSpec;
-import com.terraforged.noise.func.DistanceFunc;
-import com.terraforged.noise.func.EdgeFunc;
 import com.terraforged.noise.util.Noise;
 import com.terraforged.noise.util.NoiseUtil;
 
-public class CellEdgeNoise extends NoiseSource {
+public class SimplexNoise2 extends NoiseSource {
 
-    private final EdgeFunc edgeFunc;
-    private final DistanceFunc distFunc;
-    private final float distance;
+    private final float min;
+    private final float max;
+    private final float range;
 
-    public CellEdgeNoise(Builder builder) {
+    public SimplexNoise2(Builder builder) {
         super(builder);
-        this.edgeFunc = builder.getEdgeFunc();
-        this.distFunc = builder.getDistFunc();
-        this.distance = builder.getDisplacement();
+        this.min = -max(builder.getOctaves(), builder.getGain());
+        this.max = max(builder.getOctaves(), builder.getGain());
+        this.range = max - min;
     }
 
     @Override
     public String getSpecName() {
-        return "CellEdge";
+        return "Simplex2";
     }
 
     @Override
     public float getValue(float x, float y, int seed) {
         x *= frequency;
         y *= frequency;
-        float value = Noise.cellEdge(x, y, seed, distance, edgeFunc, distFunc);
-        return NoiseUtil.map(value, edgeFunc.min(), edgeFunc.max(), edgeFunc.range());
+
+        float sum = 0;
+        float amp = 1;
+
+        for (int i = 0; i < octaves; i++) {
+            sum += Noise.singleSimplex(x, y, seed + i) * amp;
+            x *= lacunarity;
+            y *= lacunarity;
+            amp *= gain;
+        }
+
+        return NoiseUtil.map(sum, min, max, range);
     }
 
-    public static DataSpec<CellEdgeNoise> spec() {
-        return specBuilder("CellEdge", CellEdgeNoise.class, CellEdgeNoise::new)
-                .add("distance", Builder.DEFAULT_DISTANCE, f -> f.distance)
-                .add("edge_func", Builder.DEFAULT_EDGE_FUNC, f -> f.edgeFunc.name())
-                .add("dist_func", Builder.DEFAULT_DIST_FUNC, f -> f.distFunc.name())
-                .build();
+    private static float max(int octaves, float gain) {
+        float signal = signal(octaves);
+
+        float sum = 0;
+        float amp = 1;
+        for (int i = 0; i < octaves; i++) {
+            sum += amp * signal;
+            amp *= gain;
+        }
+        return sum;
+    }
+
+    private static float signal(int octaves) {
+        int index = Math.min(octaves, signals.length - 1);
+        return signals[index];
+    }
+
+    private static final float[] signals = {1.00F, 0.989F, 0.810F, 0.781F, 0.708F, 0.702F, 0.696F};
+
+    public static DataSpec<SimplexNoise2> spec() {
+        return specBuilder("Simplex2", SimplexNoise2.class, SimplexNoise2::new).build();
     }
 }

@@ -326,7 +326,11 @@ public class NoiseUtil {
     }
 
     public static float pow(float value, float power) {
-        return (float) FastMath.pow(value, power);
+        return (float) Math.pow(value, power);
+    }
+
+    public static float sqrt(float value) {
+        return (float) Math.sqrt(value);
     }
 
     public static float sin(float r) {

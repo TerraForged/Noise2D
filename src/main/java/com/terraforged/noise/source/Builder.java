@@ -45,6 +45,7 @@ public class Builder {
     public static final float DEFAULT_RIDGE_GAIN = 0.975F;
     public static final float DEFAULT_LACUNARITY = 2F;
     public static final float DEFAULT_FREQUENCY = 1F;
+    public static final float DEFAULT_DISTANCE = 1F;
     public static final CellFunc DEFAULT_CELL_FUNC = CellFunc.CELL_VALUE;
     public static final EdgeFunc DEFAULT_EDGE_FUNC = EdgeFunc.DISTANCE_2;
     public static final DistanceFunc DEFAULT_DIST_FUNC = DistanceFunc.EUCLIDEAN;
@@ -55,6 +56,7 @@ public class Builder {
     private float gain = Float.MAX_VALUE;
     private float lacunarity = DEFAULT_LACUNARITY;
     private float frequency = DEFAULT_FREQUENCY;
+    private float displacement = DEFAULT_DISTANCE;
     private Module source = com.terraforged.noise.Source.ZERO;
     private CellFunc cellFunc = DEFAULT_CELL_FUNC;
     private EdgeFunc edgeFunc = DEFAULT_EDGE_FUNC;
@@ -81,6 +83,10 @@ public class Builder {
 
     public float getFrequency() {
         return frequency;
+    }
+
+    public float getDisplacement() {
+        return displacement;
     }
 
     public float getLacunarity() {
@@ -137,6 +143,11 @@ public class Builder {
         return this;
     }
 
+    public Builder displacement(double displacement) {
+        this.displacement = (float) displacement;
+        return this;
+    }
+
     public Builder interp(Interpolation interpolation) {
         this.interpolation = interpolation;
         return this;
@@ -166,8 +177,16 @@ public class Builder {
         return new PerlinNoise(this);
     }
 
+    public NoiseSource perlin2() {
+        return new PerlinNoise2(this);
+    }
+
     public NoiseSource simplex() {
         return new SimplexNoise(this);
+    }
+
+    public NoiseSource simplex2() {
+        return new SimplexNoise2(this);
     }
 
     public NoiseSource ridge() {

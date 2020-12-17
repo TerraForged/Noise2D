@@ -29,34 +29,36 @@ import com.terraforged.cereal.spec.DataSpec;
 import com.terraforged.noise.util.Noise;
 import com.terraforged.noise.util.NoiseUtil;
 
-public class SimplexNoise extends NoiseSource {
+public class PerlinNoise2 extends NoiseSource {
 
-    private final float min;
-    private final float max;
-    private final float range;
+    private static final float[] signals = {1F, 0.900F, 0.83F, 0.75F, 0.64F, 0.62F, 0.61F};
 
-    public SimplexNoise(Builder builder) {
+    protected final float min;
+    protected final float max;
+    protected final float range;
+
+    public PerlinNoise2(Builder builder) {
         super(builder);
-        this.min = -max(builder.getOctaves(), builder.getGain());
-        this.max = max(builder.getOctaves(), builder.getGain());
-        this.range = max - min;
+        min = min(builder.getOctaves(), builder.getGain());
+        max = max(builder.getOctaves(), builder.getGain());
+        range = Math.abs(max - min);
     }
 
     @Override
     public String getSpecName() {
-        return "Simplex";
+        return "Perlin2";
     }
 
     @Override
-    public float getValue(float x, float y, int seed) {
+    public float getValue(float x, float y) {
         x *= frequency;
         y *= frequency;
 
         float sum = 0;
-        float amp = 1;
+        float amp = gain;
 
         for (int i = 0; i < octaves; i++) {
-            sum += Noise.singleLegacySimplex(x, y, seed + i) * amp;
+            sum += Noise.singlePerlin2(x, y, seed + i, interpolation) * amp;
             x *= lacunarity;
             y *= lacunarity;
             amp *= gain;
@@ -65,13 +67,34 @@ public class SimplexNoise extends NoiseSource {
         return NoiseUtil.map(sum, min, max, range);
     }
 
-    private static float max(int octaves, float gain) {
-        float signal = signal(octaves);
+    @Override
+    public float getValue(float x, float y, int seed) {
+        x *= frequency;
+        y *= frequency;
 
         float sum = 0;
-        float amp = 1;
+        float amp = gain;
+
         for (int i = 0; i < octaves; i++) {
-            sum += amp * signal;
+            sum += Noise.singlePerlin(x, y, seed + i, interpolation) * amp;
+            x *= lacunarity;
+            y *= lacunarity;
+            amp *= gain;
+        }
+
+        return NoiseUtil.map(sum, min, max, range);
+    }
+
+    protected float min(int octaves, float gain) {
+        return -max(octaves, gain);
+    }
+
+    protected float max(int octaves, float gain) {
+        float signal = signal(octaves);
+        float sum = 0;
+        float amp = gain;
+        for (int i = 0; i < octaves; i++) {
+            sum += signal * amp;
             amp *= gain;
         }
         return sum;
@@ -82,9 +105,7 @@ public class SimplexNoise extends NoiseSource {
         return signals[index];
     }
 
-    private static final float[] signals = {1.00F, 0.989F, 0.810F, 0.781F, 0.708F, 0.702F, 0.696F};
-
-    public static DataSpec<SimplexNoise> spec() {
-        return specBuilder("Simplex", SimplexNoise.class, SimplexNoise::new).build();
+    public static DataSpec<PerlinNoise2> spec() {
+        return specBuilder("Perlin2", PerlinNoise2.class, PerlinNoise2::new).build();
     }
 }

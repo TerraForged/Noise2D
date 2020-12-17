@@ -27,12 +27,12 @@ package com.terraforged.noise;
 
 import com.terraforged.noise.func.CellFunc;
 import com.terraforged.noise.func.DistanceFunc;
-import com.terraforged.noise.util.NoiseSpec;
 import com.terraforged.noise.func.EdgeFunc;
 import com.terraforged.noise.source.Builder;
 import com.terraforged.noise.source.Constant;
 import com.terraforged.noise.source.Line;
 import com.terraforged.noise.source.Rand;
+import com.terraforged.noise.util.NoiseSpec;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
@@ -44,8 +44,10 @@ public enum Source {
     CONST(Builder::constant),
     CUBIC(Builder::cubic),
     PERLIN(Builder::perlin),
+    PERLIN2(Builder::perlin2),
     RIDGE(Builder::ridge),
     SIMPLEX(Builder::simplex),
+    SIMPLEX2(Builder::simplex2),
     SIN(Builder::sin),
     RAND(Builder::rand);
 

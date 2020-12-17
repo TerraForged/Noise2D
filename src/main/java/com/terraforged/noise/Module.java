@@ -26,41 +26,13 @@
 package com.terraforged.noise;
 
 import com.terraforged.cereal.spec.SpecName;
-import com.terraforged.noise.modifier.Freq;
-import com.terraforged.noise.combiner.Add;
-import com.terraforged.noise.combiner.Max;
-import com.terraforged.noise.combiner.Min;
-import com.terraforged.noise.combiner.Multiply;
-import com.terraforged.noise.combiner.Sub;
+import com.terraforged.noise.combiner.*;
 import com.terraforged.noise.domain.Domain;
 import com.terraforged.noise.func.CurveFunc;
 import com.terraforged.noise.func.Interpolation;
 import com.terraforged.noise.func.MidPointCurve;
-import com.terraforged.noise.modifier.Abs;
-import com.terraforged.noise.modifier.AdvancedTerrace;
-import com.terraforged.noise.modifier.Alpha;
-import com.terraforged.noise.modifier.Bias;
-import com.terraforged.noise.modifier.Boost;
-import com.terraforged.noise.modifier.Cache;
-import com.terraforged.noise.modifier.Clamp;
-import com.terraforged.noise.modifier.Curve;
-import com.terraforged.noise.modifier.Grad;
-import com.terraforged.noise.modifier.Invert;
-import com.terraforged.noise.modifier.Map;
-import com.terraforged.noise.modifier.Modulate;
-import com.terraforged.noise.modifier.Power;
-import com.terraforged.noise.modifier.PowerCurve;
-import com.terraforged.noise.modifier.Scale;
-import com.terraforged.noise.modifier.Steps;
-import com.terraforged.noise.modifier.Terrace;
-import com.terraforged.noise.modifier.Threshold;
-import com.terraforged.noise.modifier.VariableCurve;
-import com.terraforged.noise.modifier.Warp;
-import com.terraforged.noise.selector.Base;
-import com.terraforged.noise.selector.Blend;
-import com.terraforged.noise.selector.MultiBlend;
-import com.terraforged.noise.selector.Select;
-import com.terraforged.noise.selector.VariableBlend;
+import com.terraforged.noise.modifier.*;
+import com.terraforged.noise.selector.*;
 import com.terraforged.noise.source.NoiseSource;
 
 /**

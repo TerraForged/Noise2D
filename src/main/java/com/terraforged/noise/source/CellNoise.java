@@ -39,12 +39,14 @@ public class CellNoise extends NoiseSource {
     private final float min;
     private final float max;
     private final float range;
+    private final float distance;
 
     public CellNoise(Builder builder) {
         super(builder);
         lookup = builder.getSource();
         cellFunc = builder.getCellFunc();
         distFunc = builder.getDistFunc();
+        distance = builder.getDisplacement();
         min = min(cellFunc, lookup);
         max = max(cellFunc, lookup);
         range = max - min;
@@ -59,7 +61,7 @@ public class CellNoise extends NoiseSource {
     public float getValue(float x, float y, int seed) {
         x *= frequency;
         y *= frequency;
-        float value = Noise.cell(x, y, seed, cellFunc, distFunc, lookup);
+        float value = Noise.cell(x, y, seed, distance, cellFunc, distFunc, lookup);
         return cellFunc.mapValue(value, min, max, range);
     }
 
@@ -85,6 +87,7 @@ public class CellNoise extends NoiseSource {
 
     public static DataSpec<CellNoise> spec() {
         return specBuilder("Cell", CellNoise.class, CellNoise::new)
+                .add("distance", Builder.DEFAULT_DISTANCE, f -> f.distance)
                 .add("cell_func", Builder.DEFAULT_CELL_FUNC, f -> f.cellFunc.name())
                 .add("dist_func", Builder.DEFAULT_DIST_FUNC, f -> f.distFunc.name())
                 .addObj("source", Module.class, f -> f.lookup)
