@@ -1,52 +1,28 @@
-/*
- *
- * MIT License
- *
- * Copyright (c) 2020 TerraForged
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 package com.terraforged.noise.modifier;
 
 import com.terraforged.cereal.spec.DataFactory;
 import com.terraforged.cereal.spec.DataSpec;
 import com.terraforged.cereal.value.DataValue;
 import com.terraforged.noise.Module;
-import com.terraforged.noise.func.Interpolation;
 import com.terraforged.noise.util.NoiseUtil;
 
 public class Terrace extends Modifier {
 
-    private final int maxIndex;
     private final float blend;
+    private final int maxIndex;
     private final Step[] steps;
-    private final Module lowerCurve;
-    private final Module upperCurve;
+    private final Module ramp;
+    private final Module cliff;
+    private final Module rampHeight;
 
-    public Terrace(Module source, Module lowerCurve, Module upperCurve, int steps, float blendRange) {
+    public Terrace(Module source, Module ramp, Module cliff, Module rampHeight, int steps, float blendRange) {
         super(source);
         this.blend = blendRange;
         this.maxIndex = steps - 1;
         this.steps = new Step[steps];
-        this.lowerCurve = lowerCurve;
-        this.upperCurve = upperCurve;
+        this.ramp = ramp;
+        this.cliff = cliff;
+        this.rampHeight = rampHeight;
         float min = source.minValue();
         float max = source.maxValue();
         float range = max - min;
@@ -72,36 +48,42 @@ public class Terrace extends Modifier {
 
     @Override
     public float modify(float x, float y, float noiseValue) {
-        int index = NoiseUtil.round(noiseValue * maxIndex);
+        int index = NoiseUtil.floor(noiseValue * steps.length);
         Step step = steps[index];
-        if (noiseValue < step.lowerBound) {
-            if (index > 0) {
-                Step lower = steps[index - 1];
-                float alpha = (noiseValue - lower.upperBound) / (step.lowerBound - lower.upperBound);
-                alpha = 1 - Interpolation.CURVE3.apply(alpha);
-                float range = step.value - lower.value;
-                return step.value - (alpha * range * upperCurve.getValue(x, y));
-            }
-        } else if (noiseValue > step.upperBound) {
-            if (index < maxIndex) {
-                Step upper = steps[index + 1];
-                float alpha = (noiseValue - step.upperBound) / (upper.lowerBound - step.upperBound);
-                alpha = Interpolation.CURVE3.apply(alpha);
-                float range = upper.value - step.value;
-                return step.value + (alpha * range * lowerCurve.getValue(x, y));
-            }
-        }
-        return step.value;
-    }
 
-    private int getIndex(float value) {
-        int index = NoiseUtil.round(value * maxIndex);
-        if (index > maxIndex) {
-            return maxIndex;
-        } else if (index < 0) {
-            return 0;
+        if (index == maxIndex) {
+            return step.value;
         }
-        return index;
+
+        if (noiseValue < step.lowerBound) {
+            return step.value;
+        }
+
+        if (noiseValue > step.upperBound) {
+            Step next = steps[index + 1];
+            return next.value;
+        }
+
+        float ramp = 1F - (this.ramp.getValue(x, y) * 0.5F);
+        float cliff = 1F - (this.cliff.getValue(x, y) * 0.5F);
+        float alpha = (noiseValue - step.lowerBound) / (step.upperBound - step.lowerBound);
+
+        float value = step.value;
+        if (alpha > ramp) {
+            Step next = steps[index + 1];
+            float rampSize = 1 - ramp;
+            float rampAlpha = (alpha - ramp) / rampSize;
+            float rampHeight = this.rampHeight.getValue(x, y);
+            value += (next.value - value) * rampAlpha * rampHeight;
+        }
+
+        if (alpha > cliff) {
+            Step next = steps[index + 1];
+            float cliffAlpha = (alpha - cliff) / (1 - cliff);
+            value = NoiseUtil.lerp(value, next.value, cliffAlpha);
+        }
+
+        return value;
     }
 
     private static class Step {
@@ -121,8 +103,9 @@ public class Terrace extends Modifier {
 
     private static final DataFactory<Terrace> factory = (data, spec, context) -> new Terrace(
             spec.get("source", data, Module.class, context),
-            spec.get("lower_curve", data, Module.class, context),
-            spec.get("upper_curve", data, Module.class, context),
+            spec.get("ramp", data, Module.class, context),
+            spec.get("cliff", data, Module.class, context),
+            spec.get("ramp_height", data, Module.class, context),
             spec.get("steps", data, DataValue::asInt),
             spec.get("blend_range", data, DataValue::asFloat)
     );
@@ -132,8 +115,9 @@ public class Terrace extends Modifier {
                 .add("steps", 1, s -> s.steps.length)
                 .add("blend_range", 1, s -> s.blend)
                 .addObj("source", Module.class, s -> s.source)
-                .addObj("lower_curve", Module.class, s -> s.lowerCurve)
-                .addObj("upper_curve", Module.class, s -> s.upperCurve)
+                .addObj("ramp", Module.class, s -> s.ramp)
+                .addObj("cliff", Module.class, s -> s.cliff)
+                .addObj("ramp_height", Module.class, s -> s.rampHeight)
                 .build();
     }
 }

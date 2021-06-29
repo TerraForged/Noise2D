@@ -251,7 +251,7 @@ public interface Module extends Noise, SpecName {
      * @return a new Clamp Module
      */
     default Module clamp(double min, double max) {
-        return clamp(com.terraforged.noise.Source.constant(min), com.terraforged.noise.Source.constant(max));
+        return clamp(com.terraforged.noise.Source.constant(min), Source.constant(max));
     }
 
     /**
@@ -276,7 +276,7 @@ public interface Module extends Noise, SpecName {
     }
 
     default Module freq(double x, double y) {
-        return freq(com.terraforged.noise.Source.constant(x), com.terraforged.noise.Source.constant(y));
+        return freq(com.terraforged.noise.Source.constant(x), Source.constant(y));
     }
 
     default Module freq(Module x, Module y) {
@@ -296,7 +296,7 @@ public interface Module extends Noise, SpecName {
 
     // TODO
     default Module grad(double lower, double upper, double strength) {
-        return grad(com.terraforged.noise.Source.constant(lower), com.terraforged.noise.Source.constant(upper), com.terraforged.noise.Source.constant(strength));
+        return grad(com.terraforged.noise.Source.constant(lower), Source.constant(upper), Source.constant(strength));
     }
 
     // TODO
@@ -335,7 +335,7 @@ public interface Module extends Noise, SpecName {
      * @return a new Map module
      */
     default Module map(double min, double max) {
-        return map(com.terraforged.noise.Source.constant(min), com.terraforged.noise.Source.constant(max));
+        return map(com.terraforged.noise.Source.constant(min), Source.constant(max));
     }
 
     /**
@@ -436,7 +436,7 @@ public interface Module extends Noise, SpecName {
     }
 
     default Module steps(int steps, double slopeMin, double slopeMax, CurveFunc curveFunc) {
-        return steps(com.terraforged.noise.Source.constant(steps), com.terraforged.noise.Source.constant(slopeMin), com.terraforged.noise.Source.constant(slopeMax), curveFunc);
+        return steps(com.terraforged.noise.Source.constant(steps), Source.constant(slopeMin), Source.constant(slopeMax), curveFunc);
     }
 
     default Module steps(Module steps, Module slopeMin, Module slopeMax) {
@@ -451,24 +451,32 @@ public interface Module extends Noise, SpecName {
         return new Sub(this, other);
     }
 
-    default Module terrace(double lowerCurve, double upperCurve, int steps, double blendRange) {
-        return terrace(com.terraforged.noise.Source.constant(lowerCurve), com.terraforged.noise.Source.constant(upperCurve), steps, blendRange);
+    default Module legacyTerrace(double lowerCurve, double upperCurve, int steps, double blendRange) {
+        return legacyTerrace(Source.constant(lowerCurve), Source.constant(upperCurve), steps, blendRange);
     }
 
-    default Module terrace(Module lowerCurve, Module upperCurve, int steps, double blendRange) {
-        return new Terrace(this, lowerCurve, upperCurve, steps, (float) blendRange);
+    default Module legacyTerrace(Module lowerCurve, Module upperCurve, int steps, double blendRange) {
+        return new LegacyTerrace(this, lowerCurve, upperCurve, steps, (float) blendRange);
+    }
+
+    default Module terrace(double lowerCurve, double upperCurve, double lowerHeight, int steps, double blendRange) {
+        return terrace(Source.constant(lowerCurve), Source.constant(upperCurve), Source.constant(lowerHeight), steps, blendRange);
+    }
+
+    default Module terrace(Module lowerCurve, Module upperCurve, Module lowerHeight, int steps, double blendRange) {
+        return new Terrace(this, lowerCurve, upperCurve, lowerHeight, steps, (float) blendRange);
     }
 
     default Module terrace(Module modulation, double slope, double blendMin, double blendMax, int steps) {
-        return terrace(modulation, com.terraforged.noise.Source.ONE, slope, blendMin, blendMax, steps);
+        return terrace(modulation, Source.ONE, slope, blendMin, blendMax, steps);
     }
 
     default Module terrace(Module modulation, double slope, double blendMin, double blendMax, int steps, int octaves) {
-        return terrace(modulation, com.terraforged.noise.Source.ONE, com.terraforged.noise.Source.constant(slope), blendMin, blendMax, steps, octaves);
+        return terrace(modulation, Source.ONE, Source.constant(slope), blendMin, blendMax, steps, octaves);
     }
 
     default Module terrace(Module modulation, Module mask, double slope, double blendMin, double blendMax, int steps) {
-        return terrace(modulation, mask, com.terraforged.noise.Source.constant(slope), blendMin, blendMax, steps, 1);
+        return terrace(modulation, mask, Source.constant(slope), blendMin, blendMax, steps, 1);
     }
 
     default Module terrace(Module modulation, Module mask, Module slope, double blendMin, double blendMax, int steps) {
@@ -480,7 +488,7 @@ public interface Module extends Noise, SpecName {
     }
 
     default Module threshold(double threshold) {
-        return new Threshold(this, com.terraforged.noise.Source.constant(threshold));
+        return new Threshold(this, Source.constant(threshold));
     }
 
     default Module threshold(Module threshold) {
@@ -492,7 +500,7 @@ public interface Module extends Noise, SpecName {
     }
 
     default Module warp(Module warpX, Module warpZ, double power) {
-        return warp(warpX, warpZ, com.terraforged.noise.Source.constant(power));
+        return warp(warpX, warpZ, Source.constant(power));
     }
 
     default Module warp(Module warpX, Module warpZ, Module power) {

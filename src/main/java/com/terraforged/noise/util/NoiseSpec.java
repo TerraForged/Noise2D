@@ -54,6 +54,7 @@ public class NoiseSpec {
         DataSpecs.register(Freq.spec());
         DataSpecs.register(Grad.spec());
         DataSpecs.register(Invert.spec());
+        DataSpecs.register(LegacyTerrace.spec());
         DataSpecs.register(Map.spec());
         DataSpecs.register(Modulate.spec());
         DataSpecs.register(Power.spec());
