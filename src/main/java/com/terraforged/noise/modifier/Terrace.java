@@ -8,7 +8,11 @@ import com.terraforged.noise.util.NoiseUtil;
 
 public class Terrace extends Modifier {
 
+    private static final float MIN_NOISE_VALUE = 0.0F;
+    private static final float MAX_NOISE_VALUE = 0.999999F;
+
     private final float blend;
+    private final float length;
     private final int maxIndex;
     private final Step[] steps;
     private final Module ramp;
@@ -20,6 +24,7 @@ public class Terrace extends Modifier {
         this.blend = blendRange;
         this.maxIndex = steps - 1;
         this.steps = new Step[steps];
+        this.length = steps * MAX_NOISE_VALUE;
         this.ramp = ramp;
         this.cliff = cliff;
         this.rampHeight = rampHeight;
@@ -42,7 +47,7 @@ public class Terrace extends Modifier {
     @Override
     public float getValue(float x, float y) {
         float value = source.getValue(x, y);
-        value = NoiseUtil.clamp(value, 0, 1);
+        value = NoiseUtil.clamp(value, MIN_NOISE_VALUE, MAX_NOISE_VALUE);
         return modify(x, y, value);
     }
 
