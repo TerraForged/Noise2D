@@ -65,6 +65,24 @@ public class Sin extends NoiseSource {
         return NoiseUtil.map(noise, -1, 1, 2);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Sin sin = (Sin) o;
+
+        return alpha.equals(sin.alpha);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + alpha.hashCode();
+        return result;
+    }
+
     private static final DataFactory<Sin> factory = (data, spec, context) -> new Sin(
             new Builder().frequency(spec.get("frequency", data, DataValue::asDouble)).source(spec.get("alpha", data, Module.class, context))
     );

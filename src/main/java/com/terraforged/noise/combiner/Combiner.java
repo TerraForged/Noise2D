@@ -87,6 +87,27 @@ public abstract class Combiner implements Module {
         return max;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Combiner combiner = (Combiner) o;
+
+        if (Float.compare(combiner.min, min) != 0) return false;
+        if (Float.compare(combiner.max, max) != 0) return false;
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        return Arrays.equals(sources, combiner.sources);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (min != +0.0f ? Float.floatToIntBits(min) : 0);
+        result = 31 * result + (max != +0.0f ? Float.floatToIntBits(max) : 0);
+        result = 31 * result + Arrays.hashCode(sources);
+        return result;
+    }
+
     protected abstract float minTotal(float result, Module next);
 
     protected abstract float maxTotal(float result, Module next);

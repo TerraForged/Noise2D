@@ -53,6 +53,26 @@ public class VariableCurve extends Modifier {
         return NoiseUtil.curve(noiseValue, mid, curve);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        VariableCurve that = (VariableCurve) o;
+
+        if (!midpoint.equals(that.midpoint)) return false;
+        return gradient.equals(that.gradient);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + midpoint.hashCode();
+        result = 31 * result + gradient.hashCode();
+        return result;
+    }
+
     private static final DataFactory<VariableCurve> factory = (data, spec, context) -> new VariableCurve(
             spec.get("source", data, Module.class, context),
             spec.get("midpoint", data, Module.class, context),

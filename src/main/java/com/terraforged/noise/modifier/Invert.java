@@ -53,6 +53,16 @@ public class Invert extends Modifier {
         return source.maxValue() - noiseValue;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     public static DataSpec<Invert> spec() {
         return Modifier.spec(Invert.class, Invert::new);
     }

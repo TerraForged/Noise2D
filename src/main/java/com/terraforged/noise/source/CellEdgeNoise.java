@@ -57,6 +57,28 @@ public class CellEdgeNoise extends NoiseSource {
         return NoiseUtil.map(value, edgeFunc.min(), edgeFunc.max(), edgeFunc.range());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        CellEdgeNoise that = (CellEdgeNoise) o;
+
+        if (Float.compare(that.distance, distance) != 0) return false;
+        if (edgeFunc != that.edgeFunc) return false;
+        return distFunc == that.distFunc;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + edgeFunc.hashCode();
+        result = 31 * result + distFunc.hashCode();
+        result = 31 * result + (distance != +0.0f ? Float.floatToIntBits(distance) : 0);
+        return result;
+    }
+
     public static DataSpec<CellEdgeNoise> spec() {
         return specBuilder("CellEdge", CellEdgeNoise.class, CellEdgeNoise::new)
                 .add("distance", Builder.DEFAULT_DISTANCE, f -> f.distance)

@@ -30,6 +30,8 @@ import com.terraforged.noise.func.Interpolation;
 import com.terraforged.noise.util.Noise;
 import com.terraforged.noise.util.NoiseUtil;
 
+import java.util.Arrays;
+
 public class RidgeNoise extends NoiseSource {
 
     private static final int RIDGED_MAX_OCTAVE = 30;
@@ -90,6 +92,32 @@ public class RidgeNoise extends NoiseSource {
             amp *= gain;
         }
         return NoiseUtil.map(value, min, max, range);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RidgeNoise)) return false;
+        if (!super.equals(o)) return false;
+
+        RidgeNoise that = (RidgeNoise) o;
+
+        if (Float.compare(that.min, min) != 0) return false;
+        if (Float.compare(that.max, max) != 0) return false;
+        if (Float.compare(that.range, range) != 0) return false;
+        if (interpolation != that.interpolation) return false;
+        return Arrays.equals(spectralWeights, that.spectralWeights);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + interpolation.hashCode();
+        result = 31 * result + Arrays.hashCode(spectralWeights);
+        result = 31 * result + (min != +0.0f ? Float.floatToIntBits(min) : 0);
+        result = 31 * result + (max != +0.0f ? Float.floatToIntBits(max) : 0);
+        result = 31 * result + (range != +0.0f ? Float.floatToIntBits(range) : 0);
+        return result;
     }
 
     private float calculateBound(float signal, int octaves, float gain) {

@@ -53,6 +53,24 @@ public class Boost extends Modifier {
         return value;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Boost boost = (Boost) o;
+
+        return iterations == boost.iterations;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + iterations;
+        return result;
+    }
+
     private static final DataFactory<Boost> factory = (data, spec, context) -> new Boost(
             spec.get("source", data, Module.class, context),
             spec.get("iterations", data, DataValue::asInt)
@@ -60,7 +78,7 @@ public class Boost extends Modifier {
 
     public static DataSpec<Boost> spec() {
         return Modifier.specBuilder(Boost.class, factory)
-                .add("boost", 1, b -> b.iterations)
+                .add("iterations", 1, b -> b.iterations)
                 .addObj("source", Module.class,  b -> b.source)
                 .build();
     }

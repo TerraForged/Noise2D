@@ -69,6 +69,32 @@ public class CacheWarp implements Domain {
         return cachedY;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CacheWarp cacheWarp = (CacheWarp) o;
+
+        if (cached != cacheWarp.cached) return false;
+        if (Float.compare(cacheWarp.cachedX, cachedX) != 0) return false;
+        if (Float.compare(cacheWarp.cachedY, cachedY) != 0) return false;
+        if (Float.compare(cacheWarp.x, x) != 0) return false;
+        if (Float.compare(cacheWarp.y, y) != 0) return false;
+        return domain.equals(cacheWarp.domain);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = domain.hashCode();
+        result = 31 * result + (cached ? 1 : 0);
+        result = 31 * result + (cachedX != +0.0f ? Float.floatToIntBits(cachedX) : 0);
+        result = 31 * result + (cachedY != +0.0f ? Float.floatToIntBits(cachedY) : 0);
+        result = 31 * result + (x != +0.0f ? Float.floatToIntBits(x) : 0);
+        result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
+        return result;
+    }
+
     private static CacheWarp create(DataObject data, DataSpec<?> spec, Context context) {
         return new CacheWarp(spec.get("domain", data, Domain.class, context));
     }

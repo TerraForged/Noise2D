@@ -54,6 +54,24 @@ public class Curve extends Modifier {
         return func.apply(noiseValue);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Curve curve = (Curve) o;
+
+        return func.equals(curve.func);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + func.hashCode();
+        return result;
+    }
+
     private static final DataFactory<Curve> factory = (data, spec, context) -> new Curve(
             spec.get("source", data, Module.class, context),
             spec.get("curve", data, CurveFunc.class, context)

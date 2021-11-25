@@ -25,6 +25,24 @@ public class MidPointCurve implements CurveFunc {
         return NoiseUtil.curve(value, mid, steepness);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MidPointCurve that = (MidPointCurve) o;
+
+        if (Float.compare(that.mid, mid) != 0) return false;
+        return Float.compare(that.steepness, steepness) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (mid != +0.0f ? Float.floatToIntBits(mid) : 0);
+        result = 31 * result + (steepness != +0.0f ? Float.floatToIntBits(steepness) : 0);
+        return result;
+    }
+
     private static final DataFactory<MidPointCurve> factory = (data, spec, context) -> new MidPointCurve(
             spec.get("midpoint", data, DataValue::asFloat),
             spec.get("steepness", data, DataValue::asFloat)

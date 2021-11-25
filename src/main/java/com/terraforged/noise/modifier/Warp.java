@@ -58,6 +58,24 @@ public class Warp extends Modifier {
         return 0;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Warp warp = (Warp) o;
+
+        return domain.equals(warp.domain);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + domain.hashCode();
+        return result;
+    }
+
     private static final DataFactory<Warp> factory = (data, spec, context) -> new Warp(
             spec.get("source", data, Module.class, context),
             spec.get("domain", data, Domain.class, context)

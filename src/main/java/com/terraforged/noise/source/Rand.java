@@ -56,6 +56,24 @@ public class Rand implements Module {
         return Math.abs(value);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Rand rand = (Rand) o;
+
+        if (seed != rand.seed) return false;
+        return Float.compare(rand.frequency, frequency) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = seed;
+        result = 31 * result + (frequency != +0.0f ? Float.floatToIntBits(frequency) : 0);
+        return result;
+    }
+
     public float getValue(float x, float y, int childSeed) {
         return Noise.white(x, y, NoiseUtil.hash(seed, childSeed));
     }

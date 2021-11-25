@@ -49,6 +49,24 @@ public class Alpha extends Modifier {
         return (noiseValue * a) + (1 - a);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Alpha alpha1 = (Alpha) o;
+
+        return alpha.equals(alpha1.alpha);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + alpha.hashCode();
+        return result;
+    }
+
     private static final DataFactory<Alpha> factory = (data, spec, context) -> new Alpha(
             spec.get("source", data, Module.class, context),
             spec.get("alpha", data, Module.class, context)

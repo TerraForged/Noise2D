@@ -32,6 +32,26 @@ public class Freq extends Modifier {
         return 0;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Freq freq = (Freq) o;
+
+        if (!x.equals(freq.x)) return false;
+        return y.equals(freq.y);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + x.hashCode();
+        result = 31 * result + y.hashCode();
+        return result;
+    }
+
     private static final DataFactory<Freq> factory = (data, spec, context) -> new Freq(
             spec.get("source", data, Module.class, context),
             spec.get("x", data, Module.class, context),

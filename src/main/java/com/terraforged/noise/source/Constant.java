@@ -62,6 +62,21 @@ public class Constant implements Module {
         return value;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Constant constant = (Constant) o;
+
+        return Float.compare(constant.value, value) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return (value != +0.0f ? Float.floatToIntBits(value) : 0);
+    }
+
     private static final DataFactory<Constant> factory = (data, spec, context) -> new Constant(
             new Builder().frequency(spec.get("value", data, DataValue::asDouble))
     );

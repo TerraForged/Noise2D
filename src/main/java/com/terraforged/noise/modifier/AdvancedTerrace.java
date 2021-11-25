@@ -90,6 +90,40 @@ public class AdvancedTerrace extends Modifier {
         return NoiseUtil.lerp(value, result, alpha);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        AdvancedTerrace that = (AdvancedTerrace) o;
+
+        if (steps != that.steps) return false;
+        if (octaves != that.octaves) return false;
+        if (Float.compare(that.modRange, modRange) != 0) return false;
+        if (Float.compare(that.blendMin, blendMin) != 0) return false;
+        if (Float.compare(that.blendMax, blendMax) != 0) return false;
+        if (Float.compare(that.blendRange, blendRange) != 0) return false;
+        if (!slope.equals(that.slope)) return false;
+        if (!mask.equals(that.mask)) return false;
+        return modulation.equals(that.modulation);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + steps;
+        result = 31 * result + octaves;
+        result = 31 * result + (modRange != +0.0f ? Float.floatToIntBits(modRange) : 0);
+        result = 31 * result + (blendMin != +0.0f ? Float.floatToIntBits(blendMin) : 0);
+        result = 31 * result + (blendMax != +0.0f ? Float.floatToIntBits(blendMax) : 0);
+        result = 31 * result + (blendRange != +0.0f ? Float.floatToIntBits(blendRange) : 0);
+        result = 31 * result + slope.hashCode();
+        result = 31 * result + mask.hashCode();
+        result = 31 * result + modulation.hashCode();
+        return result;
+    }
+
     private float getModulated(float value, float modulation) {
         return (value + modulation) / modRange;
     }

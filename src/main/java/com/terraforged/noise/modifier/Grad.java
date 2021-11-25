@@ -66,6 +66,28 @@ public class Grad extends Modifier {
         return NoiseUtil.pow(noiseValue, power);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Grad grad = (Grad) o;
+
+        if (!lower.equals(grad.lower)) return false;
+        if (!upper.equals(grad.upper)) return false;
+        return strength.equals(grad.strength);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + lower.hashCode();
+        result = 31 * result + upper.hashCode();
+        result = 31 * result + strength.hashCode();
+        return result;
+    }
+
     private static DataFactory<Grad> factory = (data, spec, context) -> new Grad(
             spec.get("source", data, Module.class, context),
             spec.get("lower", data, Module.class, context),

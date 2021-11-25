@@ -4,7 +4,7 @@ plugins {
 }
 
 group "com.terraforged"
-version "0.8.3-SNAPSHOT"
+version "0.8.4-SNAPSHOT"
 
 configurations {
     shade
@@ -14,20 +14,22 @@ configurations {
     }
 }
 repositories {
+    mavenCentral()
     maven { url "https://io.terraforged.com/maven/" }
 }
 
 dependencies {
-    shade "com.terraforged:Cereal:0.0.2-SNAPSHOT"
+    testCompile "junit:junit:4.13.2"
+    shade "com.terraforged:Cereal:0.0.3-SNAPSHOT"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+    classifier = "sources"
     from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
+    classifier = "javadoc"
     from javadoc.destinationDir
 }
 

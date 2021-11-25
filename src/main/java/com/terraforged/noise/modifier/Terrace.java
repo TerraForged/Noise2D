@@ -6,6 +6,8 @@ import com.terraforged.cereal.value.DataValue;
 import com.terraforged.noise.Module;
 import com.terraforged.noise.util.NoiseUtil;
 
+import java.util.Arrays;
+
 public class Terrace extends Modifier {
 
     private static final float MIN_NOISE_VALUE = 0.0F;
@@ -89,6 +91,37 @@ public class Terrace extends Modifier {
         }
 
         return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Terrace terrace = (Terrace) o;
+
+        if (Float.compare(terrace.blend, blend) != 0) return false;
+        if (Float.compare(terrace.length, length) != 0) return false;
+        if (maxIndex != terrace.maxIndex) return false;
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        if (!Arrays.equals(steps, terrace.steps)) return false;
+        if (!ramp.equals(terrace.ramp)) return false;
+        if (!cliff.equals(terrace.cliff)) return false;
+        return rampHeight.equals(terrace.rampHeight);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (blend != +0.0f ? Float.floatToIntBits(blend) : 0);
+        result = 31 * result + (length != +0.0f ? Float.floatToIntBits(length) : 0);
+        result = 31 * result + maxIndex;
+        result = 31 * result + Arrays.hashCode(steps);
+        result = 31 * result + ramp.hashCode();
+        result = 31 * result + cliff.hashCode();
+        result = 31 * result + rampHeight.hashCode();
+        return result;
     }
 
     private static class Step {

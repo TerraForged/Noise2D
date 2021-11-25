@@ -54,6 +54,24 @@ public class AddWarp implements Domain {
         return a.getOffsetY(x, y) + b.getOffsetY(x, y);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AddWarp addWarp = (AddWarp) o;
+
+        if (!a.equals(addWarp.a)) return false;
+        return b.equals(addWarp.b);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = a.hashCode();
+        result = 31 * result + b.hashCode();
+        return result;
+    }
+
     private static AddWarp create(DataObject data, DataSpec<?> spec, Context context) {
         return new AddWarp(
                 spec.get("warp_1", data, Domain.class, context),

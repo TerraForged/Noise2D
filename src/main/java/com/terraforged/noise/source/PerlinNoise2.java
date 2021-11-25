@@ -85,6 +85,28 @@ public class PerlinNoise2 extends NoiseSource {
         return NoiseUtil.map(sum, min, max, range);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        PerlinNoise2 that = (PerlinNoise2) o;
+
+        if (Float.compare(that.min, min) != 0) return false;
+        if (Float.compare(that.max, max) != 0) return false;
+        return Float.compare(that.range, range) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (min != +0.0f ? Float.floatToIntBits(min) : 0);
+        result = 31 * result + (max != +0.0f ? Float.floatToIntBits(max) : 0);
+        result = 31 * result + (range != +0.0f ? Float.floatToIntBits(range) : 0);
+        return result;
+    }
+
     protected float min(int octaves, float gain) {
         return -max(octaves, gain);
     }

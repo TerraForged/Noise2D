@@ -32,6 +32,8 @@ import com.terraforged.noise.Module;
 import com.terraforged.noise.func.Interpolation;
 import com.terraforged.noise.util.NoiseUtil;
 
+import java.util.Arrays;
+
 public class LegacyTerrace extends Modifier {
 
     private final int maxIndex;
@@ -92,6 +94,33 @@ public class LegacyTerrace extends Modifier {
             }
         }
         return step.value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        LegacyTerrace that = (LegacyTerrace) o;
+
+        if (maxIndex != that.maxIndex) return false;
+        if (Float.compare(that.blend, blend) != 0) return false;
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        if (!Arrays.equals(steps, that.steps)) return false;
+        if (!lowerCurve.equals(that.lowerCurve)) return false;
+        return upperCurve.equals(that.upperCurve);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + maxIndex;
+        result = 31 * result + (blend != +0.0f ? Float.floatToIntBits(blend) : 0);
+        result = 31 * result + Arrays.hashCode(steps);
+        result = 31 * result + lowerCurve.hashCode();
+        result = 31 * result + upperCurve.hashCode();
+        return result;
     }
 
     private int getIndex(float value) {

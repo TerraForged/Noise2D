@@ -58,6 +58,24 @@ public class DirectionWarp implements Domain {
         return NoiseUtil.cos(angle) * strength.getValue(x, y);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DirectionWarp that = (DirectionWarp) o;
+
+        if (!direction.equals(that.direction)) return false;
+        return strength.equals(that.strength);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = direction.hashCode();
+        result = 31 * result + strength.hashCode();
+        return result;
+    }
+
     private static DirectionWarp create(DataObject data, DataSpec<?> spec, Context context) {
         return new DirectionWarp(
                 spec.get("direction", data, Module.class, context),

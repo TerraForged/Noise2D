@@ -67,6 +67,24 @@ public class Bias extends Modifier {
         return noiseValue + bias.getValue(x, y);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Bias bias1 = (Bias) o;
+
+        return bias.equals(bias1.bias);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + bias.hashCode();
+        return result;
+    }
+
     private static final DataFactory<Bias> factory = (data, spec, context) -> new Bias(
             spec.get("source", data, Module.class, context),
             spec.get("bias", data, DataValue::asFloat)

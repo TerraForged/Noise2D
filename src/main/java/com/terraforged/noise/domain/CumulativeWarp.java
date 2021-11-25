@@ -58,6 +58,24 @@ public class CumulativeWarp implements Domain {
         return b.getY(ax, ay);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CumulativeWarp that = (CumulativeWarp) o;
+
+        if (!a.equals(that.a)) return false;
+        return b.equals(that.b);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = a.hashCode();
+        result = 31 * result + b.hashCode();
+        return result;
+    }
+
     private static CumulativeWarp create(DataObject data, DataSpec<?> spec, Context context) {
         return new CumulativeWarp(
                 spec.get("warp_1", data, Domain.class, context),

@@ -76,10 +76,30 @@ public class Clamp extends Modifier {
         return noiseValue;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Clamp clamp = (Clamp) o;
+
+        if (!min.equals(clamp.min)) return false;
+        return max.equals(clamp.max);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + min.hashCode();
+        result = 31 * result + max.hashCode();
+        return result;
+    }
+
     private static final DataFactory<Clamp> factory = (data, spec, context) -> new Clamp(
-            spec.get("source", data, Modifier.class, context),
-            spec.get("min", data, Modifier.class, context),
-            spec.get("max", data, Modifier.class, context)
+            spec.get("source", data, Module.class, context),
+            spec.get("min", data, Module.class, context),
+            spec.get("max", data, Module.class, context)
     );
 
     public static DataSpec<Clamp> spec() {

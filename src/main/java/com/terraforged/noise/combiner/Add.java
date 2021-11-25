@@ -57,6 +57,16 @@ public class Add extends Combiner {
         return total + value;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     public static DataSpec<?> spec() {
         return spec("Add", Add::new);
     }

@@ -57,6 +57,16 @@ public class Sub extends Combiner {
         return total - value;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     public static DataSpec<?> spec() {
         return spec("Sub", Sub::new);
     }

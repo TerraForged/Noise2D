@@ -54,16 +54,16 @@ public enum Interpolation implements CurveFunc {
 
     @Override
     public String getSpecName() {
-        return "Interp";
+        return "Interpolation";
     }
 
     public abstract float apply(float f);
 
-    private static final DataFactory<Interpolation> factory = (data, spec, context) -> spec.get("name", data, v -> v.asEnum(Interpolation.class));
+    private static final DataFactory<Interpolation> factory = (data, spec, context) -> spec.get("interpolation", data, v -> Interpolation.valueOf(v.asString()));
 
     public static DataSpec<Interpolation> spec() {
-        return DataSpec.builder("Interp", Interpolation.class, factory)
-                .add("name", Interpolation.LINEAR.name(), i -> i)
+        return DataSpec.builder("Interpolation", Interpolation.class, factory)
+                .add("interpolation", Interpolation.LINEAR.name(), Enum::name)
                 .build();
     }
 }

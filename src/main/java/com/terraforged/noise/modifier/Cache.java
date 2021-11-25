@@ -68,6 +68,24 @@ public class Cache extends Modifier {
         return value.set(x, y, source.getValue(x, y));
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Cache cache = (Cache) o;
+
+        return value.equals(cache.value);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + value.hashCode();
+        return result;
+    }
+
     private static class Value {
 
         private float x = 0;

@@ -57,6 +57,16 @@ public class Min extends Combiner {
         return Math.min(total, value);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     public static DataSpec<?> spec() {
         return spec("Min", Min::new);
     }

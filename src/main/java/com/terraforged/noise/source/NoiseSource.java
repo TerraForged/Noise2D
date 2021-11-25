@@ -62,6 +62,32 @@ public abstract class NoiseSource implements Module {
         return getValue(x, y, seed);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        NoiseSource that = (NoiseSource) o;
+
+        if (seed != that.seed) return false;
+        if (octaves != that.octaves) return false;
+        if (Float.compare(that.gain, gain) != 0) return false;
+        if (Float.compare(that.frequency, frequency) != 0) return false;
+        if (Float.compare(that.lacunarity, lacunarity) != 0) return false;
+        return interpolation == that.interpolation;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = seed;
+        result = 31 * result + octaves;
+        result = 31 * result + (gain != +0.0f ? Float.floatToIntBits(gain) : 0);
+        result = 31 * result + (frequency != +0.0f ? Float.floatToIntBits(frequency) : 0);
+        result = 31 * result + (lacunarity != +0.0f ? Float.floatToIntBits(lacunarity) : 0);
+        result = 31 * result + interpolation.hashCode();
+        return result;
+    }
+
     public abstract float getValue(float x, float y, int seed);
 
     public static Builder readData(DataObject data, DataSpec<?> spec, Context context) {
@@ -71,7 +97,7 @@ public abstract class NoiseSource implements Module {
         builder.octaves(spec.get("octaves", data, DataValue::asInt));
         builder.frequency(spec.get("frequency", data, DataValue::asDouble));
         builder.lacunarity(spec.get("lacunarity", data, DataValue::asDouble));
-        builder.interp(spec.get("interp", data, v -> v.asEnum(Interpolation.class)));
+        builder.interp(spec.get("interpolation", data, v -> Interpolation.valueOf(v.asString())));
         if (data.has("cell_func")) {
             builder.cellFunc(spec.get("cell_func", data, v -> v.asEnum(CellFunc.class)));
         }
@@ -102,6 +128,6 @@ public abstract class NoiseSource implements Module {
                 .add("octaves", Builder.DEFAULT_OCTAVES, f -> f.octaves)
                 .add("frequency", Builder.DEFAULT_FREQUENCY, f -> f.frequency)
                 .add("lacunarity", Builder.DEFAULT_LACUNARITY, f -> f.lacunarity)
-                .add("interp", Builder.DEFAULT_INTERPOLATION, f -> f.interpolation);
+                .add("interpolation", Builder.DEFAULT_INTERPOLATION, f -> f.interpolation.name());
     }
 }

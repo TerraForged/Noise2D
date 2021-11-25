@@ -76,6 +76,28 @@ public class Map extends Modifier {
 //        }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Map map = (Map) o;
+
+        if (Float.compare(map.sourceRange, sourceRange) != 0) return false;
+        if (!min.equals(map.min)) return false;
+        return max.equals(map.max);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + min.hashCode();
+        result = 31 * result + max.hashCode();
+        result = 31 * result + (sourceRange != +0.0f ? Float.floatToIntBits(sourceRange) : 0);
+        return result;
+    }
+
     private static final DataFactory<Map> factory = (data, spec, context) -> new Map(
             spec.get("source", data, Module.class, context),
             spec.get("min", data, Module.class, context),

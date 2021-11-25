@@ -60,6 +60,26 @@ public class Modulate extends Modifier {
         return 0;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Modulate modulate = (Modulate) o;
+
+        if (!direction.equals(modulate.direction)) return false;
+        return strength.equals(modulate.strength);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + direction.hashCode();
+        result = 31 * result + strength.hashCode();
+        return result;
+    }
+
     private static final DataFactory<Modulate> factory = (data, spec, context) -> new Modulate(
             spec.get("source", data, Module.class, context),
             spec.get("direction", data, Module.class, context),
@@ -69,7 +89,7 @@ public class Modulate extends Modifier {
     public static DataSpec<Modulate> spec() {
         return Modifier.sourceBuilder(Modulate.class, factory)
                 .addObj("direction", Module.class, m -> m.direction)
-                .addObj("strength", Module.class, m -> m.direction)
+                .addObj("strength", Module.class, m -> m.strength)
                 .build();
     }
 }

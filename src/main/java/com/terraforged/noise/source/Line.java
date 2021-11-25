@@ -81,6 +81,52 @@ public class Line implements Module {
         return getValue(x, y, widthMod);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Line line = (Line) o;
+
+        if (Float.compare(line.x1, x1) != 0) return false;
+        if (Float.compare(line.y1, y1) != 0) return false;
+        if (Float.compare(line.x2, x2) != 0) return false;
+        if (Float.compare(line.y2, y2) != 0) return false;
+        if (Float.compare(line.dx, dx) != 0) return false;
+        if (Float.compare(line.dy, dy) != 0) return false;
+        if (Float.compare(line.orthX1, orthX1) != 0) return false;
+        if (Float.compare(line.orthY1, orthY1) != 0) return false;
+        if (Float.compare(line.orthX2, orthX2) != 0) return false;
+        if (Float.compare(line.orthY2, orthY2) != 0) return false;
+        if (Float.compare(line.length2, length2) != 0) return false;
+        if (Float.compare(line.featherBias, featherBias) != 0) return false;
+        if (Float.compare(line.featherScale, featherScale) != 0) return false;
+        if (!fadeIn.equals(line.fadeIn)) return false;
+        if (!fadeOut.equals(line.fadeOut)) return false;
+        return radius.equals(line.radius);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (x1 != +0.0f ? Float.floatToIntBits(x1) : 0);
+        result = 31 * result + (y1 != +0.0f ? Float.floatToIntBits(y1) : 0);
+        result = 31 * result + (x2 != +0.0f ? Float.floatToIntBits(x2) : 0);
+        result = 31 * result + (y2 != +0.0f ? Float.floatToIntBits(y2) : 0);
+        result = 31 * result + (dx != +0.0f ? Float.floatToIntBits(dx) : 0);
+        result = 31 * result + (dy != +0.0f ? Float.floatToIntBits(dy) : 0);
+        result = 31 * result + (orthX1 != +0.0f ? Float.floatToIntBits(orthX1) : 0);
+        result = 31 * result + (orthY1 != +0.0f ? Float.floatToIntBits(orthY1) : 0);
+        result = 31 * result + (orthX2 != +0.0f ? Float.floatToIntBits(orthX2) : 0);
+        result = 31 * result + (orthY2 != +0.0f ? Float.floatToIntBits(orthY2) : 0);
+        result = 31 * result + (length2 != +0.0f ? Float.floatToIntBits(length2) : 0);
+        result = 31 * result + (featherBias != +0.0f ? Float.floatToIntBits(featherBias) : 0);
+        result = 31 * result + (featherScale != +0.0f ? Float.floatToIntBits(featherScale) : 0);
+        result = 31 * result + fadeIn.hashCode();
+        result = 31 * result + fadeOut.hashCode();
+        result = 31 * result + radius.hashCode();
+        return result;
+    }
+
     public float getValue(float x, float y, float widthModifier) {
         return getValue(x, y, 0, widthModifier);
     }

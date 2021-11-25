@@ -57,19 +57,31 @@ public class DomainWarp implements Domain {
         return this.y.getValue(x, y) * this.distance.getValue(x, y);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DomainWarp that = (DomainWarp) o;
+
+        if (!x.equals(that.x)) return false;
+        if (!y.equals(that.y)) return false;
+        return distance.equals(that.distance);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = x.hashCode();
+        result = 31 * result + y.hashCode();
+        result = 31 * result + distance.hashCode();
+        return result;
+    }
+
     // map the module to the range -0.5 to 0.5
     // this ensures warping occurs in the positive and negative directions
     private static Module map(Module in) {
         if (in.minValue() == -0.5F && in.maxValue() == 0.5F) {
             return in;
-        }
-
-        float range = in.maxValue() - in.minValue();
-
-        // if range is 1 then the module just needs biasing by some value so that it's min becomes -0.5
-        if (range == 1F) {
-            float bias = -0.5F - in.minValue();
-            return in.bias(bias);
         }
 
         // if range is not 1 then use map to squash/stretch it to correct range

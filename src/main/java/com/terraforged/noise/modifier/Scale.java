@@ -65,6 +65,28 @@ public class Scale extends Modifier {
         return noiseValue * scale.getValue(x, y);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Scale scale1 = (Scale) o;
+
+        if (Float.compare(scale1.min, min) != 0) return false;
+        if (Float.compare(scale1.max, max) != 0) return false;
+        return scale.equals(scale1.scale);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + scale.hashCode();
+        result = 31 * result + (min != +0.0f ? Float.floatToIntBits(min) : 0);
+        result = 31 * result + (max != +0.0f ? Float.floatToIntBits(max) : 0);
+        return result;
+    }
+
     private static final DataFactory<Scale> factory = (data, spec, context) -> new Scale(
             spec.get("source", data, Module.class, context),
             spec.get("scale", data, Module.class, context)

@@ -84,6 +84,30 @@ public class Steps extends Modifier {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Steps steps1 = (Steps) o;
+
+        if (!steps.equals(steps1.steps)) return false;
+        if (!slopeMin.equals(steps1.slopeMin)) return false;
+        if (!slopeMax.equals(steps1.slopeMax)) return false;
+        return curve.equals(steps1.curve);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + steps.hashCode();
+        result = 31 * result + slopeMin.hashCode();
+        result = 31 * result + slopeMax.hashCode();
+        result = 31 * result + curve.hashCode();
+        return result;
+    }
+
     private static final DataFactory<Steps> factory = (data, spec, context) -> new Steps(
             spec.get("source", data, Module.class, context),
             spec.get("steps", data, Module.class, context),

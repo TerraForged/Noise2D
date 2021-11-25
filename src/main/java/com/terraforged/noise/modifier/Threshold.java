@@ -52,6 +52,24 @@ public class Threshold extends Modifier {
         return 1;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Threshold threshold1 = (Threshold) o;
+
+        return threshold.equals(threshold1.threshold);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + threshold.hashCode();
+        return result;
+    }
+
     private static final DataFactory<Threshold> factory = (data, spec, context) -> new Threshold(
             spec.get("source", data, Module.class, context),
             spec.get("threshold", data, Module.class, context)

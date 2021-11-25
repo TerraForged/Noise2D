@@ -65,6 +65,36 @@ public class CellNoise extends NoiseSource {
         return cellFunc.mapValue(value, min, max, range);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        CellNoise cellNoise = (CellNoise) o;
+
+        if (Float.compare(cellNoise.min, min) != 0) return false;
+        if (Float.compare(cellNoise.max, max) != 0) return false;
+        if (Float.compare(cellNoise.range, range) != 0) return false;
+        if (Float.compare(cellNoise.distance, distance) != 0) return false;
+        if (!lookup.equals(cellNoise.lookup)) return false;
+        if (cellFunc != cellNoise.cellFunc) return false;
+        return distFunc == cellNoise.distFunc;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + lookup.hashCode();
+        result = 31 * result + cellFunc.hashCode();
+        result = 31 * result + distFunc.hashCode();
+        result = 31 * result + (min != +0.0f ? Float.floatToIntBits(min) : 0);
+        result = 31 * result + (max != +0.0f ? Float.floatToIntBits(max) : 0);
+        result = 31 * result + (range != +0.0f ? Float.floatToIntBits(range) : 0);
+        result = 31 * result + (distance != +0.0f ? Float.floatToIntBits(distance) : 0);
+        return result;
+    }
+
     static float min(CellFunc func, Module lookup) {
         if (func == CellFunc.NOISE_LOOKUP) {
             return lookup.minValue();

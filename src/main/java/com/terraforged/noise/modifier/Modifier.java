@@ -60,6 +60,28 @@ public abstract class Modifier implements Module {
         return source.maxValue();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Modifier modifier = (Modifier) o;
+
+        return source.equals(modifier.source);
+    }
+
+    @Override
+    public int hashCode() {
+        return source.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Modifier{" +
+                "source=" + source +
+                '}';
+    }
+
     public abstract float modify(float x, float y, float noiseValue);
 
     protected static <M extends Modifier> DataSpec.Builder<M> specBuilder(Class<M> type, DataFactory<M> factory) {

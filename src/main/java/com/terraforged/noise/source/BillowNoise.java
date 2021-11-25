@@ -43,6 +43,16 @@ public class BillowNoise extends RidgeNoise {
         return 1 - super.getValue(x, y, seed);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     public static DataSpec<BillowNoise> billowSpec() {
         return specBuilder("Billow", BillowNoise.class, BillowNoise::new).build();
     }

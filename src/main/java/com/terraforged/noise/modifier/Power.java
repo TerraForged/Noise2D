@@ -52,6 +52,24 @@ public class Power extends Modifier {
         return NoiseUtil.pow(noiseValue, n.getValue(x, y));
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Power power = (Power) o;
+
+        return n.equals(power.n);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + n.hashCode();
+        return result;
+    }
+
     public static final DataFactory<Power> factory = (data, spec, context) -> new Power(
             spec.get("source", data, Module.class, context),
             spec.get("power", data, Module.class, context)
