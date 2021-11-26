@@ -32,8 +32,6 @@ import com.terraforged.noise.Module;
 import com.terraforged.noise.func.Interpolation;
 import com.terraforged.noise.util.NoiseUtil;
 
-import java.util.Arrays;
-
 public class LegacyTerrace extends Modifier {
 
     private final int maxIndex;
@@ -106,8 +104,6 @@ public class LegacyTerrace extends Modifier {
 
         if (maxIndex != that.maxIndex) return false;
         if (Float.compare(that.blend, blend) != 0) return false;
-        // Probably incorrect - comparing Object[] arrays with Arrays.equals
-        if (!Arrays.equals(steps, that.steps)) return false;
         if (!lowerCurve.equals(that.lowerCurve)) return false;
         return upperCurve.equals(that.upperCurve);
     }
@@ -117,7 +113,6 @@ public class LegacyTerrace extends Modifier {
         int result = super.hashCode();
         result = 31 * result + maxIndex;
         result = 31 * result + (blend != +0.0f ? Float.floatToIntBits(blend) : 0);
-        result = 31 * result + Arrays.hashCode(steps);
         result = 31 * result + lowerCurve.hashCode();
         result = 31 * result + upperCurve.hashCode();
         return result;

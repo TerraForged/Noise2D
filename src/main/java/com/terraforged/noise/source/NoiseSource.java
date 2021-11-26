@@ -99,13 +99,13 @@ public abstract class NoiseSource implements Module {
         builder.lacunarity(spec.get("lacunarity", data, DataValue::asDouble));
         builder.interp(spec.get("interpolation", data, v -> Interpolation.valueOf(v.asString())));
         if (data.has("cell_func")) {
-            builder.cellFunc(spec.get("cell_func", data, v -> v.asEnum(CellFunc.class)));
+            builder.cellFunc(spec.getEnum("cell_func", data, CellFunc.class));
         }
         if (data.has("edge_func")) {
-            builder.edgeFunc(spec.get("edge_func", data, v -> v.asEnum(EdgeFunc.class)));
+            builder.edgeFunc(spec.getEnum("edge_func", data, EdgeFunc.class));
         }
         if (data.has("dist_func")) {
-            builder.distFunc(spec.get("dist_func", data, v -> v.asEnum(DistanceFunc.class)));
+            builder.distFunc(spec.getEnum("dist_func", data, DistanceFunc.class));
         }
         if (data.has("source")) {
             builder.source(spec.get("source", data, Module.class, context));
@@ -128,6 +128,6 @@ public abstract class NoiseSource implements Module {
                 .add("octaves", Builder.DEFAULT_OCTAVES, f -> f.octaves)
                 .add("frequency", Builder.DEFAULT_FREQUENCY, f -> f.frequency)
                 .add("lacunarity", Builder.DEFAULT_LACUNARITY, f -> f.lacunarity)
-                .add("interpolation", Builder.DEFAULT_INTERPOLATION, f -> f.interpolation.name());
+                .add("interpolation", Builder.DEFAULT_INTERPOLATION, f -> f.interpolation);
     }
 }

@@ -118,8 +118,8 @@ public class CellNoise extends NoiseSource {
     public static DataSpec<CellNoise> spec() {
         return specBuilder("Cell", CellNoise.class, CellNoise::new)
                 .add("distance", Builder.DEFAULT_DISTANCE, f -> f.distance)
-                .add("cell_func", Builder.DEFAULT_CELL_FUNC, f -> f.cellFunc.name())
-                .add("dist_func", Builder.DEFAULT_DIST_FUNC, f -> f.distFunc.name())
+                .add("cell_func", Builder.DEFAULT_CELL_FUNC, f -> f.cellFunc)
+                .add("dist_func", Builder.DEFAULT_DIST_FUNC, f -> f.distFunc)
                 .addObj("source", Module.class, f -> f.lookup)
                 .build();
     }

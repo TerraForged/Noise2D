@@ -20,7 +20,7 @@ repositories {
 
 dependencies {
     testCompile "junit:junit:4.13.2"
-    shade "com.terraforged:Cereal:0.0.3-SNAPSHOT"
+    shade "com.terraforged:Cereal:0.0.5-SNAPSHOT"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

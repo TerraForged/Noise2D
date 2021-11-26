@@ -29,6 +29,8 @@ import com.terraforged.cereal.spec.DataFactory;
 import com.terraforged.cereal.spec.DataSpec;
 import com.terraforged.noise.util.NoiseUtil;
 
+import java.util.function.Function;
+
 /**
  * https://github.com/Auburns/FastNoise_Java
  */
@@ -59,11 +61,11 @@ public enum Interpolation implements CurveFunc {
 
     public abstract float apply(float f);
 
-    private static final DataFactory<Interpolation> factory = (data, spec, context) -> spec.get("interpolation", data, v -> Interpolation.valueOf(v.asString()));
+    private static final DataFactory<Interpolation> factory = (data, spec, context) -> spec.getEnum("mode", data, Interpolation.class);
 
     public static DataSpec<Interpolation> spec() {
         return DataSpec.builder("Interpolation", Interpolation.class, factory)
-                .add("interpolation", Interpolation.LINEAR.name(), Enum::name)
+                .add("mode", Interpolation.LINEAR, Function.identity())
                 .build();
     }
 }

@@ -79,14 +79,14 @@ public class Blend extends Selector {
             spec.get("upper", data, Module.class, context),
             spec.get("midpoint", data, DataValue::asFloat),
             spec.get("blend_range", data, DataValue::asFloat),
-            spec.get("interp", data, v -> v.asEnum(Interpolation.class))
+            spec.getEnum("interpolation", data, Interpolation.class)
     );
 
     public static DataSpec<Blend> spec() {
         return DataSpec.builder(Blend.class, factory)
                 .add("midpoint", 0.5F, b -> b.midpoint)
                 .add("blend_range", 0F, b -> b.blend)
-                .add("interp", Interpolation.LINEAR, b -> b.interpolation)
+                .add("interpolation", Interpolation.LINEAR, b -> b.interpolation)
                 .addObj("control", Module.class, b -> b.selector)
                 .addObj("lower", Module.class, b -> b.source0)
                 .addObj("upper", Module.class, b -> b.source1)

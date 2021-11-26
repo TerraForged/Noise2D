@@ -82,8 +82,8 @@ public class CellEdgeNoise extends NoiseSource {
     public static DataSpec<CellEdgeNoise> spec() {
         return specBuilder("CellEdge", CellEdgeNoise.class, CellEdgeNoise::new)
                 .add("distance", Builder.DEFAULT_DISTANCE, f -> f.distance)
-                .add("edge_func", Builder.DEFAULT_EDGE_FUNC, f -> f.edgeFunc.name())
-                .add("dist_func", Builder.DEFAULT_DIST_FUNC, f -> f.distFunc.name())
+                .add("edge_func", Builder.DEFAULT_EDGE_FUNC, f -> f.edgeFunc)
+                .add("dist_func", Builder.DEFAULT_DIST_FUNC, f -> f.distFunc)
                 .build();
     }
 }

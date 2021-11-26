@@ -8,6 +8,7 @@ import com.terraforged.cereal.value.DataObject;
 import com.terraforged.cereal.value.DataValue;
 import com.terraforged.noise.combiner.*;
 import com.terraforged.noise.domain.*;
+import com.terraforged.noise.func.CurveFunc;
 import com.terraforged.noise.func.Interpolation;
 import com.terraforged.noise.func.MidPointCurve;
 import com.terraforged.noise.func.SCurve;
@@ -75,8 +76,9 @@ public class NoiseSpec {
 
         // curves
         DataSpecs.register(Interpolation.spec());
-        DataSpecs.register(MidPointCurve.spec());
-        DataSpecs.register(SCurve.spec());
+        DataSpecs.registerSub(CurveFunc.class, Interpolation.spec());
+        DataSpecs.registerSub(CurveFunc.class, MidPointCurve.spec());
+        DataSpecs.registerSub(CurveFunc.class, SCurve.spec());
 
         // warps
         DataSpecs.register(CacheWarp.spec());

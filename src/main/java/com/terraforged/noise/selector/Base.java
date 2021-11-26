@@ -84,13 +84,13 @@ public class Base extends Selector {
             spec.get("base", data, Module.class, context),
             spec.get("control", data, Module.class, context),
             spec.get("falloff", data, DataValue::asFloat),
-            spec.get("interp", data, v -> v.asEnum(Interpolation.class))
+            spec.get("interpolation", data, v -> v.asEnum(Interpolation.class))
     );
 
     public static DataSpec<Base> spec() {
         return DataSpec.builder("Base", Base.class, factory)
                 .add("falloff", 0, b -> b.falloff)
-                .add("interp", Interpolation.LINEAR, b -> b.interpolation)
+                .add("interpolation", Interpolation.LINEAR, b -> b.interpolation)
                 .addObj("control", Module.class,b -> b.selector)
                 .addObj("base", Module.class,b -> b.base)
                 .build();

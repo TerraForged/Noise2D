@@ -47,40 +47,4 @@ public class SpecTester {
         System.err.println(" " + a);
         System.err.println(" " + b);
     }
-
-    public static class Result {
-        private final Module module;
-        private final DataValue data;
-
-        public Result(Module module) {
-            this(module, encode(module));
-        }
-
-        public Result(Module module, DataValue data) {
-            this.module = module;
-            this.data = data;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Result result = (Result) o;
-
-            return module.equals(result.module);
-        }
-
-        @Override
-        public int hashCode() {
-            return module.hashCode();
-        }
-
-        @Override
-        public String toString() {
-            return "Result{" +
-                    "data=" + data +
-                    '}';
-        }
-    }
 }

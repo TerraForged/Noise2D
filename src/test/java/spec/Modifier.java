@@ -49,7 +49,7 @@ public class Modifier extends SpecTester {
         test(n1().invert());
     }
 
-//    @Test
+    @Test
     public void legacyTerrace() {
         test(n1().legacyTerrace(n2(), n3(), 13, 0.5));
     }
