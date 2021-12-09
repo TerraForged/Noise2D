@@ -26,25 +26,43 @@
 package com.terraforged.noise.source;
 
 import com.terraforged.cereal.spec.DataSpec;
+import com.terraforged.noise.Module;
+import com.terraforged.noise.Source;
+import com.terraforged.noise.util.N2DUtil;
 import com.terraforged.noise.util.Noise;
 import com.terraforged.noise.util.NoiseUtil;
 
-public class SimplexNoise2 extends NoiseSource {
+import java.awt.*;
+import java.util.Arrays;
 
+public class SimplexRidgeNoise extends NoiseSource {
+
+    private static final int RIDGED_MAX_OCTAVE = 30;
+
+    private final float[] spectralWeights;
     private final float min;
     private final float max;
     private final float range;
 
-    public SimplexNoise2(Builder builder) {
+    public SimplexRidgeNoise(Builder builder) {
         super(builder);
-        this.min = -max(builder.getOctaves(), builder.getGain());
-        this.max = max(builder.getOctaves(), builder.getGain());
-        this.range = max - min;
+        this.spectralWeights = new float[RIDGED_MAX_OCTAVE];
+
+        float h = 1.0F;
+        float frequency = 1.0F;
+        for (int i = 0; i < RIDGED_MAX_OCTAVE; i++) {
+            spectralWeights[i] = NoiseUtil.pow(frequency, -h);
+            frequency *= lacunarity;
+        }
+
+        min = 0;
+        max = SimplexNoise2.max(builder.getOctaves(), builder.getGain());
+        range = Math.abs(max - min);
     }
 
     @Override
     public String getSpecName() {
-        return "Simplex2";
+        return "SimplexRidge";
     }
 
     @Override
@@ -52,61 +70,56 @@ public class SimplexNoise2 extends NoiseSource {
         x *= frequency;
         y *= frequency;
 
-        float sum = 0;
-        float amp = 1;
+        float signal;
+        float value = 0.0F;
+        float weight = 1.0F;
 
-        for (int i = 0; i < octaves; i++) {
-            sum += Noise.singleSimplex(x, y, seed + i) * amp;
+        float offset = 1.0F;
+        float amp = 2.0F;
+
+        for (int octave = 0; octave < octaves; octave++) {
+            signal = Noise.singleSimplex(x, y, seed + octave);
+            signal = Math.abs(signal);
+            signal = offset - signal;
+            signal *= signal;
+
+            signal *= weight;
+            weight = signal * amp;
+            weight = NoiseUtil.clamp(weight, 0, 1);
+            value += (signal * spectralWeights[octave]);
+
             x *= lacunarity;
             y *= lacunarity;
             amp *= gain;
         }
-
-        return NoiseUtil.map(sum, min, max, range);
+        return NoiseUtil.map(value, min, max, range);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof SimplexRidgeNoise)) return false;
         if (!super.equals(o)) return false;
 
-        SimplexNoise2 that = (SimplexNoise2) o;
+        SimplexRidgeNoise that = (SimplexRidgeNoise) o;
 
         if (Float.compare(that.min, min) != 0) return false;
         if (Float.compare(that.max, max) != 0) return false;
-        return Float.compare(that.range, range) == 0;
+        if (Float.compare(that.range, range) != 0) return false;
+        return interpolation == that.interpolation;
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
+        result = 31 * result + Arrays.hashCode(spectralWeights);
         result = 31 * result + (min != +0.0f ? Float.floatToIntBits(min) : 0);
         result = 31 * result + (max != +0.0f ? Float.floatToIntBits(max) : 0);
         result = 31 * result + (range != +0.0f ? Float.floatToIntBits(range) : 0);
         return result;
     }
 
-    protected static float max(int octaves, float gain) {
-        float signal = signal(octaves);
-
-        float sum = 0;
-        float amp = 1;
-        for (int i = 0; i < octaves; i++) {
-            sum += amp * signal;
-            amp *= gain;
-        }
-        return sum;
-    }
-
-    private static float signal(int octaves) {
-        int index = Math.min(octaves, signals.length - 1);
-        return signals[index];
-    }
-
-    private static final float[] signals = {1.00F, 0.989F, 0.810F, 0.781F, 0.708F, 0.702F, 0.696F};
-
-    public static DataSpec<SimplexNoise2> spec() {
-        return specBuilder("Simplex2", SimplexNoise2.class, SimplexNoise2::new).build();
+    public static DataSpec<SimplexRidgeNoise> ridgeSpec() {
+        return specBuilder("SimplexRidge", SimplexRidgeNoise.class, SimplexRidgeNoise::new).build();
     }
 }

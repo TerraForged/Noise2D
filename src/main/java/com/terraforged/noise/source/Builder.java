@@ -196,6 +196,13 @@ public class Builder {
         return new RidgeNoise(this);
     }
 
+    public NoiseSource simplexRidge() {
+        if (gain == Float.MAX_VALUE) {
+            gain = DEFAULT_RIDGE_GAIN;
+        }
+        return new SimplexRidgeNoise(this);
+    }
+
     public NoiseSource billow() {
         return new BillowNoise(this);
     }

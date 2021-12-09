@@ -48,6 +48,7 @@ public enum Source {
     RIDGE(Builder::ridge),
     SIMPLEX(Builder::simplex),
     SIMPLEX2(Builder::simplex2),
+    SIMPLEX_RIDGE(Builder::simplex2),
     SIN(Builder::sin),
     RAND(Builder::rand);
 
@@ -115,6 +116,14 @@ public enum Source {
 
     public static Module ridge(int seed, int scale, int octaves) {
         return Source.builder().seed(seed).scale(scale).octaves(octaves).ridge();
+    }
+
+    public static Module simplexRidge(int scale, int octaves) {
+        return ridge(ThreadLocalRandom.current().nextInt(), scale, octaves);
+    }
+
+    public static Module simplexRidge(int seed, int scale, int octaves) {
+        return Source.builder().seed(seed).scale(scale).octaves(octaves).simplexRidge();
     }
 
     public static Module cubic(int scale, int octaves) {

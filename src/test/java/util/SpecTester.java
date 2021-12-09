@@ -31,7 +31,7 @@ public class SpecTester {
     }
 
     protected static Module n3() {
-        return Source.billow(91011, 200, 2);
+        return Source.simplexRidge(91011, 200, 2);
     }
 
     protected static DataValue encode(Module module) {

@@ -32,6 +32,7 @@ public class NoiseSpec {
         DataSpecs.register(RidgeNoise.ridgeSpec());
         DataSpecs.register(SimplexNoise.spec());
         DataSpecs.register(SimplexNoise2.spec());
+        DataSpecs.register(SimplexRidgeNoise.ridgeSpec());
         DataSpecs.register(Sin.spec());
         DataSpecs.register(Line.spec());
         DataSpecs.register(Rand.spec());

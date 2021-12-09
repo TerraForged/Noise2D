@@ -12,6 +12,13 @@ public class N2DUtil {
         return image;
     }
 
+    public static JFrame display(int width, int height, PixelShader<BufferedImage> shader) {
+        return display(width, height, (x, z, ctx) -> {
+            int rgb = shader.shade(x, z, ctx);
+            ctx.setRGB(x, z, rgb);
+        });
+    }
+
     public static JFrame display(int width, int height, PosVisitor<BufferedImage> visitor) {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
@@ -43,5 +50,10 @@ public class N2DUtil {
     public interface PosVisitor<T> {
 
         void visit(int x, int z, T ctx);
+    }
+
+    public interface PixelShader<T> {
+
+        int shade(int x, int z, T ctx);
     }
 }
