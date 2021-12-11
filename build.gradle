@@ -4,7 +4,7 @@ plugins {
 }
 
 group "com.terraforged"
-version "0.8.6-SNAPSHOT"
+version "0.8.7-SNAPSHOT"
 
 configurations {
     shade
@@ -20,7 +20,7 @@ repositories {
 
 dependencies {
     testCompile "junit:junit:4.13.2"
-    shade "com.terraforged:Cereal:0.0.4-SNAPSHOT"
+    shade "com.terraforged:Cereal:0.0.5-SNAPSHOT"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
