@@ -82,7 +82,6 @@ public class NoiseSpec {
         DataSpecs.registerSub(CurveFunc.class, SCurve.spec());
 
         // warps
-        DataSpecs.register(CacheWarp.spec());
         DataSpecs.register(AddWarp.spec());
         DataSpecs.register(CompoundWarp.spec());
         DataSpecs.register(CumulativeWarp.spec());

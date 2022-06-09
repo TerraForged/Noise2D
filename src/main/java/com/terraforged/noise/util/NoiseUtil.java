@@ -27,8 +27,8 @@ package com.terraforged.noise.util;
 
 /**
  * Partly derived from FastNoise_Java
- * https://github.com/Auburns/FastNoise_Java
- * https://github.com/Auburn/FastNoise_Java/blob/master/LICENSE
+ * <a href="https://github.com/Auburns/FastNoise_Java">...</a>
+ * <a href="https://github.com/Auburn/FastNoise_Java/blob/master/LICENSE">...</a>
  *
  * MIT License
  *
@@ -153,20 +153,12 @@ public class NoiseUtil {
 
     public static float map(float value, float min, float max, float range) {
         float dif = clamp(value, min, max) - min;
-        if (dif > range) {
-            return 1F;
-        }
-        return dif / range;
+        return dif >= range ? 1f : dif / range;
     }
 
     public static float clamp(float value, float min, float max) {
-        if (value < min) {
-            return min;
-        }
-        if (value > max) {
-            return max;
-        }
-        return value;
+        //noinspection ManualMinMaxCalculation
+        return value < min ? min : value > max ? max : value;
     }
 
     public static float dist2(float x1, float y1, float x2, float y2) {

@@ -50,7 +50,7 @@ public class PerlinNoise2 extends NoiseSource {
     }
 
     @Override
-    public float getValue(float x, float y) {
+    public float getValue(int seed, float x, float y) {
         x *= frequency;
         y *= frequency;
 
@@ -58,7 +58,7 @@ public class PerlinNoise2 extends NoiseSource {
         float amp = gain;
 
         for (int i = 0; i < octaves; i++) {
-            sum += Noise.singlePerlin2(x, y, seed + i, interpolation) * amp;
+            sum += Noise.singlePerlin2(x, y, this.seed + i, interpolation) * amp;
             x *= lacunarity;
             y *= lacunarity;
             amp *= gain;
@@ -68,7 +68,7 @@ public class PerlinNoise2 extends NoiseSource {
     }
 
     @Override
-    public float getValue(float x, float y, int seed) {
+    public float getSourceValue(int seed, float x, float y) {
         x *= frequency;
         y *= frequency;
 
@@ -101,9 +101,9 @@ public class PerlinNoise2 extends NoiseSource {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + (min != +0.0f ? Float.floatToIntBits(min) : 0);
-        result = 31 * result + (max != +0.0f ? Float.floatToIntBits(max) : 0);
-        result = 31 * result + (range != +0.0f ? Float.floatToIntBits(range) : 0);
+        result = 31 * result + (min != 0.0f ? Float.floatToIntBits(min) : 0);
+        result = 31 * result + (max != 0.0f ? Float.floatToIntBits(max) : 0);
+        result = 31 * result + (range != 0.0f ? Float.floatToIntBits(range) : 0);
         return result;
     }
 

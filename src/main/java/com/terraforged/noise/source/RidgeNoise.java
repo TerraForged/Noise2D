@@ -44,18 +44,20 @@ public class RidgeNoise extends NoiseSource {
 
     public RidgeNoise(Builder builder) {
         super(builder);
+        int octaves = Math.min(RIDGED_MAX_OCTAVE, builder.getOctaves());
+
         this.interpolation = builder.getInterp();
-        this.spectralWeights = new float[RIDGED_MAX_OCTAVE];
+        this.spectralWeights = new float[octaves];
 
         float h = 1.0F;
         float frequency = 1.0F;
-        for (int i = 0; i < RIDGED_MAX_OCTAVE; i++) {
+        for (int i = 0; i < octaves; i++) {
             spectralWeights[i] = NoiseUtil.pow(frequency, -h);
             frequency *= lacunarity;
         }
 
         min = 0;
-        max = calculateBound(0.0F, builder.getOctaves(), builder.getGain());
+        max = calculateMaxBound(builder.getOctaves(), builder.getGain());
         range = Math.abs(max - min);
     }
 
@@ -65,21 +67,17 @@ public class RidgeNoise extends NoiseSource {
     }
 
     @Override
-    public float getValue(float x, float y, int seed) {
+    public float getSourceValue(int seed, float x, float y) {
         x *= frequency;
         y *= frequency;
 
-        float signal;
+        float amp = 2.0F;
         float value = 0.0F;
         float weight = 1.0F;
 
-        float offset = 1.0F;
-        float amp = 2.0F;
-
         for (int octave = 0; octave < octaves; octave++) {
-            signal = Noise.singlePerlin(x, y, seed + octave, interpolation);
-            signal = Math.abs(signal);
-            signal = offset - signal;
+            float signal = Noise.singlePerlin(x, y, seed + octave, interpolation);
+            signal = 1.0f - Math.abs(signal);
             signal *= signal;
 
             signal *= weight;
@@ -114,24 +112,19 @@ public class RidgeNoise extends NoiseSource {
         int result = super.hashCode();
         result = 31 * result + interpolation.hashCode();
         result = 31 * result + Arrays.hashCode(spectralWeights);
-        result = 31 * result + (min != +0.0f ? Float.floatToIntBits(min) : 0);
-        result = 31 * result + (max != +0.0f ? Float.floatToIntBits(max) : 0);
-        result = 31 * result + (range != +0.0f ? Float.floatToIntBits(range) : 0);
+        result = 31 * result + (min != 0.0f ? Float.floatToIntBits(min) : 0);
+        result = 31 * result + (max != 0.0f ? Float.floatToIntBits(max) : 0);
+        result = 31 * result + (range != 0.0f ? Float.floatToIntBits(range) : 0);
         return result;
     }
 
-    private float calculateBound(float signal, int octaves, float gain) {
+    private float calculateMaxBound(int octaves, float gain) {
+        float amp = 2.0F;
         float value = 0.0F;
         float weight = 1.0F;
 
-        float amp = 2.0F;
-        float offset = 1.0F;
-
         for (int curOctave = 0; curOctave < octaves; curOctave++) {
-            float noise = signal;
-            noise = Math.abs(noise);
-            noise = offset - noise;
-            noise *= noise;
+            float noise = 1.0f;
             noise *= weight;
             weight = noise * amp;
             weight = Math.min(1F, Math.max(0F, weight));

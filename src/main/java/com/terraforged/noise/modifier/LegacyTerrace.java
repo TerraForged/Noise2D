@@ -64,14 +64,14 @@ public class LegacyTerrace extends Modifier {
     }
 
     @Override
-    public float getValue(float x, float y) {
-        float value = source.getValue(x, y);
+    public float getValue(int seed, float x, float y) {
+        float value = source.getValue(seed, x, y);
         value = NoiseUtil.clamp(value, 0, 1);
-        return modify(x, y, value);
+        return modify(seed, x, y, value);
     }
 
     @Override
-    public float modify(float x, float y, float noiseValue) {
+    public float modify(int seed, float x, float y, float noiseValue) {
         int index = NoiseUtil.round(noiseValue * maxIndex);
         Step step = steps[index];
         if (noiseValue < step.lowerBound) {
@@ -80,7 +80,7 @@ public class LegacyTerrace extends Modifier {
                 float alpha = (noiseValue - lower.upperBound) / (step.lowerBound - lower.upperBound);
                 alpha = 1 - Interpolation.CURVE3.apply(alpha);
                 float range = step.value - lower.value;
-                return step.value - (alpha * range * upperCurve.getValue(x, y));
+                return step.value - (alpha * range * upperCurve.getValue(seed, x, y));
             }
         } else if (noiseValue > step.upperBound) {
             if (index < maxIndex) {
@@ -88,7 +88,7 @@ public class LegacyTerrace extends Modifier {
                 float alpha = (noiseValue - step.upperBound) / (upper.lowerBound - step.upperBound);
                 alpha = Interpolation.CURVE3.apply(alpha);
                 float range = upper.value - step.value;
-                return step.value + (alpha * range * lowerCurve.getValue(x, y));
+                return step.value + (alpha * range * lowerCurve.getValue(seed, x, y));
             }
         }
         return step.value;
@@ -112,7 +112,7 @@ public class LegacyTerrace extends Modifier {
     public int hashCode() {
         int result = super.hashCode();
         result = 31 * result + maxIndex;
-        result = 31 * result + (blend != +0.0f ? Float.floatToIntBits(blend) : 0);
+        result = 31 * result + (blend != 0.0f ? Float.floatToIntBits(blend) : 0);
         result = 31 * result + lowerCurve.hashCode();
         result = 31 * result + upperCurve.hashCode();
         return result;
