@@ -1,6 +1,5 @@
 plugins {
     id "java"
-    id "maven-publish"
 }
 
 group "com.terraforged"
@@ -8,54 +7,26 @@ version "0.9.0-SNAPSHOT"
 
 configurations {
     shade
-    compile.extendsFrom(shade)
+    implementation.extendsFrom(shade)
     all {
         resolutionStrategy.cacheChangingModulesFor 0, "seconds"
     }
 }
 repositories {
     mavenCentral()
-    maven { url "https://io.terraforged.com/maven/" }
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
-    testCompile "junit:junit:4.13.2"
-    shade "com.terraforged:Cereal:0.0.5-SNAPSHOT"
+    testImplementation "junit:junit:4.13.2"
+    shade "com.github.TerraForged:Cereal:master-SNAPSHOT"
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources"
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = "javadoc"
-    from javadoc.destinationDir
+java {
+    withSourcesJar()
 }
 
 jar {
     from { configurations.shade.collect { it.isDirectory() ? it : zipTree(it) } }
     duplicatesStrategy = "EXCLUDE"
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact jar
-            artifact sourcesJar
-        }
-    }
-
-    if (System.getenv("MAVEN_USER") != null && System.getenv("MAVEN_PASS") != null) {
-        repositories {
-            maven {
-                credentials {
-                    username System.getenv("MAVEN_USER")
-                    password System.getenv("MAVEN_PASS")
-                }
-                name = "nexus"
-                url = "https://io.terraforged.com/maven/"
-            }
-        }
-    }
 }
